@@ -5,7 +5,7 @@
       <v-col cols="11">
         <v-card>
           <v-data-table :headers="datatableHeaders" :items="items">
-            <template v-slot:[`item.actions`]="{item}">
+            <template v-slot:[`item.actions`]="{ item }">
               <v-btn icon @click="openEditDialog(item)">
                 <v-icon color="primary">mdi-pencil</v-icon>
               </v-btn>
@@ -15,6 +15,17 @@
             </template>
             <template v-slot:[`item.price`]="{ item }">
               <shared-money :amount="item.price"></shared-money>
+            </template>
+            <template v-slot:[`item.stock`]="{ item }">
+              {{ item.stock }} {{ item.unitOfMeasure }}
+            </template>
+            <template v-slot:[`item.inOrder`]="{ item }">
+              <div v-if="item.inOrder !=null">
+                {{ item.inOrder }} {{ item.unitOfMeasure }}
+              </div>
+              <div v-else>
+                0
+              </div>
             </template>
           </v-data-table>
         </v-card>
@@ -27,7 +38,7 @@
       <edit-product-dialog :editItem="editedItem"></edit-product-dialog>
     </v-dialog>
     <v-dialog v-model="deleteDialog" persistent max-width="500">
-      <delete-dialog :editItem="editedItem" title="Producto"></delete-dialog>
+      <delete-dialog :editItem="editedItem" title="Producto" deleteUrl="/api/product/delete" getUrl="/api/products"></delete-dialog>
     </v-dialog>
   </div>
 </template>
@@ -39,8 +50,21 @@ import DeleteDialog from '~/components/Dialogs/DeleteDialog.vue'
 import SharedHeader from '~/components/SharedComponents/SharedHeader.vue'
 
 export default {
-  components: { SharedHeader, NewProductDialog, EditProductDialog, DeleteDialog},
+  components: {
+    SharedHeader,
+    NewProductDialog,
+    EditProductDialog,
+    DeleteDialog,
+  },
   computed: {
+    items: {
+      get() {
+        return this.$store.state.items;
+      },
+      set(values) {
+        this.$store.commit('setItems', values);
+      },
+    },
     dialog: {
       get() {
         return this.$store.state.dialog
@@ -71,19 +95,12 @@ export default {
     editedItem: {
       id: '',
       name: '',
-      imageUrl: '',
-      observation: '',
+      unitOfMeasure: '',
       category: '',
-      price: 0,
+      price: '',
       stock: '',
-      fuente: '',
     },
     datatableHeaders: [
-      {
-        text: 'ID',
-        value: 'id',
-        class: 'header-color',
-      },
       {
         text: 'Nombre',
         value: 'name',
@@ -105,8 +122,8 @@ export default {
         class: 'header-color',
       },
       {
-        text: 'Imagen',
-        value: 'imageUrl',
+        text: 'Reservado',
+        value: 'inOrder',
         class: 'header-color',
       },
       {
@@ -115,34 +132,33 @@ export default {
         class: 'header-color',
       },
     ],
-    items: [
-      {
-        id: 1,
-        name: 'Pimenton ahumado',
-        category: 'Especias',
-        price: 47000,
-        imageUrl: 'N/A',
-        observation: 'N/A',
-        stock: 0,
-      },
-      {
-        id: 2,
-        name: 'Semilla de Chia',
-        category: 'Semillas',
-        price: 17800,
-        imageUrl: 'N/A',
-        observation: 'N/A',
-        stock: 0,
-      },
-    ],
+    page: 1,
+    itemsPerPage: 10,
   }),
+  async beforeMount() {
+    this.$store.commit('setLoading')
+    await this.$store.dispatch('getProducts', {
+      page: this.page,
+      itemsPerPage: this.itemsPerPage,
+    });
+    this.$store.commit('setLoading')
+    this.loading = false
+  },
   methods: {
     openEditDialog(item) {
-      this.editedItem = item;
+      this.editedItem = {
+        _id: item._id,
+        name: item.name,
+        unitOfMeasure: item.unitOfMeasure, 
+        category: item.category, 
+        price: item.price.toString(), 
+        stock: item.stock.toString(),
+      };
+      console.log(this.editedItem);
       this.$store.commit('setEditDialog');
     },
     openDeleteDialog(item) {
-      this.editedItem = item;
+      this.editedItem = item
       this.$store.commit('setDeleteDialog')
     },
     openCreateDialog() {

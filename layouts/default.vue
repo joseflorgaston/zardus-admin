@@ -72,11 +72,28 @@
         <nuxt />
       </v-container>
     </v-main>
+    <v-overlay :value="loading">
+      <v-progress-circular
+        color="primary"
+        indeterminate
+        size="128"
+      ></v-progress-circular>
+    </v-overlay>
   </v-app>
 </template>
 
 <script>
 export default {
+  computed: {
+    loading: {
+      get() {
+        return this.$store.state.loading;
+      },
+      set(value) {
+        return this.$store.commit("setLoading");
+      }
+    }
+  },
   data() {
     return {
       clipped: false,
@@ -102,6 +119,16 @@ export default {
         {
           icon: 'mdi-swap-horizontal-bold ',
           title: 'Movimientos',
+          to: '/movements',
+        },
+        {
+          icon: 'mdi-account ',
+          title: 'Usuarios',
+          to: '/movements',
+        },
+        {
+          icon: 'mdi-finance  ',
+          title: 'Contabilidad',
           to: '/movements',
         },
       ],
