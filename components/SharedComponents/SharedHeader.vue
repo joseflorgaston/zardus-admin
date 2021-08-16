@@ -1,9 +1,9 @@
 <template>
   <v-row>
-    <v-col cols="4" offset-md="0" md="3">
+    <v-col cols="12" offset-md="0" md="3">
       <h2>{{ title }}</h2>
     </v-col>
-    <v-col cols="8" md="5">
+    <v-col cols="12" md="5">
       <v-text-field
         rounded
         single-line
@@ -14,7 +14,7 @@
         prepend-inner-icon="mdi-magnify"
       ></v-text-field>
     </v-col>
-    <v-col cols="4" offset-md="1" md="2">
+    <v-col cols="12" offset-md="1" md="2">
       <v-btn color="primary" width="100%" @click="openCreateDialog()">
         <v-icon class="mr-2">mdi-plus</v-icon>
         Agregar

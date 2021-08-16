@@ -8,11 +8,16 @@
       </v-btn>
     </v-card-title>
 
-    <v-form>
+    <v-form v-model="isValid">
       <v-row class="mt-5 max-width mb-5">
         <v-col offset="1" cols="10" sm="10">
           <h4>Nombre.</h4>
-          <v-text-field color="accent" label="Nombre" v-model="editItem.name">
+          <v-text-field
+            color="accent"
+            label="Nombre"
+            v-model="editItem.name"
+            :rules="rules"
+          >
           </v-text-field>
         </v-col>
         <v-col offset="1" cols="10" sm="6">
@@ -22,6 +27,7 @@
             label="Categoria"
             v-model="editItem.category"
             :items="categories"
+            :rules="rules"
           >
           </v-autocomplete>
         </v-col>
@@ -32,6 +38,7 @@
             type="number"
             label="Precio"
             v-model="editItem.price"
+            :rules="priceRules"
           >
           </v-text-field>
         </v-col>
@@ -41,6 +48,7 @@
             v-model="editItem.unitOfMeasure"
             label="Unidad de medida"
             :items="['A granel', 'Kg']"
+            :rules="rules"
           ></v-select>
         </v-col>
         <v-col offset="1" offset-sm="0" cols="5" sm="5">
@@ -49,6 +57,7 @@
             type="number"
             color="accent"
             label="Stock"
+            :rules="priceRules"
             v-model="editItem.stock"
           >
           </v-text-field>
@@ -58,9 +67,11 @@
     <v-divider></v-divider>
 
     <v-card-actions>
-      <v-btn color="error" @click="openDeleteDialog"> Eliminar Producto </v-btn>
+      <v-btn color="error" @click="openDeleteDialog">
+        Eliminar Producto
+      </v-btn>
       <v-spacer></v-spacer>
-      <v-btn color="primary" @click="save()"> Guardar </v-btn>
+      <v-btn color="primary" @click="save()" :disabled="!isValid"> Guardar </v-btn>
       <v-btn text @click="closeDialog"> Cancelar </v-btn>
     </v-card-actions>
   </v-card>
@@ -76,6 +87,12 @@ export default {
   },
   computed: {},
   data: () => ({
+    isValid: true,
+    rules: [(v) => !!v || 'Este campo es requerido'],
+    priceRules: [
+      (v) => !!v || 'Este campo es requerido',
+      (v) => v >= 0 || 'Este campo debe ser mayor a 0'
+      ],
     form: {
       name: '',
       category: '',
@@ -102,7 +119,7 @@ export default {
         unitOfMeasure: this.editItem.unitOfMeasure,
       }
       this.$store.commit('setLoading')
-      this.$store.dispatch('updateProduct', this.form)
+      await this.$store.dispatch('updateProduct', this.form)
       await this.$store.dispatch('getProducts', {
         page: 1,
         itemsPerPage: 10,

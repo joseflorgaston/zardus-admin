@@ -2,9 +2,9 @@
   <div>
     <shared-header title="Productos"></shared-header>
     <v-row>
-      <v-col cols="11">
+      <v-col cols="12" md="11">
         <v-card>
-          <v-data-table :headers="datatableHeaders" :items="items">
+          <v-data-table :headers="datatableHeaders" :items="items" v-if="!loading">
             <template v-slot:[`item.actions`]="{ item }">
               <v-btn icon @click="openEditDialog(item)">
                 <v-icon color="primary">mdi-pencil</v-icon>
@@ -107,7 +107,7 @@ export default {
         class: 'header-color',
       },
       {
-        text: 'Categoria',
+        text: 'Categoría',
         value: 'category',
         class: 'header-color',
       },

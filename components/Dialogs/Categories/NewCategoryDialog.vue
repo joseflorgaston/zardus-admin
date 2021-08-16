@@ -1,27 +1,34 @@
 <template>
   <v-card>
     <v-card-title class="text-h5 white--text primary">
-      Agregar Categoria
+      Agregar Proveedor
       <v-spacer></v-spacer>
       <v-btn icon color="error" @click="closeDialog">
         <v-icon color="white"> mdi-close </v-icon>
       </v-btn>
     </v-card-title>
 
-    <v-form>
+    <v-form v-model="isValid">
       <v-row class="mt-5 max-width mb-5">
-        <v-col offset="1" cols="10" sm="10">
-          <v-text-field color="accent" label="Nombre" v-model="form.name">
+        <v-col offset="1" cols="10" sm="6">
+          <h4>Nombre</h4>
+          <v-text-field
+            color="accent"
+            label="Nombre"
+            v-model="form.name"
+            :rules="rules"
+          >
+          </v-text-field>
+        </v-col>
+        <v-col offset="1" offset-sm="0" cols="10" sm="4">
+          <h4>Contacto</h4>
+          <v-text-field color="accent" label="Contacto" v-model="form.contact">
           </v-text-field>
         </v-col>
         <v-col offset="1" cols="10" sm="10">
-          <v-textarea
-            multi-line
-            color="accent"
-            label="Descripcion"
-            v-model="form.description"
-          >
-          </v-textarea>
+          <h4>Direccion</h4>
+          <v-text-field color="accent" label="Direccion" v-model="form.address">
+          </v-text-field>
         </v-col>
       </v-row>
     </v-form>
@@ -30,7 +37,9 @@
 
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn color="primary" @click="closeDialog"> Guardar </v-btn>
+      <v-btn color="primary" @click="save" :disabled="!isValid">
+        Guardar
+      </v-btn>
       <v-btn text @click="closeDialog"> Cancelar </v-btn>
     </v-card-actions>
   </v-card>
@@ -39,14 +48,32 @@
 <script>
 export default {
   data: () => ({
+    isValid: true,
+    rules: [(v) => !!v || 'Este campo es requerido'],
     form: {
       name: '',
-      description: '',
+      address: '',
+      contact: '',
     },
   }),
   methods: {
     closeDialog() {
-      this.$store.commit('setDialog')
+      this.$store.commit('setDialog');
+      this.resetForm();
+    },
+    async save() {
+      this.$store.commit('setLoading')
+      await this.$store.dispatch('saveProvider', this.form)
+      this.closeDialog()
+      await this.$store.dispatch('getProviders', { page: 1, itemsPerPage: 10 })
+      this.$store.commit('setLoading')
+    },
+    resetForm() {
+      this.form = {
+        name: '',
+        address: '',
+        contact: '',
+      }
     },
   },
 }

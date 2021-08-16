@@ -7,7 +7,7 @@
       clipped
     >
       <template #prepend>
-        <div class="profile-container ml-5 mr-5 ">
+        <div class="profile-container ml-5 mr-5">
           <div>
             <div class="mb-5">
               <v-img
@@ -42,8 +42,52 @@
             </v-list-item-content>
           </div>
         </v-list-item>
+        <v-list-item
+          style="width: 100%; padding: 0px !important; margin: 0px !important"
+        >
+          <v-list-group>
+            <template v-slot:activator>
+              <v-list-item-action>
+                <v-icon>mdi-piggy-bank </v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title
+                  class="default-font"
+                  v-text="'Contabilidad'"
+                  exact
+                  exact-active-class="active-link"
+                />
+              </v-list-item-content>
+            </template>
+            <v-list style="padding-top: 0px; padding-left: 12px">
+              <v-list-item
+                :to="'balances'"
+                router
+                exact
+                exact-active-class="active-link"
+              >
+                <v-list-item-action>
+                  <v-icon>mdi-finance</v-icon>
+                </v-list-item-action>
+                <v-list-item-content>
+                  <v-list-item-title class="default-font" v-text="'Balances'" />
+                </v-list-item-content>
+              </v-list-item>
+              <v-list-item :to="'expenses'" router exact exact-active-class="active-link">
+                <v-list-item-action>
+                  <v-icon>mdi-cash</v-icon>
+                </v-list-item-action>
+                <v-list-item-content>
+                  <v-list-item-title
+                    class="default-font"
+                    v-text="'Gastos varios'"
+                  />
+                </v-list-item-content>
+              </v-list-item>
+            </v-list>
+          </v-list-group>
+        </v-list-item>
       </v-list>
-
       <template #append>
         <div class="pb-8 pb-md-5 d-flex justify-center">
           <v-btn
@@ -64,13 +108,13 @@
       <v-spacer />
 
       <v-spacer />
-      <v-icon color="white"> mdi-bell </v-icon>
     </v-app-bar>
 
     <v-main class="grey lighten-5">
       <v-container>
         <nuxt />
       </v-container>
+      <shared-snackbar></shared-snackbar>
     </v-main>
     <v-overlay :value="loading">
       <v-progress-circular
@@ -87,12 +131,12 @@ export default {
   computed: {
     loading: {
       get() {
-        return this.$store.state.loading;
+        return this.$store.state.loading
       },
       set(value) {
-        return this.$store.commit("setLoading");
-      }
-    }
+        return this.$store.commit('setLoading')
+      },
+    },
   },
   data() {
     return {
@@ -107,14 +151,9 @@ export default {
           to: '/products',
         },
         {
-          icon: 'mdi-format-list-bulleted-square ',
-          title: 'Categorías',
-          to: '/categories',
-        },
-        {
-          icon: 'mdi-warehouse',
-          title: 'Depósitos',
-          to: '/warehouse',
+          icon: 'mdi-package-variant-closed',
+          title: 'Proveedores',
+          to: '/providers',
         },
         {
           icon: 'mdi-swap-horizontal-bold ',
@@ -122,21 +161,16 @@ export default {
           to: '/movements',
         },
         {
-          icon: 'mdi-account ',
+          icon: 'mdi-account-multiple ',
           title: 'Usuarios',
-          to: '/movements',
-        },
-        {
-          icon: 'mdi-finance  ',
-          title: 'Contabilidad',
-          to: '/movements',
+          to: '/users',
         },
       ],
       logoutModal: false,
       miniVariant: false,
       right: true,
       rightDrawer: false,
-      title: 'Bienvenida',
+      title: 'Bienvenida CEO Expert - Cielo Morales',
     }
   },
   methods: {

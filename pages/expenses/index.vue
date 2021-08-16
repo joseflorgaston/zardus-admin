@@ -1,5 +1,7 @@
 <template>
-  
+  <div>
+      <shared-header title="Gastos Varios"></shared-header>
+  </div>
 </template>
 
 <script>

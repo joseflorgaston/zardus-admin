@@ -8,11 +8,11 @@
       </v-btn>
     </v-card-title>
 
-    <v-form>
+    <v-form v-model="isValid">
       <v-row class="mt-5 max-width mb-5">
         <v-col offset="1" cols="10" sm="10">
           <h4>Producto.</h4>
-          <v-text-field color="accent" label="Nombre" v-model="form.name">
+          <v-text-field color="accent" label="Nombre" v-model="form.name" :rules="rules">
           </v-text-field>
         </v-col>
         <v-col offset="1" cols="10" sm="6">
@@ -22,16 +22,18 @@
             label="Categoria"
             v-model="form.category"
             :items="categories"
+            :rules="rules"
           >
           </v-autocomplete>
         </v-col>
         <v-col offset="1" offset-sm="0" cols="10" sm="4">
-          <h4>Precio. ({{form.unitOfMeasure}})</h4>
+          <h4>Precio. ({{ form.unitOfMeasure }})</h4>
           <v-text-field
             type="number"
             color="accent"
             label="Precio"
             v-model="form.price"
+            :rules="rules"
           >
           </v-text-field>
         </v-col>
@@ -41,15 +43,17 @@
             v-model="form.unitOfMeasure"
             label="Unidad de medida"
             :items="['A granel', 'Kg']"
+            :rules="rules"
           ></v-select>
         </v-col>
         <v-col offset="1" offset-sm="0" cols="5" sm="5">
-          <h4>Cantidad en stock. ({{form.unitOfMeasure}})</h4>
+          <h4>Cantidad en stock. ({{ form.unitOfMeasure }})</h4>
           <v-text-field
             type="number"
             color="accent"
             label="Stock"
             v-model="form.stock"
+            :rules="rules"
           >
           </v-text-field>
         </v-col>
@@ -60,7 +64,7 @@
 
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn color="primary" @click="save"> Guardar </v-btn>
+      <v-btn color="primary" @click="save" :disabled="!isValid"> Guardar </v-btn>
       <v-btn text @click="closeDialog"> Cancelar </v-btn>
     </v-card-actions>
   </v-card>
@@ -69,6 +73,8 @@
 <script>
 export default {
   data: () => ({
+    isValid: true,
+    rules: [(v) => !!v || 'Este campo es requerido'],
     form: {
       name: '',
       category: '',
@@ -89,13 +95,13 @@ export default {
       this.$store.commit('setDialog')
     },
     async save() {
-      this.form.price = parseInt(this.form.price);
-      this.form.stock = parseInt(this.form.stock);
-      this.$store.commit("setLoading");
-      await this.$store.dispatch("saveProduct", this.form);
-      this.closeDialog();
-      await this.$store.dispatch("getProducts", {page:1, itemsPerPage: 10});
-      this.$store.commit("setLoading");
+      this.form.price = parseInt(this.form.price)
+      this.form.stock = parseInt(this.form.stock)
+      this.$store.commit('setLoading')
+      await this.$store.dispatch('saveProduct', this.form)
+      this.closeDialog()
+      await this.$store.dispatch('getProducts', { page: 1, itemsPerPage: 10 })
+      this.$store.commit('setLoading')
     },
   },
 }
