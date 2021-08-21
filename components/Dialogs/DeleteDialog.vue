@@ -45,12 +45,20 @@ export default {
   },
   methods: {
     async deleteItem() {
-      this.$store.commit("setLoading");
-      await this.$axios.$delete(`${this.deleteUrl}/` + this.editItem._id);
-      const items = await this.$axios.$get(`${this.getUrl}`);
-      this.$store.commit("setItems", items);
-      this.$store.commit("setDeleteDialog");
-      this.$store.commit("setLoading");
+      try {
+        this.$store.commit('setLoading')
+        this.$store.commit('setDeleteDialog')
+        await this.$axios.$delete(`${this.deleteUrl}/` + this.editItem._id)
+        console.log("setSuccess");
+        this.$store.commit('setSuccess', this.title + " Eliminado exitosamente");
+        console.log(this.getUrl);
+        const items = await this.$axios.$get(`${this.getUrl}`)
+        this.$store.commit('setItems', items.data)
+        this.$store.commit('setCount', items.count)
+        this.$store.commit('setLoading')
+      } catch (error) {
+        this.$store.commit('setError', 'Ha ocurrido un error')
+      }
     },
     closeDialog() {
       this.$store.commit('setDeleteDialog')

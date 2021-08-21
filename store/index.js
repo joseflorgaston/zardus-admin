@@ -10,6 +10,7 @@ export const state = () => ({
   snackbar: false,
   snackbarColor: 'success',
   message: '',
+  count: 0,
 })
 
 export const mutations = {
@@ -45,24 +46,28 @@ export const mutations = {
   closeSnackbar(state) {
     state.snackbar = false;
   },
+  setCount(state, value) {
+    state.count = value;
+  },
 
 }
 export const actions = {
   async getProducts({ commit }, pagination) {
     try {
-      const products = await this.$axios.$get('/api/products');
-    commit('setItems', products);
+      const products = await this.$axios.$get(`/api/products/${(pagination.page-1)*pagination.itemsPerPage}/${pagination.itemsPerPage}`);
+      commit('setCount', products.count);
+      commit('setItems', products.data);
     } catch (error) {
-      commit("setError", "Ha ocurrido un error al modificar el producto");
+      commit("setError", "Ha ocurrido un error inesperado");
     }
   },
 
-  async getProducts({ commit }, pagination) {
+  async getProduct({ commit }, id) {
     try {
-      const products = await this.$axios.$get('/api/products');
+      const products = await this.$axios.$get(`/api/product/${id}`);
     commit('setItems', products);
     } catch (error) {
-      commit("setError", "Ha ocurrido un error al modificar el producto");
+      commit("setError", "Ha ocurrido un error inesperado");
     }
   },
 
@@ -87,8 +92,10 @@ export const actions = {
 
   async getProviders({ commit }, pagination) {
     try {
-      const providers = await this.$axios.$get('/api/providers');
-      commit('setItems', providers);
+      console.log(pagination);
+      const providers = await this.$axios.$get(`/api/providers/${(pagination.page-1)*pagination.itemsPerPage}/${pagination.itemsPerPage}`);
+      commit("setCount", providers.count)
+      commit('setItems', providers.data);
     } catch (error) {
       commit("setError", "Ha ocurrido un error al modificar el producto");
     }
@@ -109,6 +116,25 @@ export const actions = {
       commit("setSuccess", "Proveedor modificado exitosamente");
     } catch (error) {
       commit("setError", "Ha ocurrido un error al modificar el proveedor");
+    }
+  },
+
+  async getOrders({ commit }, pagination) {
+    try {
+      const orders = await this.$axios.$get(`/api/orders/${(pagination.page-1)*pagination.itemsPerPage}/${pagination.itemsPerPage}`);
+      commit("setCount", orders.count)
+      commit('setItems', orders.data);
+    } catch (error) {
+      commit("setError", "Ha ocurrido un error al modificar el producto");
+    }
+  },
+
+  async saveOrder({ commit }, item) {
+    try {
+      await this.$axios.$post('/api/order/create', item);
+      commit("setSuccess", "Pedido agregado exitosamente");
+    } catch (error) {
+      commit("setError", "Ha ocurrido un error al intentar agregar el pedido");
     }
   },
 

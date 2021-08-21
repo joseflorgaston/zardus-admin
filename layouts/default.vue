@@ -48,6 +48,53 @@
           <v-list-group>
             <template v-slot:activator>
               <v-list-item-action>
+                <v-icon>mdi-swap-horizontal-bold</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title
+                  class="default-font"
+                  v-text="'Movimientos'"
+                  exact
+                  exact-active-class="active-link"
+                />
+              </v-list-item-content>
+            </template>
+            <v-list style="padding-top: 0px; padding-left: 12px">
+              <v-list-item
+                :to="'buy_products'"
+                router
+                exact
+                exact-active-class="active-link"
+              >
+                <v-list-item-action>
+                  <v-icon>mdi-truck-check </v-icon>
+                </v-list-item-action>
+                <v-list-item-content>
+                  <v-list-item-title class="default-font" v-text="'Compras'" />
+                </v-list-item-content>
+              </v-list-item>
+              <v-list-item
+                :to="'orders'"
+                router
+                exact
+                exact-active-class="active-link"
+              >
+                <v-list-item-action>
+                  <v-icon>mdi-clipboard-list-outline </v-icon>
+                </v-list-item-action>
+                <v-list-item-content>
+                  <v-list-item-title class="default-font" v-text="'Pedidos'" />
+                </v-list-item-content>
+              </v-list-item>
+            </v-list>
+          </v-list-group>
+        </v-list-item>
+        <v-list-item
+          style="width: 100%; padding: 0px !important; margin: 0px !important"
+        >
+          <v-list-group>
+            <template v-slot:activator>
+              <v-list-item-action>
                 <v-icon>mdi-piggy-bank </v-icon>
               </v-list-item-action>
               <v-list-item-content>
@@ -73,7 +120,12 @@
                   <v-list-item-title class="default-font" v-text="'Balances'" />
                 </v-list-item-content>
               </v-list-item>
-              <v-list-item :to="'expenses'" router exact exact-active-class="active-link">
+              <v-list-item
+                :to="'expenses'"
+                router
+                exact
+                exact-active-class="active-link"
+              >
                 <v-list-item-action>
                   <v-icon>mdi-cash</v-icon>
                 </v-list-item-action>
@@ -154,11 +206,6 @@ export default {
           icon: 'mdi-package-variant-closed',
           title: 'Proveedores',
           to: '/providers',
-        },
-        {
-          icon: 'mdi-swap-horizontal-bold ',
-          title: 'Movimientos',
-          to: '/movements',
         },
         {
           icon: 'mdi-account-multiple ',
