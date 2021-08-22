@@ -47,7 +47,7 @@
           <v-select
             v-model="editItem.unitOfMeasure"
             label="Unidad de medida"
-            :items="['A granel', 'Kg']"
+            :items="['uds', 'kgs']"
             :rules="rules"
           ></v-select>
         </v-col>

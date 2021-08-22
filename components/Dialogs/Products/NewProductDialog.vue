@@ -33,7 +33,7 @@
             color="accent"
             label="Precio"
             v-model="form.price"
-            :rules="rules"
+            :rules="quantityRule"
           >
           </v-text-field>
         </v-col>
@@ -42,7 +42,7 @@
           <v-select
             v-model="form.unitOfMeasure"
             label="Unidad de medida"
-            :items="['A granel', 'Kg']"
+            :items="['uds', 'kgs']"
             :rules="rules"
           ></v-select>
         </v-col>
@@ -53,7 +53,7 @@
             color="accent"
             label="Stock"
             v-model="form.stock"
-            :rules="rules"
+            :rules="quantityRule"
           >
           </v-text-field>
         </v-col>
@@ -75,11 +75,15 @@ export default {
   data: () => ({
     isValid: true,
     rules: [(v) => !!v || 'Este campo es requerido'],
+    quantityRule: [,
+    (v) => v>=0 || 'Coloca un numero mayor a 0',
+    (v) => !!v || 'Este campo es requerido'
+    ],
     form: {
       name: '',
       category: '',
       price: 0,
-      unitOfMeasure: 'Kg',
+      unitOfMeasure: 'kgs',
       stock: 0,
     },
     categories: [

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <shared-header title="Productos"></shared-header>
+    <shared-header title="Productos" class="mt-1"></shared-header>
     <v-row>
       <v-col cols="12" md="11">
         <v-card>
@@ -13,14 +13,37 @@
             @update:page="nextPage"
             @update:items-per-page="otherItemCount"
             :loading="loading"
+            :footer-props="{
+              itemsPerPageOptions: [5, 10, 15],
+            }"
           >
             <template v-slot:[`item.actions`]="{ item }">
-              <v-btn icon @click="openEditDialog(item)">
-                <v-icon color="primary" title="editar">mdi-pencil</v-icon>
-              </v-btn>
-              <v-btn icon @click="openDeleteDialog(item)">
-                <v-icon color="error" title="eliminar">mdi-delete</v-icon>
-              </v-btn>
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    icon
+                    @click="openEditDialog(item)"
+                    v-bind="attrs"
+                    v-on="on"
+                  >
+                    <v-icon color="primary" title="editar">mdi-pencil</v-icon>
+                  </v-btn>
+                </template>
+                <span>Editar Producto</span>
+              </v-tooltip>
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    icon
+                    @click="openDeleteDialog(item)"
+                    v-bind="attrs"
+                    v-on="on"
+                  >
+                    <v-icon color="error" title="eliminar">mdi-delete</v-icon>
+                  </v-btn>
+                </template>
+                <span>Eliminar Producto</span>
+              </v-tooltip>
             </template>
             <template v-slot:[`item.price`]="{ item }">
               <shared-money :amount="item.price || 0"></shared-money>
@@ -49,7 +72,9 @@
         :editItem="editedItem"
         title="Producto"
         deleteUrl="/api/product/delete"
-        :getUrl="`/api/products/${(this.page-1)*this.itemsPerPage}/${this.itemsPerPage}`"
+        :getUrl="`/api/products/${(this.page - 1) * this.itemsPerPage}/${
+          this.itemsPerPage
+        }`"
       ></delete-dialog>
     </v-dialog>
   </div>
@@ -151,7 +176,7 @@ export default {
     itemsPerPage: 10,
   }),
   async beforeMount() {
-    await this.getProducts();
+    await this.getProducts()
   },
   methods: {
     openEditDialog(item) {
@@ -175,11 +200,11 @@ export default {
     },
     async nextPage(value) {
       this.page = value
-      await this.getProducts();
+      await this.getProducts()
     },
     async otherItemCount(value) {
-      this.itemsPerPage = value;
-      await this.getProducts();
+      this.itemsPerPage = value
+      await this.getProducts()
     },
     async getProducts() {
       this.loading = true

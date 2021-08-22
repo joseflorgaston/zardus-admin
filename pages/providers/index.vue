@@ -14,14 +14,38 @@
               @update:page="nextPage"
               @update:items-per-page="otherItemCount"
               :loading="loading"
+              :footer-props="{
+                itemsPerPageOptions: [5, 10, 15],
+              }"
             >
               <template v-slot:[`item.actions`]="{ item }">
-                <v-btn icon @click="openEditDialog(item)">
-                  <v-icon color="primary" title="editar">mdi-pencil</v-icon>
-                </v-btn>
-                <v-btn icon @click="openDeleteDialog(item)">
-                  <v-icon color="error" title="eliminar">mdi-delete</v-icon>
-                </v-btn>
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      icon
+                      @click="openEditDialog(item)"
+                      v-bind="attrs"
+                      v-on="on"
+                    >
+                      <v-icon color="primary" title="editar">mdi-pencil</v-icon>
+                    </v-btn>
+                  </template>
+                  <span>Editar Proveedor</span>
+                </v-tooltip>
+
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      icon
+                      @click="openDeleteDialog(item)"
+                      v-bind="attrs"
+                      v-on="on"
+                    >
+                      <v-icon color="error" title="eliminar">mdi-delete</v-icon>
+                    </v-btn>
+                  </template>
+                  <span>Eliminar Proveedor</span>
+                </v-tooltip>
               </template>
             </v-data-table>
           </v-card>
@@ -39,7 +63,9 @@
         :editItem="editedItem"
         title="Proveedor"
         deleteUrl="/api/provider/delete"
-        :getUrl="`/api/providers/${(this.page-1)*this.itemsPerPage}/${this.itemsPerPage}`"
+        :getUrl="`/api/providers/${(this.page - 1) * this.itemsPerPage}/${
+          this.itemsPerPage
+        }`"
       ></delete-dialog>
     </v-dialog>
   </div>
@@ -92,7 +118,7 @@ export default {
   },
   data: () => ({
     editedItem: {},
-    loading:false,
+    loading: false,
     datatableHeaders: [
       {
         text: 'Nombre',
@@ -136,27 +162,26 @@ export default {
       this.$store.commit('setDialog')
     },
     async getProviders() {
-      this.loading = true;
-      this.$store.commit('setLoading');
+      this.loading = true
+      this.$store.commit('setLoading')
       await this.$store.dispatch('getProviders', {
         page: this.page,
         itemsPerPage: this.itemsPerPage,
-      });
-      this.$store.commit('setLoading');
-      this.loading = false;
+      })
+      this.$store.commit('setLoading')
+      this.loading = false
     },
     async nextPage(value) {
-      this.page = value;
-      await this.getProviders();
+      this.page = value
+      await this.getProviders()
     },
     async otherItemCount(value) {
-      this.itemsPerPage = value;
-      await this.getProviders();
-    }
-
+      this.itemsPerPage = value
+      await this.getProviders()
+    },
   },
   async beforeMount() {
-    this.getProviders();
+    this.getProviders()
   },
 }
 </script>

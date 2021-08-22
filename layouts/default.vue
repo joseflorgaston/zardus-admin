@@ -76,8 +76,7 @@
               <v-list-item
                 :to="'orders'"
                 router
-                exact
-                exact-active-class="active-link"
+                active-class="active-link"
               >
                 <v-list-item-action>
                   <v-icon>mdi-clipboard-list-outline </v-icon>
@@ -95,12 +94,12 @@
           <v-list-group>
             <template v-slot:activator>
               <v-list-item-action>
-                <v-icon>mdi-piggy-bank </v-icon>
+                <v-icon>mdi-clipboard-text-outline </v-icon>
               </v-list-item-action>
               <v-list-item-content>
                 <v-list-item-title
                   class="default-font"
-                  v-text="'Contabilidad'"
+                  v-text="'Reportes'"
                   exact
                   exact-active-class="active-link"
                 />
@@ -162,7 +161,7 @@
       <v-spacer />
     </v-app-bar>
 
-    <v-main class="grey lighten-5">
+    <v-main class="grey lighten-4">
       <v-container>
         <nuxt />
       </v-container>
