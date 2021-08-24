@@ -1,5 +1,5 @@
 <template>
-  <v-container class="grey lighten-5">
+  <v-container class="white">
     <v-form v-model="isValid">
       <div class="d-flex justify-space-between pb-4">
         <div class="d-flex">
@@ -7,7 +7,9 @@
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
               <v-btn icon class="mx-6" v-bind="attrs" v-on="on">
-                <v-icon color="primary" large>mdi-broom</v-icon>
+                <v-icon color="primary" large @click="cleanHeader()"
+                  >mdi-broom</v-icon
+                >
               </v-btn>
             </template>
             <span>Limpiar Formulario</span>
@@ -126,7 +128,7 @@
           </v-text-field>
         </v-col>
         <v-col cols="12" sm="6" md="3">
-          <h4>Cantidad ({{this.selectedProduct.unitOfMeasure}})</h4>
+          <h4>Cantidad ({{ this.selectedProduct.unitOfMeasure }})</h4>
           <v-text-field
             type="number"
             prepend-icon="mdi-numeric-2-box-multiple-outline "
@@ -142,9 +144,11 @@
     <v-row>
       <v-col cols="12" sm="12" md="10">
         <div class="d-flex justify-space-between">
-          <v-btn color="primary" :disabled="!isValid" @click="addProduct()">Agregar</v-btn>
+          <v-btn color="primary" :disabled="!isValid" @click="addProduct()"
+            >Agregar</v-btn
+          >
           <div class="d-flex">
-            <h3>SubTotal: <shared-money :amount="subTotal" /></h3>
+            <h3>SubTotal: <shared-money :amount="parseInt(subTotal)" /></h3>
           </div>
         </div>
       </v-col>
@@ -155,31 +159,55 @@
       <v-tooltip bottom>
         <template v-slot:activator="{ on, attrs }">
           <v-btn icon class="mx-6" v-bind="attrs" v-on="on">
-            <v-icon color="primary" large>mdi-broom</v-icon>
+            <v-icon color="primary" large @click="cleanTable">mdi-broom</v-icon>
           </v-btn>
         </template>
         <span>Limpiar Tabla</span>
       </v-tooltip>
     </div>
-    <v-card class="mt-5">
-      <v-data-table :items="dataItems" :headers="dataHeaders"> 
+    <v-card class="mt-5" elevation="4" outlined>
+      <v-data-table :items="dataItems" :headers="dataHeaders">
         <template v-slot:[`item.product`]="{ item }">
-          {{item.product.name}}
+          {{ item.product.name }}
         </template>
         <template v-slot:[`item.subTotal`]="{ item }">
-          <shared-money :amount="item.subTotal"></shared-money>
+          <shared-money :amount="parseInt(item.subTotal)"></shared-money>
         </template>
         <template v-slot:[`item.price`]="{ item }">
-          <shared-money :amount="item.price"></shared-money>
+          <div class="d-flex">
+            <shared-money :amount="parseInt(item.price)"></shared-money>
+          </div>
+        </template>
+        <template v-slot:[`item.quantity`]="{ item }">
+          <div class="d-flex">
+            {{ item.quantity }} {{ item.product.unitOfMeasure }}
+          </div>
         </template>
         <template v-slot:[`item.actions`]="{ item }">
           <v-btn icon>
-            <v-icon color="error" @click="removeItem(item)">mdi-close</v-icon>
+            <v-icon color="error" @click="removeItem(item)" title="Remover item"
+              >mdi-close</v-icon
+            >
           </v-btn>
         </template>
       </v-data-table>
     </v-card>
-    <v-btn color="primary" class="my-4">Guardar</v-btn>
+    <v-row>
+      <v-col cols="12" sm="12" md="10">
+        <div class="d-flex justify-space-between">
+          <v-btn
+            color="primary"
+            class="my-4"
+            @click="saveOrder"
+            :disabled="!hasItem"
+            >Guardar</v-btn
+          >
+          <div class="mt-2 mr-5">
+            <h3>Total: {{ this.total }}</h3>
+          </div>
+        </div>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
@@ -190,6 +218,7 @@ import SharedMoney from '../../components/SharedComponents/SharedMoney.vue'
 export default {
   data: () => ({
     isValid: true,
+    hasItem: false,
     rules: [(v) => !!v || 'Este campo es requerido'],
     quantityRules: [
       (v) => v >= 0 || 'Coloca un numero mayor a 0',
@@ -198,12 +227,14 @@ export default {
     products: [],
     autocomplete: null,
     subTotal: 0,
+    total: 0,
     selectedProduct: {},
     formHeader: {
       deliveryDate: format(parseISO(new Date().toISOString()), 'yyyy-MM-dd'),
       paymentMethod: 'Contado',
       customerName: '',
       numberOfPayments: 0,
+      deliveryAddress: '',
     },
     search: null,
     formDetails: {
@@ -245,17 +276,52 @@ export default {
   }),
 
   methods: {
-    async getProducts(value) {
-      console.log(value)
-      // const product = await this.$axios.$get(`/api/orders/${this.product}`);
-    },
     getSubTotal() {
       if (this.formDetails.quantity > 0 && this.formDetails.price > 0) {
-        this.subTotal = this.formDetails.quantity * this.formDetails.price;
+        this.subTotal = this.formDetails.quantity * this.formDetails.price
       }
     },
-    removeItem(item) {
-      console.log(item);
+    cleanTable() {
+      this.total = 0;
+      this.dataItems = [];
+    },
+    cleanHeader() {
+      this.formHeader = {
+        deliveryDate: format(parseISO(new Date().toISOString()), 'yyyy-MM-dd'),
+        paymentMethod: 'Contado',
+        customerName: '',
+        numberOfPayments: 0,
+        deliveryAddress: '',
+      }
+      this.formDetails = {
+        product: '',
+        quantity: 0,
+        price: 0,
+      }
+      this.subTotal = 0
+    },
+    async saveOrder() {
+      const item = {
+        deliveryDate: this.formHeader.deliveryDate,
+        totalAmount: this.total,
+        client: this.formHeader.customerName,
+        paymentMethod: this.formHeader.paymentMethod,
+        numberOfPayments: this.formHeader.numberOfPayments,
+        total: this.total,
+        details: this.dataItems,
+        deliveryAddress: 'N/A',
+      }
+      await this.$axios.post('/api/order/create', item)
+      this.$router.push('/orders')
+      this.$store.commit('setSuccess', 'Pedido creado exitosamente')
+    },
+    removeItem(item, event) {
+      const index = this.dataItems.indexOf(item)
+      this.total = this.total - item.subTotal
+      this.dataItems.splice(index, 1)
+      if (this.dataItems.length == 0) {
+        this.hasItem = false
+      }
     },
     clearDetailsForm() {
       this.formDetails = {
@@ -263,33 +329,49 @@ export default {
         quantity: 0,
         price: 0,
       }
-      this.subTotal = 0;
-      this.search = null;
+      this.subTotal = 0
+      this.search = null
+    },
+    stockIsValid() {
+      let stock = this.selectedProduct.stock - this.selectedProduct.inOrder
+      stock = stock - this.formDetails.quantity
+      if (stock < 0) {
+        alert(
+          'La cantidad del producto agregado supera al stock por' + stock * -1
+        )
+        return false
+      }
+      return true
     },
     addProduct() {
-      this.formDetails.subTotal = this.subTotal;
-      this.formDetails.product = this.selectedProduct;
-      this.dataItems.push(this.formDetails);
-      this.clearDetailsForm();
+      if (!this.stockIsValid()) {
+        return
+      }
+      this.formDetails.subTotal = this.subTotal
+      this.formDetails.product = this.selectedProduct
+      this.dataItems.push(this.formDetails)
+      this.total = this.total + this.subTotal
+      this.hasItem = true
+      this.clearDetailsForm()
     },
     selectProduct(value) {
-      console.log(value);
+      console.log(value)
       if (value == null) return
-      this.formDetails.price = value.price;
+      this.formDetails.price = value.price
       this.formDetails.quantity = 0
       this.subTotal = 0
-      this.selectedProduct = value;
+      this.selectedProduct = value
     },
   },
   watch: {
     async search(val) {
-      if(val == null) {
-        this.formDetails.price = 0;
-        return ;
+      if (val == null) {
+        this.formDetails.price = 0
+        return
       }
-      if(val.length < 2) return
-      const product = await this.$axios.$get(`/api/orders/${val}`);
-      this.products = product.data;
+      if (val.length < 2) return
+      const product = await this.$axios.$get(`/api/orders/${val}`)
+      this.products = product.data
     },
   },
   computed: {

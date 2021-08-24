@@ -1,6 +1,6 @@
 <template>
   <div>
-    <shared-header title="Proveedores"></shared-header>
+    <shared-header title="Proveedores" class="mt-1"></shared-header>
     <v-row>
       <v-col cols="12" md="11">
         <v-card>
