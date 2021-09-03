@@ -1,7 +1,7 @@
 <template>
   <div>
-    <shared-header title="Productos" class="mt-1"></shared-header>
-    <v-row>
+    <shared-header title="Productos" class="mt-1 mb-0 pb-0"></shared-header>
+    <v-row class="pt-0">
       <v-col cols="12" md="11">
         <v-card>
           <v-data-table

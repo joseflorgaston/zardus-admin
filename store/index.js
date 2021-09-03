@@ -124,6 +124,7 @@ export const actions = {
       const orders = await this.$axios.$get(`/api/orders/${(pagination.page-1)*pagination.itemsPerPage}/${pagination.itemsPerPage}`);
       commit("setCount", orders.count)
       commit('setItems', orders.data);
+      console.log(orders.data)
     } catch (error) {
       commit("setError", "Ha ocurrido un error al modificar el producto");
     }

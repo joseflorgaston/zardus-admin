@@ -6,6 +6,17 @@
         <template v-slot:[`item.totalAmount`]="{ item }">
           <shared-money :amount="item.totalAmount || 0"></shared-money>
         </template>
+        <template v-slot:[`item.createdOn`]="{ item }">
+          <shared-formatted-date
+            :date="item.createdOn || ''"
+            :hasHour="true"
+          ></shared-formatted-date>
+        </template>
+        <template v-slot:[`item.deliveryDate`]="{ item }">
+          <shared-formatted-date
+            :date="item.deliveryDate || ''"
+          ></shared-formatted-date>
+        </template>
         <template v-slot:[`item.actions`]="{ item }">
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
@@ -26,6 +37,7 @@
                 <v-icon
                   color="primary"
                   title="Editar Pedido"
+                  :disabled="item.status != 'Aguardando'"
                   @click="editOrder(item)"
                   >mdi-pencil</v-icon
                 >
@@ -47,13 +59,13 @@
         </template>
         <template v-slot:[`item.isPrepared`]="{ item }">
           <v-switch
-            v-model="item.isPrepared"
+            :input-value="item.isPrepared"
+            @change="setIsPrepared(item, $event)"
             v-if="item.status == 'Aguardando'"
-
             title="Indica si el pedido esta preparado para la entrega"
           ></v-switch>
           <v-switch
-            v-model="item.isPrepared"
+            v-model="disabledSwitch"
             disabled
             v-else
             title="Indica si el pedido esta preparado para la entrega"
@@ -61,12 +73,34 @@
         </template>
       </v-data-table>
     </v-card>
+    <v-dialog v-model="dialog" persistent min-width="500" width="700">
+      <view-order-dialog :item="viewItem"></view-order-dialog>
+    </v-dialog>
   </v-container>
 </template>
 
 <script>
+import ViewOrderDialog from '~/components/Dialogs/Orders/ViewOrderDialog.vue'
 export default {
+  components: { ViewOrderDialog },
+  computed: {
+    items: {
+      get() {
+        return this.$store.state.items
+      },
+      set(values) {
+        this.$store.commit('setItems', values)
+      },
+    },
+    dialog() {
+      return this.$store.state.dialog
+    },
+    count() {
+      return this.$store.state.count
+    },
+  },
   data: () => ({
+    disabledSwitch: true,
     headers: [
       {
         text: 'Fecha de pedido',
@@ -80,7 +114,7 @@ export default {
       },
       {
         text: 'Cliente',
-        value: 'clientName',
+        value: 'client',
         class: 'header-color',
       },
       {
@@ -109,54 +143,21 @@ export default {
         class: 'header-color',
       },
     ],
-    items: [
-      {
-        createdOn: '20/08/2021',
-        deliveryDate: '01/09/2021',
-        clientName: 'Jorge Aurelio',
-        deliveryAddress: 'La paz esq/ tacuary',
-        paymentMethod: 'Contado',
-        isPrepared: true,
-        status: 'Aguardando',
-        totalAmount: 180000,
-      },
-      {
-        createdOn: '20/08/2021',
-        deliveryDate: '01/09/2021',
-        clientName: 'Jorge Aurelio',
-        deliveryAddress: 'La paz esq/ tacuary',
-        isPrepared: false,
-        paymentMethod: 'Contado',
-        status: 'Aguardando',
-        totalAmount: 180000,
-      },
-      {
-        createdOn: '20/08/2021',
-        deliveryDate: '01/09/2021',
-        clientName: 'Jorge Aurelio',
-        isPrepared: true,
-        deliveryAddress: 'La paz esq/ tacuary',
-        paymentMethod: 'Contado',
-        status: 'Entregado',
-        totalAmount: 180000,
-      },
-      {
-        createdOn: '20/08/2021',
-        deliveryDate: '01/09/2021',
-        isPrepared: true,
-        clientName: 'Jorge Aurelio',
-        deliveryAddress: 'La paz esq/ tacuary',
-        paymentMethod: 'Contado',
-        status: 'Cancelado',
-        totalAmount: 180000,
-      },
-    ],
     page: 1,
+    viewItem: {},
     itemsPerPage: 10,
   }),
   methods: {
     viewOrder(item) {
-      console.log(item)
+      this.viewItem = item
+      this.$store.commit("setDialog");
+    },
+    async setIsPrepared({ _id }, value) {
+      this.$store.commit('setLoading')
+      console.log(value)
+      await this.$axios.patch(`/api/order/update/isprepared/${_id}`, { value })
+      this.$store.commit('setSuccess', 'El pedido esta preparado')
+      this.$store.commit('setLoading')
     },
     editOrder(item) {
       console.log(item)

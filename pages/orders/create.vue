@@ -121,7 +121,8 @@
             type="number"
             prepend-icon="mdi-currency-usd"
             :rules="quantityRules"
-            @keypress="getSubTotal()"
+            @keydown="getSubTotal()"
+            @keyup="getSubTotal()"
             @change="getSubTotal()"
             v-model="formDetails.price"
           >
@@ -135,7 +136,8 @@
             :disabled="selectedProduct == null"
             :rules="quantityRules"
             v-model="formDetails.quantity"
-            @keypress="getSubTotal()"
+            @keydown="getSubTotal()"
+            @keyup="getSubTotal()"
             @change="getSubTotal()"
           ></v-text-field>
         </v-col>
@@ -154,16 +156,24 @@
       </v-col>
     </v-row>
     <v-divider class="primary my-5"></v-divider>
-    <div class="d-flex mb-3">
-      <h2>Productos seleccionados</h2>
-      <v-tooltip bottom>
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn icon class="mx-6" v-bind="attrs" v-on="on">
-            <v-icon color="primary" large @click="cleanTable">mdi-broom</v-icon>
-          </v-btn>
-        </template>
-        <span>Limpiar Tabla</span>
-      </v-tooltip>
+    <div class="d-flex mb-3 justify-space-between">
+      <div class="d-flex">
+        <h2>Productos seleccionados</h2>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn icon class="mx-6" v-bind="attrs" v-on="on">
+              <v-icon color="primary" large @click="cleanTable"
+                >mdi-broom</v-icon
+              >
+            </v-btn>
+          </template>
+          <span>Limpiar Tabla</span>
+        </v-tooltip>
+      </div>
+      <span class="caption pt-3">
+        <v-icon color="blue" small>mdi-alert-circle-outline </v-icon> Para crear el pedido
+        clickea el boton guardar
+      </span>
     </div>
     <v-card class="mt-5" elevation="4" outlined>
       <v-data-table :items="dataItems" :headers="dataHeaders">
@@ -202,8 +212,10 @@
             :disabled="!hasItem"
             >Guardar</v-btn
           >
-          <div class="mt-2 mr-5">
-            <h3>Total: {{ this.total }}</h3>
+          <div class="d-flex mt-2 mr-5">
+            <h3>
+              Total: <shared-money :amount="parseInt(total)"></shared-money>
+            </h3>
           </div>
         </div>
       </v-col>
@@ -282,8 +294,8 @@ export default {
       }
     },
     cleanTable() {
-      this.total = 0;
-      this.dataItems = [];
+      this.total = 0
+      this.dataItems = []
     },
     cleanHeader() {
       this.formHeader = {
@@ -333,11 +345,25 @@ export default {
       this.search = null
     },
     stockIsValid() {
+      if (this.dataItems.length > 0) {
+        const filter = this.dataItems.filter(
+          (item) => item.product.name == this.selectedProduct.name
+        )
+        if (filter.length > 0) {
+          this.autocomplete = null
+          this.$store.commit(
+            'setError',
+            'Este producto ya se agrego en la tabla'
+          )
+          return false
+        }
+      }
       let stock = this.selectedProduct.stock - this.selectedProduct.inOrder
       stock = stock - this.formDetails.quantity
       if (stock < 0) {
-        alert(
-          'La cantidad del producto agregado supera al stock por' + stock * -1
+        this.$store.commit(
+          'setError',
+          'La cantidad del producto agregado supera al stock por ' + stock * -1
         )
         return false
       }
@@ -349,14 +375,20 @@ export default {
       }
       this.formDetails.subTotal = this.subTotal
       this.formDetails.product = this.selectedProduct
-      this.dataItems.push(this.formDetails)
+      const item = {
+        subTotal: this.formDetails.subTotal,
+        product: this.selectedProduct,
+        quantity: this.formDetails.quantity,
+        price: this.formDetails.price,
+      }
+      this.dataItems.push(item)
+      console.log(this.dataItems)
       this.total = this.total + this.subTotal
       this.hasItem = true
-      this.clearDetailsForm()
     },
     selectProduct(value) {
-      console.log(value)
       if (value == null) return
+      this.autocomplete = null
       this.formDetails.price = value.price
       this.formDetails.quantity = 0
       this.subTotal = 0
@@ -370,7 +402,7 @@ export default {
         return
       }
       if (val.length < 2) return
-      const product = await this.$axios.$get(`/api/orders/${val}`)
+      const product = await this.$axios.$get(`/api/products/${val}`)
       this.products = product.data
     },
   },

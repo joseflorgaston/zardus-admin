@@ -12,7 +12,12 @@
       <v-row class="mt-5 max-width mb-5">
         <v-col offset="1" cols="10" sm="10">
           <h4>Producto.</h4>
-          <v-text-field color="accent" label="Nombre" v-model="form.name" :rules="rules">
+          <v-text-field
+            color="accent"
+            label="Nombre"
+            v-model="form.name"
+            :rules="rules"
+          >
           </v-text-field>
         </v-col>
         <v-col offset="1" cols="10" sm="6">
@@ -64,7 +69,9 @@
 
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn color="primary" @click="save" :disabled="!isValid"> Guardar </v-btn>
+      <v-btn color="primary" @click="save" :disabled="!isValid">
+        Guardar
+      </v-btn>
       <v-btn text @click="closeDialog"> Cancelar </v-btn>
     </v-card-actions>
   </v-card>
@@ -75,15 +82,15 @@ export default {
   data: () => ({
     isValid: true,
     rules: [(v) => !!v || 'Este campo es requerido'],
-    quantityRule: [,
-    (v) => v>=0 || 'Coloca un numero mayor a 0',
-    (v) => !!v || 'Este campo es requerido'
+    quantityRule: [
+      (v) => v >= 0 || 'Coloca un numero mayor a 0',
+      (v) => !!v || 'Este campo es requerido',
     ],
     form: {
       name: '',
       category: '',
       price: 0,
-      unitOfMeasure: 'kgs',
+      unitOfMeasure: 'gs',
       stock: 0,
     },
     categories: [
@@ -96,11 +103,24 @@ export default {
   }),
   methods: {
     closeDialog() {
+      this.form = {
+        name: '',
+        category: '',
+        price: 0,
+        unitOfMeasure: 'gs',
+        stock: 0,
+      }
       this.$store.commit('setDialog')
     },
     async save() {
       this.form.price = parseInt(this.form.price)
-      this.form.stock = parseInt(this.form.stock)
+      if (this.form.unitOfMeasure == 'uds') {
+        console.log('aaa')
+        this.form.stock = parseInt(this.form.stock)
+      } else {
+        this.form.stock = parseFloat(this.form.stock)
+      }
+      console.log(this.form)
       this.$store.commit('setLoading')
       await this.$store.dispatch('saveProduct', this.form)
       this.closeDialog()

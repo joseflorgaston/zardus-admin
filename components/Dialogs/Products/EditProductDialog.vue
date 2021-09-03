@@ -113,10 +113,15 @@ export default {
       this.form = {
         _id: this.editItem._id,
         name: this.editItem.name,
-        stock: parseInt(this.editItem.stock),
+        stock: this.editItem.stock,
         price: parseInt(this.editItem.price),
         category: this.editItem.category,
         unitOfMeasure: this.editItem.unitOfMeasure,
+      }
+      if (this.form.unitOfMeasure == "uds") {
+        this.form.stock = parseInt(this.form.stock)
+      } else {
+        this.form.stock = parseFloat(this.form.stock)
       }
       this.$store.commit('setLoading')
       await this.$store.dispatch('updateProduct', this.form)
