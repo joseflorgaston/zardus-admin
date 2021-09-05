@@ -15,7 +15,7 @@ export default {
     },
     computed: {
         formattedAmount() {
-            return this.formatMiles(this.amount);
+            return this.formatMiles(parseInt(this.amount));
         }
     },
     methods: {

@@ -1,7 +1,7 @@
 <template>
   <v-container>
-    <pedidos-header title="Pedidos" link="orders/create" />
-    <v-card>
+    <h2>Historial de pedidos</h2>
+    <v-card class="mt-5">
       <v-data-table
         :items="items"
         :headers="headers"
@@ -43,20 +43,6 @@
             </template>
             <span>Ver Pedido</span>
           </v-tooltip>
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn icon v-bind="attrs" v-on="on">
-                <v-icon
-                  color="primary"
-                  title="Editar Pedido"
-                  :disabled="item.status != 'Aguardando'"
-                  @click="editOrder(item)"
-                  >mdi-pencil</v-icon
-                >
-              </v-btn>
-            </template>
-            <span>Editar Pedido</span>
-          </v-tooltip>
         </template>
         <template v-slot:[`item.status`]="{ item }">
           <div v-if="item.status == 'Aguardando'" class="chip blue ligthen-1">
@@ -68,20 +54,6 @@
           <div v-if="item.status == 'Cancelado'" class="chip error">
             {{ item.status }}
           </div>
-        </template>
-        <template v-slot:[`item.isPrepared`]="{ item }">
-          <v-switch
-            :input-value="item.isPrepared"
-            @change="setIsPrepared(item, $event)"
-            v-if="item.status == 'Aguardando'"
-            title="Indica si el pedido esta preparado para la entrega"
-          ></v-switch>
-          <v-switch
-            v-model="disabledSwitch"
-            disabled
-            v-else
-            title="Indica si el pedido esta preparado para la entrega"
-          ></v-switch>
         </template>
       </v-data-table>
     </v-card>
@@ -146,11 +118,6 @@ export default {
         class: 'header-color',
       },
       {
-        text: 'Preparado',
-        value: 'isPrepared',
-        class: 'header-color',
-      },
-      {
         text: 'Acciones',
         value: 'actions',
         class: 'header-color',
@@ -165,33 +132,26 @@ export default {
       this.viewItem = item
       this.$store.commit('setDialog')
     },
-    async setIsPrepared({ _id }, value) {
-      this.$store.commit('setLoading')
-      console.log(value)
-      await this.$axios.patch(`/api/order/update/isprepared/${_id}`, { value })
-      this.$store.commit('setSuccess', 'El pedido esta preparado')
-      this.$store.commit('setLoading')
-    },
-    editOrder(item) {
-      this.$router.push({ path: '/orders/create', query: { _id: `${item._id}` } })
-    },
     async nextPage(value) {
       this.page = value
-      await this.getProducts()
+      await this.getOrders()
     },
     async otherItemCount(value) {
       this.itemsPerPage = value
-      await this.getProducts()
+      await this.getOrders()
+    },
+    editOrder(item) {
+      console.log(item)
     },
     async getOrders() {
-      this.loading = true;
+      this.loading = true
       this.$store.commit('setLoading')
-      await this.$store.dispatch('getOrders', {
+      await this.$store.dispatch('getHistoryOrders', {
         page: this.page,
         itemsPerPage: this.itemsPerPage,
       })
       this.$store.commit('setLoading')
-      this.loading = false;
+      this.loading = false
     },
   },
   async beforeMount() {

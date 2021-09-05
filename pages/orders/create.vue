@@ -171,8 +171,12 @@
         </v-tooltip>
       </div>
       <span class="caption pt-3">
-        <v-icon color="blue" small>mdi-alert-circle-outline </v-icon> Para crear el pedido
-        clickea el boton guardar
+        <v-icon color="blue" class="mb-1" small
+          >mdi-alert-circle-outline
+        </v-icon>
+        <span class="subtitle-2">
+          Para crear el pedido clickea el boton guardar</span
+        >
       </span>
     </div>
     <v-card class="mt-5" elevation="4" outlined>
@@ -230,6 +234,7 @@ import SharedMoney from '../../components/SharedComponents/SharedMoney.vue'
 export default {
   data: () => ({
     isValid: true,
+    isEdit: false,
     hasItem: false,
     rules: [(v) => !!v || 'Este campo es requerido'],
     quantityRules: [
@@ -254,6 +259,7 @@ export default {
       quantity: 0,
       price: 0,
     },
+    editItem: [],
     dataItems: [],
     dataHeaders: [
       {
@@ -287,7 +293,35 @@ export default {
     paymentMethod: ['Contado', 'Crédito'],
   }),
 
+  async beforeMount() {
+    this.$store.commit('setLoading')
+    if (this.$route.query._id != null) {
+      this.isEdit = true
+      console.log(this.$route.query._id)
+      const item = await this.$axios.$get('/api/order/' + this.$route.query._id)
+      this.setItem(item)
+    }
+    this.$store.commit('setLoading')
+  },
+
   methods: {
+    setItem(item) {
+      console.log(item)
+      this.dataItems = item.details
+      this.hasItem = true
+      this.formHeader.deliveryDate = format(
+        parseISO(item.deliveryDate),
+        'yyyy-MM-dd'
+      )
+      this.formHeader.paymentMethod = item.paymentMethod
+      this.formHeader.customerName = item.client
+      this.formHeader.numberOfPayments = item.numberOfPayments
+      this.total = item.totalAmount
+      for (let i = 0; i < item.details.length; i++) {
+        const element = item.details[i];
+        this.editItem.push(element);
+      }
+    },
     getSubTotal() {
       if (this.formDetails.quantity > 0 && this.formDetails.price > 0) {
         this.subTotal = this.formDetails.quantity * this.formDetails.price
@@ -323,9 +357,23 @@ export default {
         details: this.dataItems,
         deliveryAddress: 'N/A',
       }
-      await this.$axios.post('/api/order/create', item)
+      try {
+        if (this.isEdit) {
+          await this.$axios.put('/api/order/update/' + this.$route.query._id, {
+            oldItem: this.editItem,
+            editedItem: item,
+          })
+          this.$store.commit('setSuccess', 'Pedido editado exitosamente')
+        } else {
+          await this.$axios.post('/api/order/create', item)
+          this.$store.commit('setSuccess', 'Pedido creado exitosamente')
+        }
+      } catch (error) {
+        console.log(error)
+        this.$store.commit('setError', 'Ha ocurrido un error')
+      }
+
       this.$router.push('/orders')
-      this.$store.commit('setSuccess', 'Pedido creado exitosamente')
     },
     removeItem(item, event) {
       const index = this.dataItems.indexOf(item)

@@ -85,6 +85,18 @@
                   <v-list-item-title class="default-font" v-text="'Pedidos'" />
                 </v-list-item-content>
               </v-list-item>
+              <v-list-item
+                :to="'orders_history'"
+                router
+                active-class="active-link"
+              >
+                <v-list-item-action>
+                  <v-icon>mdi-list-status </v-icon>
+                </v-list-item-action>
+                <v-list-item-content>
+                  <v-list-item-title class="default-font" v-text="'Historial de pedidos'" />
+                </v-list-item-content>
+              </v-list-item>
             </v-list>
           </v-list-group>
         </v-list-item>
