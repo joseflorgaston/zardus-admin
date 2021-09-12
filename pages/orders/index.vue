@@ -57,6 +57,32 @@
             </template>
             <span>Editar Pedido</span>
           </v-tooltip>
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn icon v-bind="attrs" v-on="on">
+                <v-icon
+                  color="error"
+                  title="Cancelar Pedido"
+                  @click="changeState(item._id, 'Cancelado')"
+                  >mdi-close</v-icon
+                >
+              </v-btn>
+            </template>
+            <span>Cancelar Pedido</span>
+          </v-tooltip>
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn icon v-bind="attrs" v-on="on">
+                <v-icon
+                  color="success"
+                  title="Entregar Pedido"
+                  @click="changeState(item._id, 'Entregado')"
+                  >mdi-check</v-icon
+                >
+              </v-btn>
+            </template>
+            <span>Cambiar estado a Entregado</span>
+          </v-tooltip>
         </template>
         <template v-slot:[`item.status`]="{ item }">
           <div v-if="item.status == 'Aguardando'" class="chip blue ligthen-1">
@@ -88,13 +114,20 @@
     <v-dialog v-model="dialog" persistent min-width="500" width="700">
       <view-order-dialog :item="viewItem"></view-order-dialog>
     </v-dialog>
+    <v-dialog v-model="editDialog" persistent min-width="500" width="700">
+      <change-order-status-dialog
+        :id="statusModalId"
+        :status="statusModalValue"
+      ></change-order-status-dialog>
+    </v-dialog>
   </v-container>
 </template>
 
 <script>
 import ViewOrderDialog from '~/components/Dialogs/Orders/ViewOrderDialog.vue'
+import ChangeOrderStatusDialog from '~/components/Dialogs/Orders/ChangeOrderStatusDialog.vue'
 export default {
-  components: { ViewOrderDialog },
+  components: { ViewOrderDialog, ChangeOrderStatusDialog },
   computed: {
     items: {
       get() {
@@ -107,6 +140,14 @@ export default {
     dialog() {
       return this.$store.state.dialog
     },
+    editDialog: {
+      get() {
+        return this.$store.state.editDialog
+      },
+      set() {
+        this.$store.commit('setEditDialog')
+      },
+    },
     count() {
       return this.$store.state.count
     },
@@ -114,14 +155,16 @@ export default {
   data: () => ({
     disabledSwitch: true,
     loading: true,
+    statusModalValue: '',
+    statusModalId: '',
     headers: [
       {
-        text: 'Fecha de pedido',
+        text: 'Fecha',
         value: 'createdOn',
         class: 'header-color',
       },
       {
-        text: 'Fecha de entrega',
+        text: 'Fecha entrega',
         value: 'deliveryDate',
         class: 'header-color',
       },
@@ -131,12 +174,12 @@ export default {
         class: 'header-color',
       },
       {
-        text: 'Metodos de pago',
+        text: 'Método de pago',
         value: 'paymentMethod',
         class: 'header-color',
       },
       {
-        text: 'Monto Total',
+        text: 'Monto',
         value: 'totalAmount',
         class: 'header-color',
       },
@@ -173,7 +216,10 @@ export default {
       this.$store.commit('setLoading')
     },
     editOrder(item) {
-      this.$router.push({ path: '/orders/create', query: { _id: `${item._id}` } })
+      this.$router.push({
+        path: '/orders/create',
+        query: { _id: `${item._id}` },
+      })
     },
     async nextPage(value) {
       this.page = value
@@ -184,14 +230,19 @@ export default {
       await this.getProducts()
     },
     async getOrders() {
-      this.loading = true;
+      this.loading = true
       this.$store.commit('setLoading')
       await this.$store.dispatch('getOrders', {
         page: this.page,
         itemsPerPage: this.itemsPerPage,
       })
       this.$store.commit('setLoading')
-      this.loading = false;
+      this.loading = false
+    },
+    changeState(id, status) {
+      this.statusModalValue = status
+      this.statusModalId = id
+      this.$store.commit("setEditDialog");
     },
   },
   async beforeMount() {
