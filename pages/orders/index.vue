@@ -212,7 +212,11 @@ export default {
       this.$store.commit('setLoading')
       console.log(value)
       await this.$axios.patch(`/api/order/update/isprepared/${_id}`, { value })
-      this.$store.commit('setSuccess', 'El pedido esta preparado')
+      if (value) {
+        this.$store.commit('setSuccess', 'El pedido esta preparado')
+      } else {
+        this.$store.commit('setSuccess', 'El pedido ya no esta preparado')
+      }
       this.$store.commit('setLoading')
     },
     editOrder(item) {
@@ -242,7 +246,7 @@ export default {
     changeState(id, status) {
       this.statusModalValue = status
       this.statusModalId = id
-      this.$store.commit("setEditDialog");
+      this.$store.commit('setEditDialog')
     },
   },
   async beforeMount() {

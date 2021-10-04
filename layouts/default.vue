@@ -228,7 +228,7 @@ export default {
       miniVariant: false,
       right: true,
       rightDrawer: false,
-      title: 'Bienvenida CEO Expert - Cielo Morales',
+      title: 'Bienvenida Cielo pipo',
     }
   },
   methods: {

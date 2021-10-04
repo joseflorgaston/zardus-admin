@@ -47,15 +47,15 @@ export default {
     },
     async changeOrderStatus() {
       try {
+        this.closeDialog();
         this.$store.commit('setLoading')
-        await this.$axios.patch('api/order/update/status/' + this.id, this.status)
+        await this.$axios.patch('api/order/update/status/' + this.id, {status: this.status})
         this.$store.commit("setSuccess", "Pedido actualizado exitosamente");
         await this.$store.dispatch('getOrders', {
           page: this.page,
           itemsPerPage: this.itemsPerPage,
         })
         this.$store.commit('setLoading')
-        this.closeDialog();
       } catch (error) {
         console.log(error);
         this.$store.commit("setError", "Ha ocurrido un error al intentar actualizar el pedido");

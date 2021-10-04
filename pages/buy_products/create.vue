@@ -1,70 +1,26 @@
 <template>
   <v-container class="white">
     <v-form v-model="isValid">
-      <div class="d-flex justify-space-between pb-4">
-        <div class="d-flex">
-          <h2>Nuevo Pedido</h2>
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn icon class="mx-6" v-bind="attrs" v-on="on">
-                <v-icon color="primary" large @click="cleanHeader()"
-                  >mdi-broom</v-icon
-                >
-              </v-btn>
-            </template>
-            <span>Limpiar Formulario</span>
-          </v-tooltip>
-        </div>
-        <div>
-          <h2>{{ this.today }}</h2>
-        </div>
+      <div class="d-flex">
+        <h2>Nueva Compra</h2>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn icon class="mx-6" v-bind="attrs" v-on="on">
+              <v-icon color="primary" large @click="cleanHeader()"
+                >mdi-broom</v-icon
+              >
+            </v-btn>
+          </template>
+          <span>Limpiar Formulario</span>
+        </v-tooltip>
       </div>
       <v-row>
         <v-col cols="12" sm="6" md="3">
-          <h4>Fecha de entrega</h4>
-          <v-menu
-            ref="menu"
-            v-model="menu"
-            :return-value.sync="computedDateFormattedMomentjs"
-            :close-on-content-click="false"
-            transition="scale-transition"
-            min-width="auto"
-          >
-            <template v-slot:activator="{ on, attrs }">
-              <v-combobox
-                v-model="computedDateFormattedMomentjs"
-                color="primary"
-                prepend-icon="mdi-calendar"
-                readonly
-                v-bind="attrs"
-                v-on="on"
-              ></v-combobox>
-            </template>
-            <v-date-picker
-              v-model="formHeader.deliveryDate"
-              locale="es-py"
-              title="Entrega"
-              header-color="primary"
-              scrollable
-            >
-              <v-spacer></v-spacer>
-              <v-btn text color="primary" @click="menu = false"> Cancel </v-btn>
-              <v-btn
-                text
-                color="primary"
-                @click="$refs.menu.save(formHeader.deliveryDate)"
-              >
-                OK
-              </v-btn>
-            </v-date-picker>
-          </v-menu>
-        </v-col>
-        <v-col cols="12" sm="6" md="3">
-          <h4>Cliente</h4>
+          <h4>Proveedor</h4>
           <v-text-field
-            placeholder="Cliente"
-            prepend-icon="mdi-account"
-            v-model="formHeader.customerName"
+            placeholder="Proveedor"
+            prepend-icon="mdi-truck"
+            v-model="formHeader.provider"
             :rules="rules"
           >
           </v-text-field>
@@ -95,7 +51,6 @@
           ></v-text-field>
         </v-col>
       </v-row>
-
       <v-divider class="primary my-5"></v-divider>
       <div class="d-flex mb-3">
         <h2>Agregar Producto.</h2>
@@ -249,7 +204,7 @@ export default {
     formHeader: {
       deliveryDate: format(parseISO(new Date().toISOString()), 'yyyy-MM-dd'),
       paymentMethod: 'Contado',
-      customerName: '',
+      provider: '',
       numberOfPayments: 0,
       deliveryAddress: '',
     },
@@ -298,7 +253,7 @@ export default {
     if (this.$route.query._id != null) {
       this.isEdit = true
       console.log(this.$route.query._id)
-      const item = await this.$axios.$get('/api/order/' + this.$route.query._id)
+      const item = await this.$axios.$get('/api/supplyOrder/' + this.$route.query._id)
       this.setItem(item)
     }
     this.$store.commit('setLoading')
@@ -309,17 +264,13 @@ export default {
       console.log(item)
       this.dataItems = item.details
       this.hasItem = true
-      this.formHeader.deliveryDate = format(
-        parseISO(item.deliveryDate),
-        'yyyy-MM-dd'
-      )
       this.formHeader.paymentMethod = item.paymentMethod
-      this.formHeader.customerName = item.client
+      this.formHeader.provider = item.provider
       this.formHeader.numberOfPayments = item.numberOfPayments
       this.total = item.totalAmount
       for (let i = 0; i < item.details.length; i++) {
-        const element = item.details[i];
-        this.editItem.push(element);
+        const element = item.details[i]
+        this.editItem.push(element)
       }
     },
     getSubTotal() {
@@ -335,7 +286,7 @@ export default {
       this.formHeader = {
         deliveryDate: format(parseISO(new Date().toISOString()), 'yyyy-MM-dd'),
         paymentMethod: 'Contado',
-        customerName: '',
+        provider: '',
         numberOfPayments: 0,
         deliveryAddress: '',
       }
@@ -347,11 +298,11 @@ export default {
       this.subTotal = 0
     },
     async saveOrder() {
-      this.$store.commit("setLoading");
+      this.$store.commit('setLoading')
       const item = {
         deliveryDate: this.formHeader.deliveryDate,
         totalAmount: this.total,
-        client: this.formHeader.customerName,
+        provider: this.formHeader.provider,
         paymentMethod: this.formHeader.paymentMethod,
         numberOfPayments: this.formHeader.numberOfPayments,
         total: this.total,
@@ -360,21 +311,21 @@ export default {
       }
       try {
         if (this.isEdit) {
-          await this.$axios.put('/api/order/update/' + this.$route.query._id, {
+          await this.$axios.put('/api/supplyOrder/update/' + this.$route.query._id, {
             oldItem: this.editItem,
             editedItem: item,
           })
-          this.$store.commit('setSuccess', 'Pedido editado exitosamente')
+          this.$store.commit('setSuccess', 'Compra editada exitosamente')
         } else {
-          await this.$axios.post('/api/order/create', item)
+          await this.$axios.post('/api/supplyOrder/create', item)
           this.$store.commit('setSuccess', 'Pedido creado exitosamente')
         }
       } catch (error) {
         console.log(error)
         this.$store.commit('setError', 'Ha ocurrido un error')
       }
-      this.$store.commit("setLoading");
-      this.$router.push('/orders')
+      this.$store.commit('setLoading')
+      this.$router.push('/buy_products')
     },
     removeItem(item, event) {
       const index = this.dataItems.indexOf(item)
@@ -393,7 +344,8 @@ export default {
       this.subTotal = 0
       this.search = null
     },
-    stockIsValid() {
+    
+    addProduct() {
       if (this.dataItems.length > 0) {
         const filter = this.dataItems.filter(
           (item) => item.product.name == this.selectedProduct.name
@@ -406,21 +358,6 @@ export default {
           )
           return false
         }
-      }
-      let stock = this.selectedProduct.stock - this.selectedProduct.inOrder
-      stock = stock - this.formDetails.quantity
-      if (stock < 0) {
-        this.$store.commit(
-          'setError',
-          'La cantidad del producto agregado supera al stock por ' + stock * -1
-        )
-        return false
-      }
-      return true
-    },
-    addProduct() {
-      if (!this.stockIsValid()) {
-        return
       }
       this.formDetails.subTotal = this.subTotal
       this.formDetails.product = this.selectedProduct

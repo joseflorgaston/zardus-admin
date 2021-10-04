@@ -125,7 +125,17 @@ export const actions = {
       commit("setCount", orders.count)
       commit('setItems', orders.data);
     } catch (error) {
-      commit("setError", "Ha ocurrido un error al modificar el producto");
+      commit("setError", "Ha ocurrido un error");
+    }
+  },
+
+  async getSupplyOrders({ commit }, pagination) {
+    try {
+      const orders = await this.$axios.$get(`/api/supplyOrders/${(pagination.page-1)*pagination.itemsPerPage}/${pagination.itemsPerPage}`);
+      commit("setCount", orders.count)
+      commit('setItems', orders.data);
+    } catch (error) {
+      commit("setError", "Ha ocurrido un error");
     }
   },
 
