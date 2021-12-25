@@ -1,5 +1,4 @@
 
-
 export const state = () => ({
   items: [],
   editItem: {},
@@ -11,6 +10,7 @@ export const state = () => ({
   snackbarColor: 'success',
   message: '',
   count: 0,
+  user: {}
 })
 
 export const mutations = {
@@ -48,6 +48,9 @@ export const mutations = {
   },
   setCount(state, value) {
     state.count = value;
+  },
+  setUser(state, user) {
+    state.user = user;
   },
 
 }

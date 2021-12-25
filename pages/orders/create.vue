@@ -146,9 +146,12 @@
     <v-row>
       <v-col cols="12" sm="12" md="10">
         <div class="d-flex justify-space-between">
-          <v-btn color="primary" :disabled="!isValid" @click="addProduct()"
-            >Agregar</v-btn
-          >
+          <div>
+            <v-btn color="primary" :disabled="!isValid" @click="addProduct()"
+              >Agregar</v-btn
+            >
+            <v-btn color="primary" class="ml-5" @click="openMixtureModal()">Agregar Mezcla</v-btn>
+          </div>
           <div class="d-flex">
             <h3>SubTotal: <shared-money :amount="parseInt(subTotal)" /></h3>
           </div>
@@ -181,6 +184,9 @@
     </div>
     <v-card class="mt-5" elevation="4" outlined>
       <v-data-table :items="dataItems" :headers="dataHeaders">
+        <template v-slot:[`item.isPrepared`]="{ item }">
+          <v-checkbox v-model="item.product.isPrepared"> </v-checkbox>
+        </template>
         <template v-slot:[`item.product`]="{ item }">
           {{ item.product.name }}
         </template>
@@ -231,7 +237,9 @@
 import moment from 'moment'
 import { format, parseISO } from 'date-fns'
 import SharedMoney from '../../components/SharedComponents/SharedMoney.vue'
+import MixtureModal from '~/components/Dialogs/Products/MixtureModal.vue'
 export default {
+  components: { MixtureModal },
   data: () => ({
     isValid: true,
     isEdit: false,
@@ -262,6 +270,11 @@ export default {
     editItem: [],
     dataItems: [],
     dataHeaders: [
+      {
+        text: 'Preparado',
+        value: 'isPrepared',
+        class: 'header-color',
+      },
       {
         text: 'Producto',
         value: 'product',
@@ -305,8 +318,13 @@ export default {
   },
 
   methods: {
+    closeDialog() {
+      this.mixtureModal = false;
+    },
+    addMixture() {
+
+    },
     setItem(item) {
-      console.log(item)
       this.dataItems = item.details
       this.hasItem = true
       this.formHeader.deliveryDate = format(
@@ -318,8 +336,8 @@ export default {
       this.formHeader.numberOfPayments = item.numberOfPayments
       this.total = item.totalAmount
       for (let i = 0; i < item.details.length; i++) {
-        const element = item.details[i];
-        this.editItem.push(element);
+        const element = item.details[i]
+        this.editItem.push(element)
       }
     },
     getSubTotal() {
@@ -347,7 +365,7 @@ export default {
       this.subTotal = 0
     },
     async saveOrder() {
-      this.$store.commit("setLoading");
+      this.$store.commit('setLoading')
       const item = {
         deliveryDate: this.formHeader.deliveryDate,
         totalAmount: this.total,
@@ -373,7 +391,7 @@ export default {
         console.log(error)
         this.$store.commit('setError', 'Ha ocurrido un error')
       }
-      this.$store.commit("setLoading");
+      this.$store.commit('setLoading')
       this.$router.push('/orders')
     },
     removeItem(item, event) {
@@ -434,6 +452,9 @@ export default {
       console.log(this.dataItems)
       this.total = this.total + this.subTotal
       this.hasItem = true
+    },
+    openMixtureModal() {
+      this.mixtureModal = true;
     },
     selectProduct(value) {
       if (value == null) return

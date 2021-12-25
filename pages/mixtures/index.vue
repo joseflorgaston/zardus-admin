@@ -1,6 +1,6 @@
 <template>
   <div>
-    <product-header title="Productos" class="mt-1 mb-0 pb-0" v-on:mixtureModal="openMixtureModal()"></product-header>
+    <mixtures-header title="Productos" class="mt-1 mb-0 pb-0" v-on:mixtureModal="openMixtureModal()"></mixtures-header>
     <v-row class="pt-0">
       <v-col cols="12" md="11">
         <v-card>
@@ -63,11 +63,11 @@
         </v-card>
       </v-col>
     </v-row>
-    <v-dialog v-model="dialog" persistent min-width="500" width="700">
-      <new-product-dialog></new-product-dialog>
-    </v-dialog>
     <v-dialog v-model="editDialog" persistent min-width="500" width="700">
       <edit-product-dialog :editItem="editedItem"></edit-product-dialog>
+    </v-dialog>
+    <v-dialog v-model="mixtureDialog" persistent min-width="500" width="700">
+      <mixture-modal v-on:mixtureModal="openMixtureModal()"></mixture-modal>
     </v-dialog>
     <v-dialog v-model="deleteDialog" persistent max-width="500">
       <delete-dialog
@@ -86,12 +86,12 @@
 import NewProductDialog from '~/components/Dialogs/Products/NewProductDialog.vue'
 import EditProductDialog from '~/components/Dialogs/Products/EditProductDialog.vue'
 import DeleteDialog from '~/components/Dialogs/DeleteDialog.vue'
-import ProductHeader from '~/components/SharedComponents/ProductsHeader.vue'
+import MixturesHeader from '~/components/Headers/MixturesHeader.vue'
 import MixtureModal from '~/components/Dialogs/Products/MixtureModal.vue'
 
 export default {
   components: {
-    ProductHeader,
+    MixturesHeader,
     NewProductDialog,
     EditProductDialog,
     DeleteDialog,
@@ -181,7 +181,7 @@ export default {
     itemsPerPage: 10,
   }),
   async beforeMount() {
-    await this.getProducts()
+    await this.getMixtures()
   },
   methods: {
     openEditDialog(item) {
@@ -204,9 +204,6 @@ export default {
       this.editedItem = item
       this.$store.commit('setDeleteDialog')
     },
-    openCreateDialog() {
-      this.$store.commit('setDialog')
-    },
     async nextPage(value) {
       this.page = value
       await this.getProducts()
@@ -215,7 +212,7 @@ export default {
       this.itemsPerPage = value
       await this.getProducts()
     },
-    async getProducts() {
+    async getMixtures() {
       this.loading = true
       this.$store.commit('setLoading')
       await this.$store.dispatch('getProducts', {

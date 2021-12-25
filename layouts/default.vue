@@ -178,6 +178,9 @@
         <nuxt />
       </v-container>
       <shared-snackbar></shared-snackbar>
+      <v-dialog v-model="logoutModal" width="300">
+        <logout-modal v-on:closeDialog="closeDialog()"></logout-modal>
+      </v-dialog>
     </v-main>
     <v-overlay :value="loading">
       <v-progress-circular
@@ -190,7 +193,10 @@
 </template>
 
 <script>
+import LogoutModal from '../components/Dialogs/LogoutDialog.vue';
 export default {
+  components: {LogoutModal},
+  auth: true,
   computed: {
     loading: {
       get() {
@@ -214,6 +220,11 @@ export default {
           to: '/products',
         },
         {
+          icon: 'mdi-bowl-mix ',
+          title: 'Mezclas',
+          to: '/mixtures',
+        },
+        {
           icon: 'mdi-package-variant-closed',
           title: 'Proveedores',
           to: '/providers',
@@ -228,20 +239,19 @@ export default {
       miniVariant: false,
       right: true,
       rightDrawer: false,
-      title: 'Bienvenida Cielo pipo',
+      title: 'Bienvenido',
+    }
+  },
+  async beforeMount() {
+    console.log(this.$auth);
+    if(!this.$auth.loggedIn){
+      this.$router.push('/login');
     }
   },
   methods: {
-    async logout(event) {
-      if (!event) return
-      try {
-        await this.$auth.logout()
-        await this.$router.push({ path: '/users' })
-      } catch (e) {
-        console.log(e)
-        this.$store.commit('setError', true)
-      }
-    },
+    closeDialog() {
+      this.logoutModal = false;
+    }
   },
 }
 </script>

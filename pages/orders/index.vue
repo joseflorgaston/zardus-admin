@@ -49,7 +49,6 @@
                 <v-icon
                   color="primary"
                   title="Editar Pedido"
-                  :disabled="item.status != 'Aguardando'"
                   @click="editOrder(item)"
                   >mdi-pencil</v-icon
                 >
@@ -88,26 +87,15 @@
           <div v-if="item.status == 'Aguardando'" class="chip blue ligthen-1">
             {{ item.status }}
           </div>
+          <div v-if="item.status == 'Preparado'" class="chip yellow darken-3">
+            {{ item.status }}
+          </div>
           <div v-if="item.status == 'Entregado'" class="chip success">
             {{ item.status }}
           </div>
           <div v-if="item.status == 'Cancelado'" class="chip error">
             {{ item.status }}
           </div>
-        </template>
-        <template v-slot:[`item.isPrepared`]="{ item }">
-          <v-switch
-            :input-value="item.isPrepared"
-            @change="setIsPrepared(item, $event)"
-            v-if="item.status == 'Aguardando'"
-            title="Indica si el pedido esta preparado para la entrega"
-          ></v-switch>
-          <v-switch
-            v-model="disabledSwitch"
-            disabled
-            v-else
-            title="Indica si el pedido esta preparado para la entrega"
-          ></v-switch>
         </template>
       </v-data-table>
     </v-card>
@@ -189,11 +177,6 @@ export default {
         class: 'header-color',
       },
       {
-        text: 'Preparado',
-        value: 'isPrepared',
-        class: 'header-color',
-      },
-      {
         text: 'Acciones',
         value: 'actions',
         class: 'header-color',
@@ -207,17 +190,6 @@ export default {
     viewOrder(item) {
       this.viewItem = item
       this.$store.commit('setDialog')
-    },
-    async setIsPrepared({ _id }, value) {
-      this.$store.commit('setLoading')
-      console.log(value)
-      await this.$axios.patch(`/api/order/update/isprepared/${_id}`, { value })
-      if (value) {
-        this.$store.commit('setSuccess', 'El pedido esta preparado')
-      } else {
-        this.$store.commit('setSuccess', 'El pedido ya no esta preparado')
-      }
-      this.$store.commit('setLoading')
     },
     editOrder(item) {
       this.$router.push({

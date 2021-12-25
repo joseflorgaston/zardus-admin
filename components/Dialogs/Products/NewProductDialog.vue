@@ -32,7 +32,7 @@
           </v-autocomplete>
         </v-col>
         <v-col offset="1" offset-sm="0" cols="10" sm="4">
-          <h4>Precio. ({{ form.unitOfMeasure }})</h4>
+          <h4>Precio. ({{ form.unitOfMeasure != 'gramos' ? form.unitOfMeasure : "unidades" }})</h4>
           <v-text-field
             type="number"
             color="accent"
@@ -47,7 +47,7 @@
           <v-select
             v-model="form.unitOfMeasure"
             label="Unidad de medida"
-            :items="['uds', 'kgs']"
+            :items="['unidad', 'gramos']"
             :rules="rules"
           ></v-select>
         </v-col>
@@ -90,7 +90,7 @@ export default {
       name: '',
       category: '',
       price: 0,
-      unitOfMeasure: 'gs',
+      unitOfMeasure: 'gramos',
       stock: 0,
     },
     categories: [
@@ -114,8 +114,7 @@ export default {
     },
     async save() {
       this.form.price = parseInt(this.form.price)
-      if (this.form.unitOfMeasure == 'uds') {
-        console.log('aaa')
+      if (this.form.unitOfMeasure != 'gramos') {
         this.form.stock = parseInt(this.form.stock)
       } else {
         this.form.stock = parseFloat(this.form.stock)

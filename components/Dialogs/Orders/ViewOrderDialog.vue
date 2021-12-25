@@ -110,6 +110,8 @@ export default {
         return 'blue--text ligthen-1'
       } else if (this.item.status == 'Cancelado') {
         return 'red--text'
+      } else if (this.item.status == 'Preparado') {
+        return 'yellow--text'
       }
       return 'success--text'
     },

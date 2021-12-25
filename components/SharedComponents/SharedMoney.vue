@@ -11,6 +11,10 @@ export default {
         amount: {
             type: Number,
             required: true,
+        },
+        currency: {
+            type: String,
+            default: 'Gs.'
         }
     },
     computed: {
@@ -20,7 +24,7 @@ export default {
     },
     methods: {
         formatMiles(val) {
-            return 'Gs. ' + val.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+            return this.currency + " " + val.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
         }
     }
 }

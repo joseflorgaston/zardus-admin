@@ -42,11 +42,43 @@ export default {
   modules: [
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
+    '@nuxtjs/auth-next'
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
     baseURL:'http://localhost:5000/'
+  },
+
+  auth: {
+    strategies: {
+      local: {
+        scheme: 'refresh',
+        token: {
+          property: "accessToken", //property name that the Back-end sends for you as a access token for saving on localStorage and cookie of user browser
+          global: true,
+          required: true,
+          type: "Bearer",
+          maxAge: 20,
+        },
+        refreshToken: {
+          property: "refreshToken", // property name that the Back-end sends for you as a refresh token for saving on localStorage and cookie of user browser
+          data: "refreshToken", //
+          maxAge: 60 * 60 //* 24 * 30
+        },
+        user: {
+          property: 'user',
+         // autoFetch: true
+        },
+        endpoints: {
+          login: { url: "/api/auth/signin", method: "post" },
+          refresh: { url: "/api/auth/refreshToken", method: "post" },
+          logout: false, //  we don't have an endpoint for our logout in our API and we just remove the token from localstorage
+          user: { url: "/api/auth/user", method: "get" }
+        },
+        // autoLogout: false
+      }
+    }
   },
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify

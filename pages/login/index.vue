@@ -17,8 +17,8 @@
       >
         <div class="field">
           <v-text-field
-            v-model="login.username"
-            label="Correo electrónico"
+            v-model="login.userName"
+            label="Usuario"
           ></v-text-field>
         </div>
 
@@ -37,6 +37,7 @@
             rounded
             :disabled="!isFormValid || wasSubmitted"
             :loading="wasSubmitted"
+            @click="userLogin()"
           >
             INGRESAR
           </v-btn>
@@ -47,10 +48,10 @@
           >
         </div>
       </v-form>
-      <shared-forgot-password-modal
-        :email="login.username"
+      <!--<shared-forgot-password-modal
+        :email="login.userName"
         v-model="openModal"
-      />
+      /> -->
     </v-card>
   </div>
 </template>
@@ -58,48 +59,51 @@
 <script lang="ts">
 import Vue from "vue";
 
-export default Vue.extend({
-  
-  layout: "empty",
+export default {
   data() {
     return {
       isFormValid: true,
       login: {
-        username: "",
+        userName: "",
         password: "",
       },
       wasSubmitted: false,
       openModal: false,
     };
   },
+  layout: 'empty',
   methods: {
     async userLogin() {
       try {
         this.wasSubmitted = true;
-        await this.$auth.loginWith("local", {
+        console.log(this.$auth);
+        let res = await this.$auth.loginWith("local", {
           data: this.login,
         });
-        await this.$router.push({ path: "/distributionCenter" });
+        console.log(res);
+        this.$store.commit('setUser', res);
+        await this.$router.push({ path: "/" });
       } catch (e) {
+        console.log(e);
         this.wasSubmitted = false;
         this.$store.commit("setError", "Credenciales incorrectos");
       }
     },
     async sendForgotPasswordEmail() {
       try {
-        await this.$axios.$post("/identity/reset-password-token", {emailAddress: this.login.username});
-        this.$store.commit("setSuccess", "El correo fue enviado a " + this.login.username);
+        await this.$axios.$post("/identity/reset-password-token", {emailAddress: this.login.userName});
+        this.$store.commit("setSuccess", "El correo fue enviado a " + this.login.userName);
         this.openModal = true;
       } catch (e) {
         console.log(e);
-        this.$store.commit("setError", "Por favor, coloque una dirección email válida");
+        this.$store.commit("setError", e.toString());
       }
     },
     register() {
       this.$router.push("registro");
     },
   },
-});
+};
 </script>
 
 <style scoped lang="scss">

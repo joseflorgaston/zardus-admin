@@ -47,7 +47,7 @@
           <v-select
             v-model="editItem.unitOfMeasure"
             label="Unidad de medida"
-            :items="['uds', 'kgs']"
+            :items="['unidad', 'gramos']"
             :rules="rules"
           ></v-select>
         </v-col>
@@ -118,10 +118,10 @@ export default {
         category: this.editItem.category,
         unitOfMeasure: this.editItem.unitOfMeasure,
       }
-      if (this.form.unitOfMeasure == "uds") {
+      if (this.form.unitOfMeasure != "gramos") {
         this.form.stock = parseInt(this.form.stock)
       } else {
-        this.form.stock = parseFloat(this.form.stock)
+        this.form.stock = parseFloat(this.form.stock).toFixed(3);
       }
       this.$store.commit('setLoading')
       await this.$store.dispatch('updateProduct', this.form)
