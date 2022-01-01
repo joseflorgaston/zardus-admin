@@ -116,7 +116,7 @@
           </v-autocomplete>
         </v-col>
         <v-col cols="12" sm="6" md="3">
-          <h4>Precio Gs.</h4>
+          <h4>Precio Gs. ({{selectedProduct.unitOfMeasure == 'gramos' ? 'Kg' : selectedProduct.unitOfMeasure}})</h4>
           <v-text-field
             type="number"
             prepend-icon="mdi-currency-usd"
@@ -341,7 +341,11 @@ export default {
       }
     },
     getSubTotal() {
+      console.log(this.selectProduct);
       if (this.formDetails.quantity > 0 && this.formDetails.price > 0) {
+        if(this.selectedProduct.unitOfMeasure.trim() == 'gramos'){
+          return this.subTotal = parseInt(this.formDetails.quantity * this.formDetails.price / 1000);
+        }
         this.subTotal = this.formDetails.quantity * this.formDetails.price
       }
     },

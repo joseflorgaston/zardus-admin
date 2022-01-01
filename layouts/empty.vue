@@ -2,7 +2,6 @@
   <v-app>
     <v-main>
       <nuxt/>
-        <shared-alert/>
     </v-main>
   </v-app>
 </template>

@@ -1,7 +1,7 @@
 <template>
   <v-card width="800" max-width="100%">
     <v-card-title class="text-h5 white--text primary header">
-      Agregar Mezcla
+      Editar Mezcla
       <v-spacer></v-spacer>
       <v-btn icon color="error" @click="closeDialog()">
         <v-icon color="white"> mdi-close </v-icon>
@@ -15,7 +15,7 @@
           <v-text-field
             color="accent"
             label="Nombre"
-            v-model="form.name"
+            v-model="editItem.name"
             :rules="rules"
           >
           </v-text-field>
@@ -25,7 +25,7 @@
           <v-autocomplete
             color="accent"
             label="Categoria"
-            v-model="form.category"
+            v-model="editItem.category"
             :items="categories"
             :rules="rules"
           >
@@ -37,7 +37,7 @@
             type="number"
             color="accent"
             label="Precio"
-            v-model="form.price"
+            v-model="editItem.price"
             :rules="rules"
           >
           </v-text-field>
@@ -45,30 +45,30 @@
         <v-col offset="1" offset-sm="0" cols="5" sm="5" md="4">
           <h4>Unidad de medida.</h4>
           <v-select
-            v-model="form.unitOfMeasure"
+            v-model="editItem.unitOfMeasure"
             label="Unidad de medida"
             :items="['unidades', 'gramos']"
             :rules="rules"
           ></v-select>
         </v-col>
         <v-col offset="1" offset-sm="0" cols="5" sm="5" md="4">
-          <h4>Cantidad en stock. ({{ form.unitOfMeasure }})</h4>
+          <h4>Cantidad en stock. ({{ editItem.unitOfMeasure }})</h4>
           <v-text-field
             type="number"
             color="accent"
             label="Stock"
-            v-model="form.stock"
+            v-model="editItem.stock"
             :rules="quantityRules"
           >
           </v-text-field>
         </v-col>
         <v-col offset="1" offset-sm="0" cols="5" sm="5" md="4">
-          <h4>Cantidad por ingredientes. ({{ form.unitOfMeasure }})</h4>
+          <h4>Cantidad por ingredientes. ({{ editItem.unitOfMeasure }})</h4>
           <v-text-field
             type="number"
             color="accent"
             label="Cantidad por ingredientes"
-            v-model="form.quantityPerIngredients"
+            v-model="editItem.quantityPerIngredients"
             :rules="quantityRules"
           >
           </v-text-field>
@@ -80,6 +80,8 @@
           <v-divider color="primary" />
         </v-col>
       </v-row>
+    </v-form>
+    <v-form v-model="validIngredient">
       <v-container class="pt-0 mt-0">
         <div class="d-flex flex-wrap align-center">
           <div class="col-12 col-sm-6 col-md-4">
@@ -90,7 +92,6 @@
               item-text="name"
               placeholder="Producto"
               :search-input.sync="searchProducts"
-              @change="selectProduct($event)"
               return-object
             >
             </v-autocomplete>
@@ -105,7 +106,7 @@
             </v-text-field>
           </div>
           <div class="col-12 col-sm-6 col-md-3">
-            <v-btn @click="addToIngredients" :disabled="!isValid"
+            <v-btn @click="addToIngredients()" :disabled="!validIngredient"
               >Anadir ingrendiente.</v-btn
             >
           </div>
@@ -115,22 +116,36 @@
         </div>
       </v-container>
     </v-form>
-    <center v-if="ingredients.length > 0"><h3>Ingredientes:</h3></center>
+    <center>
+      <h3>Ingredientes:</h3>
+    </center>
     <div
       class="d-flex justify-center"
-      v-for="(ingredient, i) in ingredients"
+      v-for="(ingredient, i) in editItem.ingredients"
       :key="i"
     >
       <div class="black--text">{{ ingredient.name }}</div>
       <div class="mx-3">-</div>
       <div class="black--text">
-        {{ ingredient.quantity }} {{ ingredient.unitOfMeasure }} 
-        <v-btn x-small icon color="red" @click="removeIngredient(i)" title="Borrar ingrediente"><v-icon>mdi-close</v-icon></v-btn>
+        {{ ingredient.quantity }} {{ ingredient.unitOfMeasure }}
+        <v-btn
+          x-small
+          icon
+          color="red"
+          @click="removeIngredient(i)"
+          title="Borrar ingrediente"
+          ><v-icon>mdi-close</v-icon></v-btn
+        >
       </div>
     </div>
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn color="primary" @click="save()" :disabled="ingredients.length == 0 || !isValid">Guardar</v-btn>
+      <v-btn
+        color="primary"
+        @click="save()"
+        :disabled="editItem.ingredients.length == 0 || !isValid"
+        >Guardar</v-btn
+      >
       <v-btn @click="closeDialog()">Cancelar</v-btn>
     </v-card-actions>
   </v-card>
@@ -138,9 +153,16 @@
 
 <script>
 export default {
+  props: {
+    editItem: {
+      type: Object,
+      required: true,
+    },
+  },
   data: () => ({
     form: {},
     product: '',
+    validIngredient: false,
     products: [],
     productQuantity: '0',
     ingredients: [],
@@ -152,7 +174,7 @@ export default {
       'Frutos Secos',
       'Deshidratados',
     ],
-    isValid: false,
+    isValid: true,
     rules: [(v) => !!v || 'Este campo es requerido'],
     quantityRules: [
       (v) => v > -1 || 'Este campo no puede ser negativo',
@@ -164,7 +186,7 @@ export default {
       try {
         if (val == null) return
         if (val.length < 2) return
-        
+
         const product = await this.$axios.$get(`/api/products/${val}`)
         this.products = product.data
       } catch (error) {
@@ -174,19 +196,26 @@ export default {
   },
   methods: {
     closeDialog() {
-      this.$emit('mixtureModal');
+      this.$store.commit('setEditDialog')
     },
 
     removeIngredient(i) {
-      this.ingredients.splice(i, 1);
+      this.editItem.ingredients.splice(i, 1)
+      let item = this.editItem;
+      this.editItem = {};
+      this.editItem = item;
     },
 
     validateStock() {
-      if (this.productQuantity > this.product.stock) {
-        alert('La cantidad ingresada supera al stock del producto (' + this.product.stock + ')')
+      /*if (this.productQuantity > this.product.stock) {
+        alert(
+          'La cantidad ingresada supera al stock del producto (' +
+            this.product.stock +
+            ')'
+        )
         return false
-      }
-      const isOnIngredients = this.ingredients.filter(
+      }*/
+      const isOnIngredients = this.editItem.ingredients.filter(
         (x) => x.name == this.product.name
       )
       if (isOnIngredients.length > 0) {
@@ -199,6 +228,7 @@ export default {
       if (!this.validateStock()) {
         return
       }
+
       const newIngredient = {
         _id: this.product._id,
         name: this.product.name,
@@ -206,34 +236,36 @@ export default {
         unitOfMeasure: this.product.unitOfMeasure,
         category: this.product.category,
       }
-      this.ingredients.push(newIngredient)
+      this.editItem.ingredients.push(newIngredient)
+      let newIngredients = this.editItem;
+      this.editItem = {};
+      this.editItem = newIngredients;
     },
-    selectProduct() {
-      try {
-      } catch (error) {}
-    },
+
     async save() {
       try {
-        if(this.ingredients.length < 2){
-          alert('Coloca al menos dos ingredientes para crear la mezcla');
+        if (this.editItem.ingredients.length < 2) {
+          alert('Coloca al menos dos ingredientes para editar la mezcla')
           return
         }
-        this.$store.commit('setLoading');
-        let mixture = this.form;
-        mixture.ingredients = this.ingredients;
-        mixture.price = parseInt(mixture.price);
-        mixture.stock = parseInt(mixture.stock);
-        mixture.quantityPerIngredients = parseInt(mixture.quantityPerIngredients);
-        await this.$axios.post('/api/mixture/create', mixture);
-        this.$emit('mixtureModal');
-        this.$store.commit('setSuccess', 'Mezcla creada exitosamente');
+        this.$store.commit('setLoading')
+        let mixture = this.form
+        mixture.ingredients = this.editItem.ingredients
+        mixture.price = parseInt(mixture.price)
+        mixture.stock = parseInt(mixture.stock)
+        mixture.quantityPerIngredients = parseInt(
+          mixture.quantityPerIngredients
+        )
+        await this.$axios.put('/api/mixture/update/' + this.editItem._id, this.editItem)
+        this.$store.commit('setEditDialog');
+        this.$store.commit('setSuccess', 'Mezcla editada exitosamente')
         await this.$store.dispatch('getMixtures', { page: 1, itemsPerPage: 10 })
-        this.$store.commit('setLoading');
+        this.$store.commit('setLoading')
       } catch (error) {
-        console.log(error);
-        this.$store.commit('setError', error.toString());
+        console.log(error)
+        this.$store.commit('setError', error.toString())
       }
-    }
+    },
   },
 }
 </script>

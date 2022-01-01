@@ -59,12 +59,12 @@ export default {
           global: true,
           required: true,
           type: "Bearer",
-          maxAge: 20,
+          maxAge: 60 * 60,
         },
         refreshToken: {
           property: "refreshToken", // property name that the Back-end sends for you as a refresh token for saving on localStorage and cookie of user browser
           data: "refreshToken", //
-          maxAge: 60 * 60 //* 24 * 30
+          maxAge: 60 * 60 * 24 * 30
         },
         user: {
           property: 'user',

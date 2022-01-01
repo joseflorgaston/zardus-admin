@@ -32,7 +32,7 @@
           </v-autocomplete>
         </v-col>
         <v-col offset="1" offset-sm="0" cols="10" sm="4">
-          <h4>Precio. ({{ form.unitOfMeasure != 'gramos' ? form.unitOfMeasure : "unidades" }})</h4>
+          <h4>Precio. ({{ form.unitOfMeasure == 'gramos' ? 'Kg' : "unidades" }})</h4>
           <v-text-field
             type="number"
             color="accent"
@@ -47,7 +47,7 @@
           <v-select
             v-model="form.unitOfMeasure"
             label="Unidad de medida"
-            :items="['unidad', 'gramos']"
+            :items="['unidades', 'gramos']"
             :rules="rules"
           ></v-select>
         </v-col>
@@ -90,8 +90,9 @@ export default {
       name: '',
       category: '',
       price: 0,
-      unitOfMeasure: 'gramos',
+      unitOfMeasure: 'unidades',
       stock: 0,
+      type: 'Product'
     },
     categories: [
       'Especias',
@@ -109,16 +110,13 @@ export default {
         price: 0,
         unitOfMeasure: 'gs',
         stock: 0,
+        type: ''
       }
       this.$store.commit('setDialog')
     },
     async save() {
       this.form.price = parseInt(this.form.price)
-      if (this.form.unitOfMeasure != 'gramos') {
-        this.form.stock = parseInt(this.form.stock)
-      } else {
-        this.form.stock = parseFloat(this.form.stock)
-      }
+      this.form.stock = parseInt(this.form.stock)
       console.log(this.form)
       this.$store.commit('setLoading')
       await this.$store.dispatch('saveProduct', this.form)

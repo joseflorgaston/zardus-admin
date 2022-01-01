@@ -47,7 +47,7 @@
           <v-select
             v-model="editItem.unitOfMeasure"
             label="Unidad de medida"
-            :items="['unidad', 'gramos']"
+            :items="['unidades', 'gramos']"
             :rules="rules"
           ></v-select>
         </v-col>
@@ -72,7 +72,7 @@
       </v-btn>
       <v-spacer></v-spacer>
       <v-btn color="primary" @click="save()" :disabled="!isValid"> Guardar </v-btn>
-      <v-btn text @click="closeDialog"> Cancelar </v-btn>
+      <v-btn text @click="closeDialog()"> Cancelar </v-btn>
     </v-card-actions>
   </v-card>
 </template>

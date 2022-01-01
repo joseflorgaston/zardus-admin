@@ -1,6 +1,10 @@
 <template>
   <div>
-    <mixtures-header title="Productos" class="mt-1 mb-0 pb-0" v-on:mixtureModal="openMixtureModal()"></mixtures-header>
+    <mixtures-header
+      title="Productos"
+      class="mt-1 mb-0 pb-0"
+      v-on:mixtureModal="openMixtureModal()"
+    ></mixtures-header>
     <v-row class="pt-0">
       <v-col cols="12" md="11">
         <v-card>
@@ -22,6 +26,19 @@
                 <template v-slot:activator="{ on, attrs }">
                   <v-btn
                     icon
+                    @click="openEditMixtureStock(item)"
+                    v-bind="attrs"
+                    v-on="on"
+                  >
+                    <v-icon color="primary" title="editar">mdi-plus</v-icon>
+                  </v-btn>
+                </template>
+                <span>Modificar stock</span>
+              </v-tooltip>
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    icon
                     @click="openEditDialog(item)"
                     v-bind="attrs"
                     v-on="on"
@@ -29,7 +46,7 @@
                     <v-icon color="primary" title="editar">mdi-pencil</v-icon>
                   </v-btn>
                 </template>
-                <span>Editar Producto</span>
+                <span>Editar Mezcla</span>
               </v-tooltip>
               <v-tooltip bottom>
                 <template v-slot:activator="{ on, attrs }">
@@ -50,12 +67,22 @@
             </template>
             <template v-slot:[`item.stock`]="{ item }">
               <div class="d-flex">
-              <shared-money :amount="item.stock || 0" currency="" class="mr-1"></shared-money> {{ item.unitOfMeasure }}
+                <shared-money
+                  :amount="item.stock || 0"
+                  currency=""
+                  class="mr-1"
+                ></shared-money>
+                {{ item.unitOfMeasure }}
               </div>
             </template>
             <template v-slot:[`item.inOrder`]="{ item }">
               <div v-if="item.inOrder != null" class="d-flex">
-                <shared-money :amount="item.inOrder || 0" currency="" class="mr-1"></shared-money> {{ item.unitOfMeasure }}
+                <shared-money
+                  :amount="item.inOrder || 0"
+                  currency=""
+                  class="mr-1"
+                ></shared-money>
+                {{ item.unitOfMeasure }}
               </div>
               <div v-else>0</div>
             </template>
@@ -64,10 +91,19 @@
       </v-col>
     </v-row>
     <v-dialog v-model="editDialog" persistent min-width="500" width="700">
-      <edit-product-dialog :editItem="editedItem"></edit-product-dialog>
+      <edit-mixture-dialog
+        v-on:removeIngredient="removeIngredient"
+        :editItem="editedItem"
+      ></edit-mixture-dialog>
     </v-dialog>
     <v-dialog v-model="mixtureDialog" persistent min-width="500" width="700">
       <mixture-modal v-on:mixtureModal="openMixtureModal()"></mixture-modal>
+    </v-dialog>
+    <v-dialog v-model="stockMixtureDialog" persistent min-width="500" width="600">
+      <add-mixture-stock
+        v-on:closeEditMixtureStock="closeEditMixtureStock()"
+        :editItem="editedItem"
+      ></add-mixture-stock>
     </v-dialog>
     <v-dialog v-model="deleteDialog" persistent max-width="500">
       <delete-dialog
@@ -84,7 +120,8 @@
 
 <script>
 import NewProductDialog from '~/components/Dialogs/Products/NewProductDialog.vue'
-import EditProductDialog from '~/components/Dialogs/Products/EditProductDialog.vue'
+import EditMixtureDialog from '~/components/Dialogs/Products/EditMixtureModal.vue'
+import AddMixtureStock from '~/components/Dialogs/Products/AddMixtureStock.vue'
 import DeleteDialog from '~/components/Dialogs/DeleteDialog.vue'
 import MixturesHeader from '~/components/Headers/MixturesHeader.vue'
 import MixtureModal from '~/components/Dialogs/Products/MixtureModal.vue'
@@ -93,9 +130,10 @@ export default {
   components: {
     MixturesHeader,
     NewProductDialog,
-    EditProductDialog,
+    EditMixtureDialog,
     DeleteDialog,
     MixtureModal,
+    AddMixtureStock,
   },
   computed: {
     items: {
@@ -142,7 +180,9 @@ export default {
       unitOfMeasure: '',
       category: '',
       price: '',
+      ingredients: [],
       stock: '',
+      quantityPerIngredients: 0,
     },
     datatableHeaders: [
       {
@@ -177,6 +217,7 @@ export default {
       },
     ],
     mixtureDialog: false,
+    stockMixtureDialog: false,
     page: 1,
     itemsPerPage: 10,
   }),
@@ -185,24 +226,41 @@ export default {
   },
   methods: {
     openEditDialog(item) {
+      this.setEditedItem(item)
+      this.$store.commit('setEditDialog')
+    },
+    removeIngredient(i) {
+      this.editedItem.ingredients.splice(i, 1)
+    },
+    openMixtureModal() {
+      this.mixtureDialog = !this.mixtureDialog
+    },
+    openEditMixtureStock(item) {
+      this.setEditedItem(item)
+      this.stockMixtureDialog = !this.stockMixtureDialog
+    },
+    closeEditMixtureStock(){
+      this.stockMixtureDialog = !this.stockMixtureDialog;
+    },
+    openDeleteDialog(item) {
+      this.editedItem = item
+      this.$store.commit('setDeleteDialog')
+    },
+    setEditedItem(item) {
       this.editedItem = {
         _id: item._id,
+        id: item.id,
         name: item.name,
         unitOfMeasure: item.unitOfMeasure,
         category: item.category,
         price: item.price.toString(),
         stock: item.stock.toString(),
+        quantityPerIngredients: item.quantityPerIngredients,
       }
-      console.log(this.editedItem)
-      this.$store.commit('setEditDialog')
-    },
-    openMixtureModal() {
-      console.log(this.mixtureDialog);
-      this.mixtureDialog = !this.mixtureDialog;
-    },
-    openDeleteDialog(item) {
-      this.editedItem = item
-      this.$store.commit('setDeleteDialog')
+      this.editedItem.ingredients = []
+      for (let i = 0; i < item.ingredients.length; i++) {
+        this.editedItem.ingredients.push(item.ingredients[i])
+      }
     },
     async nextPage(value) {
       this.page = value
@@ -215,7 +273,7 @@ export default {
     async getMixtures() {
       this.loading = true
       this.$store.commit('setLoading')
-      await this.$store.dispatch('getProducts', {
+      await this.$store.dispatch('getMixtures', {
         page: this.page,
         itemsPerPage: this.itemsPerPage,
       })

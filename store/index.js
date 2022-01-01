@@ -93,6 +93,16 @@ export const actions = {
     }
   },
 
+  async getMixtures({ commit }, pagination) {
+    try {
+      const mixtures = await this.$axios.$get(`/api/mixture/${(pagination.page-1)*pagination.itemsPerPage}/${pagination.itemsPerPage}`);
+      commit('setCount', mixtures.count);
+      commit('setItems', mixtures.data);
+    } catch (error) {
+      commit("setError", "Ha ocurrido un error inesperado");
+    }
+  },
+
   async getProviders({ commit }, pagination) {
     try {
       console.log(pagination);
