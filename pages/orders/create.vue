@@ -116,7 +116,13 @@
           </v-autocomplete>
         </v-col>
         <v-col cols="12" sm="6" md="3">
-          <h4>Precio Gs. ({{selectedProduct.unitOfMeasure == 'gramos' ? 'Kg' : selectedProduct.unitOfMeasure}})</h4>
+          <h4>
+            Precio Gs. ({{
+              selectedProduct.unitOfMeasure == 'gramos'
+                ? 'Kg'
+                : selectedProduct.unitOfMeasure
+            }})
+          </h4>
           <v-text-field
             type="number"
             prepend-icon="mdi-currency-usd"
@@ -150,7 +156,6 @@
             <v-btn color="primary" :disabled="!isValid" @click="addProduct()"
               >Agregar</v-btn
             >
-            <v-btn color="primary" class="ml-5" @click="openMixtureModal()">Agregar Mezcla</v-btn>
           </div>
           <div class="d-flex">
             <h3>SubTotal: <shared-money :amount="parseInt(subTotal)" /></h3>
@@ -236,10 +241,8 @@
 <script>
 import moment from 'moment'
 import { format, parseISO } from 'date-fns'
-import SharedMoney from '../../components/SharedComponents/SharedMoney.vue'
-import MixtureModal from '~/components/Dialogs/Products/MixtureModal.vue'
 export default {
-  components: { MixtureModal },
+  components: {},
   data: () => ({
     isValid: true,
     isEdit: false,
@@ -310,7 +313,6 @@ export default {
     this.$store.commit('setLoading')
     if (this.$route.query._id != null) {
       this.isEdit = true
-      console.log(this.$route.query._id)
       const item = await this.$axios.$get('/api/order/' + this.$route.query._id)
       this.setItem(item)
     }
@@ -318,12 +320,6 @@ export default {
   },
 
   methods: {
-    closeDialog() {
-      this.mixtureModal = false;
-    },
-    addMixture() {
-
-    },
     setItem(item) {
       this.dataItems = item.details
       this.hasItem = true
@@ -341,10 +337,11 @@ export default {
       }
     },
     getSubTotal() {
-      console.log(this.selectProduct);
       if (this.formDetails.quantity > 0 && this.formDetails.price > 0) {
-        if(this.selectedProduct.unitOfMeasure.trim() == 'gramos'){
-          return this.subTotal = parseInt(this.formDetails.quantity * this.formDetails.price / 1000);
+        if (this.selectedProduct.unitOfMeasure.trim() == 'gramos') {
+          return (this.subTotal = parseInt(
+            (this.formDetails.quantity * this.formDetails.price) / 1000
+          ))
         }
         this.subTotal = this.formDetails.quantity * this.formDetails.price
       }
@@ -379,6 +376,7 @@ export default {
         total: this.total,
         details: this.dataItems,
         deliveryAddress: 'N/A',
+        userName: this.$auth.user.userName
       }
       try {
         if (this.isEdit) {
@@ -453,12 +451,8 @@ export default {
         price: this.formDetails.price,
       }
       this.dataItems.push(item)
-      console.log(this.dataItems)
       this.total = this.total + this.subTotal
       this.hasItem = true
-    },
-    openMixtureModal() {
-      this.mixtureModal = true;
     },
     selectProduct(value) {
       if (value == null) return

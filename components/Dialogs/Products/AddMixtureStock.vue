@@ -10,13 +10,12 @@
     <v-form v-model="isValid" class="mt-5">
       <v-row>
         <v-col offset="1" cols="10">
-          <h3>Cantidad a añadir ({{editItem.unitOfMeasure}}).</h3>
+          <h3>Cantidad a añadir ({{ editItem.unitOfMeasure }}).</h3>
           <v-text-field
             type="number"
             v-model="stock"
             label="Cantidad a añadir"
             :rules="quantityRules"
-            @keydown="calculateQuantity"
           >
           </v-text-field>
         </v-col>
@@ -48,8 +47,8 @@
                 </div>
                 <div class="col-4 cols-4">
                   {{
-                    ingredient.quantity *
-                    parseInt(stock / editItem.quantityPerIngredients)
+                    (ingredient.quantity * stock) /
+                    editItem.quantityPerIngredients
                   }}
                   {{ ingredient.unitOfMeasure }}.
                 </div>
@@ -85,15 +84,33 @@ export default {
     isValid: false,
     stock: 0,
     quantityRules: [
-      (v) => v > -1 || 'Este campo no puede ser negativo',
+      (v) => v > 0 || 'Este campo debe ser mayor a 0',
       (v) => !!v || 'Este campo es requerido',
     ],
   }),
   methods: {
     closeDialog() {
-      this.$emit('closeEditMixtureStock', {})
+      this.$emit('closeEditMixtureStock')
     },
-    calculateQuantity() {},
+    async save() {
+      try {
+        this.$store.commit('setLoading')
+        await this.$axios.$put(
+          'api/mixtures/updateStock/' + this.editItem._id,
+          { stock: this.stock }
+        )
+        await this.$store.dispatch('getMixtures', {
+          page: 1,
+          itemsPerPage: 10,
+        })
+        this.closeDialog()
+        this.$store.commit('setSuccess', 'La mezcla ha sido añadida al stock')
+      } catch (error) {
+        console.log(error)
+        this.$store.commit('setError', error.toString())
+      }
+      this.$store.commit('setLoading')
+    },
   },
 }
 </script>

@@ -48,10 +48,7 @@
           >
         </div>
       </v-form>
-      <!--<shared-forgot-password-modal
-        :email="login.userName"
-        v-model="openModal"
-      /> -->
+      
     </v-card>
   </div>
 </template>
@@ -80,8 +77,8 @@ export default {
         let res = await this.$auth.loginWith("local", {
           data: this.login,
         });
-        console.log(res);
-        this.$store.commit('setUser', res);
+        this.$auth.setUser(res.data)
+        this.$store.commit('setUser', res.data);
         await this.$router.push({ path: "/" });
       } catch (e) {
         console.log(e);
