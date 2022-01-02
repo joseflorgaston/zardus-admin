@@ -54,11 +54,16 @@
         </template>
       </v-data-table>
     </v-card>
+    <v-dialog v-model="dialog" persistent min-width="500" width="700">
+      <view-order-dialog :item="viewItem"></view-order-dialog>
+    </v-dialog>
   </v-container>
 </template>
 
 <script>
+import ViewOrderDialog from '~/components/Dialogs/BuyProducts/ViewBuyDetails.vue';
 export default {
+  components: { ViewOrderDialog },
   computed: {
     items: {
       get() {
@@ -117,12 +122,12 @@ export default {
   }),
   methods: {
     viewOrder(item) {
-      console.log("aaa")
+      console.log('aaa')
       this.viewItem = item
       this.$store.commit('setDialog')
     },
     editOrder(item) {
-      console.log("aaa")
+      console.log('aaa')
       this.$router.push({
         path: '/buy_products/create',
         query: { _id: `${item._id}` },

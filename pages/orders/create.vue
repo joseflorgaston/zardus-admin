@@ -127,9 +127,7 @@
             type="number"
             prepend-icon="mdi-currency-usd"
             :rules="quantityRules"
-            @keydown="getSubTotal()"
             @keyup="getSubTotal()"
-            @change="getSubTotal()"
             v-model="formDetails.price"
           >
           </v-text-field>
@@ -142,9 +140,7 @@
             :disabled="selectedProduct == null"
             :rules="quantityRules"
             v-model="formDetails.quantity"
-            @keydown="getSubTotal()"
             @keyup="getSubTotal()"
-            @change="getSubTotal()"
           ></v-text-field>
         </v-col>
       </v-row>
@@ -340,7 +336,7 @@ export default {
       if (this.formDetails.quantity > 0 && this.formDetails.price > 0) {
         if (this.selectedProduct.unitOfMeasure.trim() == 'gramos') {
           return (this.subTotal = parseInt(
-            (this.formDetails.quantity * this.formDetails.price) / 1000
+            (this.formDetails.quantity * (this.formDetails.price / 1000))
           ))
         }
         this.subTotal = this.formDetails.quantity * this.formDetails.price
@@ -376,7 +372,7 @@ export default {
         total: this.total,
         details: this.dataItems,
         deliveryAddress: 'N/A',
-        userName: this.$auth.user.userName
+        userName: this.$auth.user.userName,
       }
       try {
         if (this.isEdit) {

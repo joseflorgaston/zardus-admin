@@ -93,23 +93,42 @@ export default {
       this.$emit('closeEditMixtureStock')
     },
     async save() {
+      const store = this.$store
       try {
-        this.$store.commit('setLoading')
-        await this.$axios.$put(
-          'api/mixtures/updateStock/' + this.editItem._id,
-          { stock: this.stock }
-        )
-        await this.$store.dispatch('getMixtures', {
+        store.commit('setLoading')
+        const response = await this.$axios
+          .$put('api/mixtures/updateStock/' + this.editItem._id, {
+            stock: this.stock,
+          })
+          .catch(function (error) {
+            if (error.response) {
+              store.commit(
+                'setError',
+                error.response.data.message +
+                  '\n Ingrediente: ' +
+                  error.response.data.producto +
+                  '\n Stock:' +
+                  error.response.data.stock +
+                  '\n Reservado:' +
+                  error.response.data.inOrder
+              )
+              return error.response.status
+            }
+          })
+        if (response == 400) {
+          return store.commit('setLoading')
+        }
+        this.closeDialog()
+        this.$store.commit('setSuccess', 'La mezcla ha sido añadida al stock')
+        await store.dispatch('getMixtures', {
           page: 1,
           itemsPerPage: 10,
         })
-        this.closeDialog()
-        this.$store.commit('setSuccess', 'La mezcla ha sido añadida al stock')
       } catch (error) {
         console.log(error)
-        this.$store.commit('setError', error.toString())
+        store.commit('setError', error.toString())
       }
-      this.$store.commit('setLoading')
+      store.commit('setLoading')
     },
   },
 }

@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <v-card-title class="text-h5 white--text primary">
-      Detalles del Pedido
+      Detalles de Compra
       <v-spacer></v-spacer>
       <v-btn icon color="error" @click="closeDialog">
         <v-icon color="white"> mdi-close </v-icon>
@@ -9,9 +9,9 @@
     </v-card-title>
     <v-card-text class="mt-4 black--text">
       <v-row>
-        <v-col cols="12" sm="4">
+        <v-col cols="12" sm="6">
           <div class="d-flex">
-            <span class="font-weight-black">Fecha del pedido: </span>
+            <span class="font-weight-black">Fecha de la compra: </span>
             <div class="pl-1">
               <shared-formatted-date
                 :date="item.createdOn || ''"
@@ -19,37 +19,23 @@
             </div>
           </div>
         </v-col>
-        <v-col cols="12" sm="4">
-          <span class="font-weight-black">Cliente:</span>
-          <span>{{ item.client }}</span>
+        <v-col cols="12" sm="6">
+          <span class="font-weight-black">Proveedor:</span>
+          <span>{{ item.provider }}</span>
         </v-col>
-        <v-col cols="12" sm="4">
-          <div class="d-flex">
-            <span class="font-weight-black">Fecha de entrega: </span>
-            <div class="pl-1">
-              <shared-formatted-date
-                :date="item.deliveryDate || ''"
-              ></shared-formatted-date>
-            </div>
-          </div>
-        </v-col>
-        <v-col cols="12" sm="4">
+        <v-col cols="12" sm="6">
           <span class="font-weight-black">Metodo de pago:</span>
           <span>{{ item.paymentMethod }}</span>
         </v-col>
-        <v-col cols="12" sm="4">
+        <v-col cols="12" sm="6">
           <span class="font-weight-black">Encargado:</span>
           <span>{{ item.userName }}</span>
-        </v-col>
-        <v-col cols="12" sm="4">
-          <span class="font-weight-black">Estado:</span>
-          <span :class="getStatusClass()">{{ item.status }}</span>
         </v-col>
       </v-row>
       <v-divider class="mt-3"></v-divider>
       <center>
         <div class="mt-2">
-          <h3>Detalle del pedido:</h3>
+          <h3>Detalle de la compra:</h3>
         </div>
       </center>
       <v-row class="pt-2 pb-0">
@@ -84,8 +70,11 @@
     <v-divider></v-divider>
     <v-card-actions>
       <div class="d-flex">
-        <span class="subtitle-2 font-weight-bold">Monto Total:</span> 
-        <shared-money :amount="item.totalAmount" class="pl-1 subtitle-2"></shared-money>
+        <span class="subtitle-2 font-weight-bold">Monto Total:</span>
+        <shared-money
+          :amount="item.totalAmount"
+          class="pl-1 subtitle-2"
+        ></shared-money>
       </div>
       <v-spacer></v-spacer
       ><v-btn text @click="closeDialog" class="pa-4">Cerrar</v-btn>
@@ -104,16 +93,6 @@ export default {
   methods: {
     closeDialog() {
       this.$store.commit('setDialog')
-    },
-    getStatusClass() {
-      if (this.item.status == 'Aguardando') {
-        return 'blue--text ligthen-1'
-      } else if (this.item.status == 'Cancelado') {
-        return 'red--text'
-      } else if (this.item.status == 'Preparado') {
-        return 'yellow--text'
-      }
-      return 'success--text'
     },
   },
 }

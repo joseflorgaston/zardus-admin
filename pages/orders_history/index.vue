@@ -43,12 +43,26 @@
             </template>
             <span>Ver Pedido</span>
           </v-tooltip>
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn icon v-bind="attrs" v-on="on">
+                <v-icon
+                  :disabled="item.status != 'Entregado'"
+                  color="primary"
+                  title="Detalle Pedido"
+                  @click="changeOrderStatus(item._id, 'Pagado')"
+                  >mdi-cash</v-icon
+                >
+              </v-btn>
+            </template>
+            <span>Cambiar estado a pagado</span>
+          </v-tooltip>
         </template>
         <template v-slot:[`item.status`]="{ item }">
-          <div v-if="item.status == 'Aguardando'" class="chip blue ligthen-1">
+          <div v-if="item.status == 'Pagado'" class="chip success">
             {{ item.status }}
           </div>
-          <div v-if="item.status == 'Entregado'" class="chip success">
+          <div v-if="item.status == 'Entregado'" class="chip warning">
             {{ item.status }}
           </div>
           <div v-if="item.status == 'Cancelado'" class="chip error">
@@ -60,13 +74,20 @@
     <v-dialog v-model="dialog" persistent min-width="500" width="700">
       <view-order-dialog :item="viewItem"></view-order-dialog>
     </v-dialog>
+    <v-dialog v-model="editDialog" persistent min-width="500" width="700">
+      <change-order-status-dialog
+        :id="statusModalId"
+        :status="'Pagado'"
+      ></change-order-status-dialog>
+    </v-dialog>
   </v-container>
 </template>
 
 <script>
 import ViewOrderDialog from '~/components/Dialogs/Orders/ViewOrderDialog.vue'
+import ChangeOrderStatusDialog from '~/components/Dialogs/Orders/ChangeOrderStatusDialog.vue'
 export default {
-  components: { ViewOrderDialog },
+  components: { ViewOrderDialog, ChangeOrderStatusDialog },
   computed: {
     items: {
       get() {
@@ -78,6 +99,17 @@ export default {
     },
     dialog() {
       return this.$store.state.dialog
+    },
+    count() {
+      return this.$store.state.count
+    },
+    editDialog: {
+      get() {
+        return this.$store.state.editDialog
+      },
+      set() {
+        this.$store.commit('setEditDialog')
+      },
     },
     count() {
       return this.$store.state.count
@@ -123,6 +155,8 @@ export default {
         class: 'header-color',
       },
     ],
+    statusModalValue: '',
+    statusModalId: '',
     page: 1,
     viewItem: {},
     itemsPerPage: 10,
@@ -152,6 +186,12 @@ export default {
       })
       this.$store.commit('setLoading')
       this.loading = false
+    },
+    changeOrderStatus(id, status) {
+      console.log(id);
+      this.statusModalValue = status
+      this.statusModalId = id
+      this.$store.commit('setEditDialog')
     },
   },
   async beforeMount() {

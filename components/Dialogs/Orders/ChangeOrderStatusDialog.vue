@@ -40,7 +40,7 @@ export default {
 
   methods: {
     getClass() {
-      if (this.status == 'Entregado') {
+      if (this.status == 'Entregado' || this.status == 'Pagado') {
         return 'success--text'
       }
       return 'error--text'
@@ -51,10 +51,7 @@ export default {
         this.$store.commit('setLoading')
         await this.$axios.patch('api/order/update/status/' + this.id, {status: this.status})
         this.$store.commit("setSuccess", "Pedido actualizado exitosamente");
-        await this.$store.dispatch('getOrders', {
-          page: this.page,
-          itemsPerPage: this.itemsPerPage,
-        })
+        await location.reload();
         this.$store.commit('setLoading')
       } catch (error) {
         console.log(error);

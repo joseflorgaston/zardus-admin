@@ -17,13 +17,18 @@
       <v-row>
         <v-col cols="12" sm="6" md="3">
           <h4>Proveedor</h4>
-          <v-text-field
-            placeholder="Proveedor"
+          <v-autocomplete
             prepend-icon="mdi-truck"
-            v-model="formHeader.provider"
+            placeholder="Proveedor"
             :rules="rules"
+            :items="providers"
+            item-text="name"
+            v-model="provider"
+            :search-input.sync="searchProvider"
+            @change="selectProvider($event)"
+            return-object
           >
-          </v-text-field>
+          </v-autocomplete>
         </v-col>
         <v-col cols="12" sm="6" md="3">
           <h4>Metodo de pago</h4>
@@ -76,9 +81,7 @@
             type="number"
             prepend-icon="mdi-currency-usd"
             :rules="quantityRules"
-            @keydown="getSubTotal()"
             @keyup="getSubTotal()"
-            @change="getSubTotal()"
             v-model="formDetails.price"
           >
           </v-text-field>
@@ -91,9 +94,7 @@
             :disabled="selectedProduct == null"
             :rules="quantityRules"
             v-model="formDetails.quantity"
-            @keydown="getSubTotal()"
             @keyup="getSubTotal()"
-            @change="getSubTotal()"
           ></v-text-field>
         </v-col>
       </v-row>
@@ -197,7 +198,9 @@ export default {
       (v) => !!v || 'Este campo es requerido',
     ],
     products: [],
+    providers: [],
     autocomplete: null,
+    provider: null,
     subTotal: 0,
     total: 0,
     selectedProduct: {},
@@ -209,6 +212,7 @@ export default {
       deliveryAddress: '',
     },
     search: null,
+    searchProvider: null,
     formDetails: {
       product: '',
       quantity: 0,
@@ -253,7 +257,9 @@ export default {
     if (this.$route.query._id != null) {
       this.isEdit = true
       console.log(this.$route.query._id)
-      const item = await this.$axios.$get('/api/supplyOrder/' + this.$route.query._id)
+      const item = await this.$axios.$get(
+        '/api/supplyOrder/' + this.$route.query._id
+      )
       this.setItem(item)
     }
     this.$store.commit('setLoading')
@@ -275,6 +281,11 @@ export default {
     },
     getSubTotal() {
       if (this.formDetails.quantity > 0 && this.formDetails.price > 0) {
+        if (this.selectedProduct.unitOfMeasure.trim() == 'gramos') {
+          return (this.subTotal = parseInt(
+            (this.formDetails.quantity * (this.formDetails.price / 1000))
+          ))
+        }
         this.subTotal = this.formDetails.quantity * this.formDetails.price
       }
     },
@@ -311,10 +322,13 @@ export default {
       }
       try {
         if (this.isEdit) {
-          await this.$axios.put('/api/supplyOrder/update/' + this.$route.query._id, {
-            oldItem: this.editItem,
-            editedItem: item,
-          })
+          await this.$axios.put(
+            '/api/supplyOrder/update/' + this.$route.query._id,
+            {
+              oldItem: this.editItem,
+              editedItem: item,
+            }
+          )
           this.$store.commit('setSuccess', 'Compra editada exitosamente')
         } else {
           await this.$axios.post('/api/supplyOrder/create', item)
@@ -344,7 +358,7 @@ export default {
       this.subTotal = 0
       this.search = null
     },
-    
+
     addProduct() {
       if (this.dataItems.length > 0) {
         const filter = this.dataItems.filter(
@@ -380,6 +394,11 @@ export default {
       this.subTotal = 0
       this.selectedProduct = value
     },
+    selectProvider(value) {
+      if (value == null) return
+      this.provider = value
+      this.formHeader.provider = this.provider.name
+    },
   },
   watch: {
     async search(val) {
@@ -390,6 +409,13 @@ export default {
       if (val.length < 2) return
       const product = await this.$axios.$get(`/api/products/${val}`)
       this.products = product.data
+    },
+    async searchProvider(val) {
+      if (val == null) return
+      if (val.length < 2) return
+
+      const providers = await this.$axios.$get(`/api/providers/${val}`)
+      this.providers = providers.data
     },
   },
   computed: {
