@@ -1,9 +1,9 @@
 <template>
   <div class="d-flex flex-wrap">
-    <div class="col-12 col-sm-3 col-md-2">
-      <h2>Mezclas</h2>
+    <div class="col-12 col-sm-3 col-md-5">
+      <h2>Historial de pedidos</h2>
     </div>
-    <div class="col-12 col-sm-9 col-md-4 col-lg-6">
+    <div class="col-12 col-sm-9 col-md-7 col-lg-6">
       <v-text-field
         v-model="searchText"
         rounded
@@ -13,15 +13,9 @@
         dense
         :label="'Buscar ' + title"
         prepend-inner-icon="mdi-magnify"
-        @keyup="getMixtures($event)"
+        @keyup="getHistoryOrders($event)"
         :loading="loading"
       ></v-text-field>
-    </div>
-    <div class="col-6 col-md-3 col-lg-2">
-      <v-btn color="primary" width="100%" max-width="250" @click="openMixtureModal()">
-        <v-icon class="mr-2">mdi-plus</v-icon>
-        Mezcla
-      </v-btn>
     </div>
   </div>
 </template>
@@ -40,18 +34,19 @@ export default {
   },
   data: () => ({
     searchText: '',
-    loading: false
+    loading: false,
   }),
   methods: {
-    openMixtureModal() {
-        this.$emit('mixtureModal');
-    },
-    async getMixtures() {
+    async getHistoryOrders() {
       this.loading = true
-      clearTimeout(this.debounce);
+      clearTimeout(this.debounce)
       this.debounce = setTimeout(async () => {
-        await this.$store.dispatch("searchMixtures", this.searchText);
-        this.loading = false;
+        if (this.searchText.length == 0) {
+          await this.$store.dispatch('sharedSearch', '/api/orders/history/0/10')
+        } else {
+          await this.$store.dispatch('sharedSearch', '/api/orders/history/search/' + this.searchText)
+        }
+        this.loading = false
       }, 600)
     },
   },

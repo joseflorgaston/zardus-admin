@@ -466,7 +466,7 @@ export default {
         return
       }
       if (val.length < 2) return
-      const product = await this.$axios.$get(`/api/products/${val}`)
+      const product = await this.$axios.$get(`/api/allProducts/${val}`)
       this.products = product.data
     },
   },

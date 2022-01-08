@@ -57,7 +57,7 @@ export const mutations = {
 export const actions = {
   async getProducts({ commit }, pagination) {
     try {
-      const products = await this.$axios.$get(`/api/products/${(pagination.page-1)*pagination.itemsPerPage}/${pagination.itemsPerPage}`);
+      const products = await this.$axios.$get(`/api/products/${(pagination.page - 1) * pagination.itemsPerPage}/${pagination.itemsPerPage}`);
       commit('setCount', products.count);
       commit('setItems', products.data);
     } catch (error) {
@@ -68,7 +68,7 @@ export const actions = {
   async getProduct({ commit }, id) {
     try {
       const products = await this.$axios.$get(`/api/product/${id}`);
-    commit('setItems', products);
+      commit('setItems', products);
     } catch (error) {
       commit("setError", "Ha ocurrido un error inesperado");
     }
@@ -93,11 +93,45 @@ export const actions = {
     }
   },
 
+  async searchProducts({ commit }, search) {
+    try {
+      commit('setLoading');
+      let products = [];
+      if (search.length > 0) {
+        products = await this.$axios.$get(`/api/products/${search}`);
+      } else {
+        products = await this.$axios.$get(`/api/products/0/10`);
+      }
+      commit('setCount', products.count);
+      commit('setItems', products.data);
+      commit('setLoading');
+    } catch (error) {
+      commit("setError", "Ha ocurrido un error inesperado");
+    }
+  },
+
   async getMixtures({ commit }, pagination) {
     try {
-      const mixtures = await this.$axios.$get(`/api/mixture/${(pagination.page-1)*pagination.itemsPerPage}/${pagination.itemsPerPage}`);
+      const mixtures = await this.$axios.$get(`/api/mixture/${(pagination.page - 1) * pagination.itemsPerPage}/${pagination.itemsPerPage}`);
       commit('setCount', mixtures.count);
       commit('setItems', mixtures.data);
+    } catch (error) {
+      commit("setError", "Ha ocurrido un error inesperado");
+    }
+  },
+
+  async searchMixtures({ commit }, search) {
+    try {
+      commit('setLoading');
+      let products = [];
+      if (search.length > 0) {
+        products = await this.$axios.$get(`/api/mixtures/${search}`);
+      } else {
+        products = await this.$axios.$get(`/api/mixture/0/10`);
+      }
+      commit('setCount', products.count);
+      commit('setItems', products.data);
+      commit('setLoading');
     } catch (error) {
       commit("setError", "Ha ocurrido un error inesperado");
     }
@@ -106,7 +140,7 @@ export const actions = {
   async getProviders({ commit }, pagination) {
     try {
       console.log(pagination);
-      const providers = await this.$axios.$get(`/api/providers/${(pagination.page-1)*pagination.itemsPerPage}/${pagination.itemsPerPage}`);
+      const providers = await this.$axios.$get(`/api/providers/${(pagination.page - 1) * pagination.itemsPerPage}/${pagination.itemsPerPage}`);
       commit("setCount", providers.count)
       commit('setItems', providers.data);
     } catch (error) {
@@ -132,9 +166,26 @@ export const actions = {
     }
   },
 
+  async searchProviders({ commit }, search) {
+    try {
+      commit('setLoading');
+      let providers = [];
+      if (search.length > 0) {
+        providers = await this.$axios.$get(`/api/providers/${search}`);
+      } else {
+        providers = await this.$axios.$get(`/api/providers/0/10`);
+      }
+      commit('setCount', providers.count);
+      commit('setItems', providers.data);
+      commit('setLoading');
+    } catch (error) {
+      commit("setError", "Ha ocurrido un error inesperado");
+    }
+  },
+
   async getOrders({ commit }, pagination) {
     try {
-      const orders = await this.$axios.$get(`/api/orders/${(pagination.page-1)*pagination.itemsPerPage}/${pagination.itemsPerPage}`);
+      const orders = await this.$axios.$get(`/api/orders/${(pagination.page - 1) * pagination.itemsPerPage}/${pagination.itemsPerPage}`);
       commit("setCount", orders.count)
       commit('setItems', orders.data);
     } catch (error) {
@@ -144,7 +195,7 @@ export const actions = {
 
   async getSupplyOrders({ commit }, pagination) {
     try {
-      const orders = await this.$axios.$get(`/api/supplyOrders/${(pagination.page-1)*pagination.itemsPerPage}/${pagination.itemsPerPage}`);
+      const orders = await this.$axios.$get(`/api/supplyOrders/${(pagination.page - 1) * pagination.itemsPerPage}/${pagination.itemsPerPage}`);
       commit("setCount", orders.count)
       commit('setItems', orders.data);
     } catch (error) {
@@ -154,11 +205,21 @@ export const actions = {
 
   async getHistoryOrders({ commit }, pagination) {
     try {
-      const orders = await this.$axios.$get(`/api/orders/history/${(pagination.page-1)*pagination.itemsPerPage}/${pagination.itemsPerPage}`);
+      const orders = await this.$axios.$get(`/api/orders/history/${(pagination.page - 1) * pagination.itemsPerPage}/${pagination.itemsPerPage}`);
       commit("setCount", orders.count)
       commit('setItems', orders.data);
     } catch (error) {
-      commit("setError", "Ha ocurrido un error al modificar el producto");
+      commit("setError", "Ha ocurrido un error");
+    }
+  },
+
+  async sharedSearch({ commit }, searchUrl) {
+    try {
+      const search = await this.$axios.$get(`${searchUrl}`);
+      commit("setCount", search.count)
+      commit('setItems', search.data);
+    } catch (error) {
+      commit("setError", "Ha ocurrido un error");
     }
   },
 

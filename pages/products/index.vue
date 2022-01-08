@@ -86,16 +86,14 @@
 import NewProductDialog from '~/components/Dialogs/Products/NewProductDialog.vue'
 import EditProductDialog from '~/components/Dialogs/Products/EditProductDialog.vue'
 import DeleteDialog from '~/components/Dialogs/DeleteDialog.vue'
-import ProductHeader from '~/components/SharedComponents/ProductsHeader.vue'
-import MixtureModal from '~/components/Dialogs/Products/MixtureModal.vue'
+import ProductHeader from '~/components/Headers/ProductsHeader.vue'
 
 export default {
   components: {
     ProductHeader,
     NewProductDialog,
     EditProductDialog,
-    DeleteDialog,
-    MixtureModal,
+    DeleteDialog
   },
   computed: {
     items: {

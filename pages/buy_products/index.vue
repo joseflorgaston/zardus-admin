@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <pedidos-header title="Compras" link="buy_products/create" />
+    <pedidos-header title="Compras" link="buy_products/create" searchUrl="/api/supplyOrders/"/>
     <v-card>
       <v-data-table
         :items="items"
@@ -61,9 +61,10 @@
 </template>
 
 <script>
-import ViewOrderDialog from '~/components/Dialogs/BuyProducts/ViewBuyDetails.vue';
+import ViewOrderDialog from '~/components/Dialogs/BuyProducts/ViewBuyDetails.vue'
+import PedidosHeader from '~/components/Headers/PedidosHeader.vue';
 export default {
-  components: { ViewOrderDialog },
+  components: { ViewOrderDialog, PedidosHeader },
   computed: {
     items: {
       get() {
@@ -116,18 +117,17 @@ export default {
         class: 'header-color',
       },
     ],
+    viewItem: {},
     loading: false,
     page: 1,
     itemsPerPage: 10,
   }),
   methods: {
     viewOrder(item) {
-      console.log('aaa')
       this.viewItem = item
       this.$store.commit('setDialog')
     },
     editOrder(item) {
-      console.log('aaa')
       this.$router.push({
         path: '/buy_products/create',
         query: { _id: `${item._id}` },

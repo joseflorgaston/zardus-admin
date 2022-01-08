@@ -114,8 +114,9 @@
 <script>
 import ViewOrderDialog from '~/components/Dialogs/Orders/ViewOrderDialog.vue'
 import ChangeOrderStatusDialog from '~/components/Dialogs/Orders/ChangeOrderStatusDialog.vue'
+import PedidosHeader from '~/components/Headers/PedidosHeader.vue';
 export default {
-  components: { ViewOrderDialog, ChangeOrderStatusDialog },
+  components: { ViewOrderDialog, ChangeOrderStatusDialog, PedidosHeader },
   computed: {
     items: {
       get() {

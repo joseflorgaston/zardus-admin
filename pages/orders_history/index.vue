@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <h2>Historial de pedidos</h2>
+    <orders-history-header title="Pedidos"> </orders-history-header>
     <v-card class="mt-5">
       <v-data-table
         :items="items"
@@ -86,8 +86,9 @@
 <script>
 import ViewOrderDialog from '~/components/Dialogs/Orders/ViewOrderDialog.vue'
 import ChangeOrderStatusDialog from '~/components/Dialogs/Orders/ChangeOrderStatusDialog.vue'
+import OrdersHistoryHeader from '~/components/Headers/OrdersHistoryheader.vue'
 export default {
-  components: { ViewOrderDialog, ChangeOrderStatusDialog },
+  components: { ViewOrderDialog, ChangeOrderStatusDialog, OrdersHistoryHeader },
   computed: {
     items: {
       get() {

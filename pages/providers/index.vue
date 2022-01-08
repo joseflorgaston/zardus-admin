@@ -1,6 +1,6 @@
 <template>
   <div>
-    <shared-header title="Proveedores" class="mt-1"></shared-header>
+    <providers-header title="Proveedores" class="mt-1"></providers-header>
     <v-row>
       <v-col cols="12" md="11">
         <v-card>
@@ -72,14 +72,14 @@
 </template>
 
 <script>
-import SharedHeader from '~/components/SharedComponents/SharedHeader.vue'
+import ProvidersHeader from '~/components/Headers/ProvidersHeader.vue'
 import NewCategoryDialog from '~/components/Dialogs/Categories/NewCategoryDialog.vue'
 import EditCategoryDialog from '~/components/Dialogs/Categories/EditCategoryDialog.vue'
 import DeleteDialog from '~/components/Dialogs/DeleteDialog.vue'
 
 export default {
   components: {
-    SharedHeader,
+    ProvidersHeader,
     NewCategoryDialog,
     EditCategoryDialog,
     DeleteDialog,
