@@ -232,4 +232,14 @@ export const actions = {
     }
   },
 
+  async getUsers({ commit }, pagination) {
+    try {
+      const users = await this.$axios.$get(`/api/users/${(pagination.page - 1) * pagination.itemsPerPage}/${pagination.itemsPerPage}`);
+      commit("setCount", users.count)
+      commit('setItems', users.data);
+    } catch (error) {
+      commit("setError", "Ha ocurrido un error");
+    }
+  },
+
 }

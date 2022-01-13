@@ -77,6 +77,7 @@ export default {
         let res = await this.$auth.loginWith("local", {
           data: this.login,
         });
+        console.log(res);
         this.$auth.setUser(res.data)
         this.$store.commit('setUser', res.data);
         await this.$router.push({ path: "/" });

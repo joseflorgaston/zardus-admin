@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <pedidos-header title="Pedidos" link="orders/create" />
+    <pedidos-header title="Pedidos" link="orders/create" searchUrl="/api/orders/" />
     <v-card>
       <v-data-table
         :items="items"

@@ -140,7 +140,6 @@
             :disabled="selectedProduct == null"
             :rules="quantityRules"
             v-model="formDetails.quantity"
-            @keyup="getSubTotal()"
           ></v-text-field>
         </v-col>
       </v-row>
@@ -154,7 +153,7 @@
             >
           </div>
           <div class="d-flex">
-            <h3>SubTotal: <shared-money :amount="parseInt(subTotal)" /></h3>
+            <h3>SubTotal: <shared-money :amount="parseInt(formDetails.price)" /></h3>
           </div>
         </div>
       </v-col>
@@ -333,14 +332,15 @@ export default {
       }
     },
     getSubTotal() {
-      if (this.formDetails.quantity > 0 && this.formDetails.price > 0) {
+      /*if (this.formDetails.quantity > 0 && this.formDetails.price > 0) {
         if (this.selectedProduct.unitOfMeasure.trim() == 'gramos') {
           return (this.subTotal = parseInt(
             (this.formDetails.quantity * (this.formDetails.price / 1000))
           ))
         }
         this.subTotal = this.formDetails.quantity * this.formDetails.price
-      }
+      }*/
+      this.subTotal = this.formDetails.price;
     },
     cleanTable() {
       this.total = 0
@@ -438,10 +438,11 @@ export default {
       if (!this.stockIsValid()) {
         return
       }
-      this.formDetails.subTotal = this.subTotal
+      this.subTotal = this.subTotal + this.formDetails.price;
+      this.formDetails.subTotal = this.formDetails.price;
       this.formDetails.product = this.selectedProduct
       const item = {
-        subTotal: this.formDetails.subTotal,
+        subTotal: this.formDetails.price,
         product: this.selectedProduct,
         quantity: this.formDetails.quantity,
         price: this.formDetails.price,

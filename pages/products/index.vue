@@ -89,6 +89,7 @@ import DeleteDialog from '~/components/Dialogs/DeleteDialog.vue'
 import ProductHeader from '~/components/Headers/ProductsHeader.vue'
 
 export default {
+  auth: true,
   components: {
     ProductHeader,
     NewProductDialog,
