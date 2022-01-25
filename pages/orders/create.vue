@@ -153,7 +153,9 @@
             >
           </div>
           <div class="d-flex">
-            <h3>SubTotal: <shared-money :amount="parseInt(formDetails.price)" /></h3>
+            <h3>
+              SubTotal: <shared-money :amount="parseInt(formDetails.price)" />
+            </h3>
           </div>
         </div>
       </v-col>
@@ -332,15 +334,7 @@ export default {
       }
     },
     getSubTotal() {
-      /*if (this.formDetails.quantity > 0 && this.formDetails.price > 0) {
-        if (this.selectedProduct.unitOfMeasure.trim() == 'gramos') {
-          return (this.subTotal = parseInt(
-            (this.formDetails.quantity * (this.formDetails.price / 1000))
-          ))
-        }
-        this.subTotal = this.formDetails.quantity * this.formDetails.price
-      }*/
-      this.subTotal = this.formDetails.price;
+      this.subTotal = this.formDetails.price
     },
     cleanTable() {
       this.total = 0
@@ -372,7 +366,7 @@ export default {
         total: this.total,
         details: this.dataItems,
         deliveryAddress: 'N/A',
-        userName: this.$auth.user.userName,
+        userName: this.$auth.$state.user.userName,
       }
       try {
         if (this.isEdit) {
@@ -438,8 +432,8 @@ export default {
       if (!this.stockIsValid()) {
         return
       }
-      this.subTotal = this.subTotal + this.formDetails.price;
-      this.formDetails.subTotal = this.formDetails.price;
+      this.subTotal = this.subTotal + this.formDetails.price
+      this.formDetails.subTotal = this.formDetails.price
       this.formDetails.product = this.selectedProduct
       const item = {
         subTotal: this.formDetails.price,

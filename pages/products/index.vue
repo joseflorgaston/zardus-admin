@@ -180,6 +180,9 @@ export default {
     itemsPerPage: 10,
   }),
   async beforeMount() {
+    if(!this.$auth.loggedIn){
+      return this.$router.push('/login');
+    }
     await this.getProducts()
   },
   methods: {

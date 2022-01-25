@@ -215,6 +215,7 @@ export const actions = {
 
   async sharedSearch({ commit }, searchUrl) {
     try {
+      console.log(searchUrl);
       const search = await this.$axios.$get(`${searchUrl}`);
       commit("setCount", search.count)
       commit('setItems', search.data);

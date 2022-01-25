@@ -1,6 +1,10 @@
 <template>
   <v-container>
-    <pedidos-header title="Compras" link="buy_products/create" searchUrl="/api/supplyOrders/"/>
+    <pedidos-header
+      title="Compras"
+      link="buy_products/create"
+      searchUrl="/api/supplyOrders/"
+    />
     <v-card>
       <v-data-table
         :items="items"
@@ -17,6 +21,9 @@
       >
         <template v-slot:[`item.totalAmount`]="{ item }">
           <shared-money :amount="item.totalAmount || 0"></shared-money>
+        </template>
+        <template v-slot:[`item.totalPayed`]="{ item }">
+          <shared-money :amount="item.totalPayed || 0"></shared-money>
         </template>
         <template v-slot:[`item.createdOn`]="{ item }">
           <shared-formatted-date
@@ -51,20 +58,40 @@
             </template>
             <span>Editar Compra</span>
           </v-tooltip>
+          <v-tooltip bottom v-if="item.totalPayed != item.totalAmount">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn icon v-bind="attrs" v-on="on">
+                <v-icon
+                  color="primary"
+                  title="Editar Compra"
+                  @click="openPaymentDialog(item)"
+                  >mdi-cash</v-icon
+                >
+              </v-btn>
+            </template>
+            <span>Agregar Pago</span>
+          </v-tooltip>
         </template>
       </v-data-table>
     </v-card>
     <v-dialog v-model="dialog" persistent min-width="500" width="700">
       <view-order-dialog :item="viewItem"></view-order-dialog>
     </v-dialog>
+    <v-dialog v-model="paymentDialog" persistent min-width="500" width="700">
+      <payment-dialog
+        :item="viewItem"
+        v-on:closeDialog="openPaymentDialog"
+      ></payment-dialog>
+    </v-dialog>
   </v-container>
 </template>
 
 <script>
+import PaymentDialog from '~/components/Dialogs/BuyProducts/PaymentDialog.vue'
 import ViewOrderDialog from '~/components/Dialogs/BuyProducts/ViewBuyDetails.vue'
-import PedidosHeader from '~/components/Headers/PedidosHeader.vue';
+import PedidosHeader from '~/components/Headers/PedidosHeader.vue'
 export default {
-  components: { ViewOrderDialog, PedidosHeader },
+  components: { ViewOrderDialog, PedidosHeader, PaymentDialog },
   computed: {
     items: {
       get() {
@@ -112,6 +139,11 @@ export default {
         class: 'header-color',
       },
       {
+        text: 'Monto pagado',
+        value: 'totalPayed',
+        class: 'header-color',
+      },
+      {
         text: 'Acciones',
         value: 'actions',
         class: 'header-color',
@@ -121,11 +153,16 @@ export default {
     loading: false,
     page: 1,
     itemsPerPage: 10,
+    paymentDialog: false,
   }),
   methods: {
     viewOrder(item) {
       this.viewItem = item
       this.$store.commit('setDialog')
+    },
+    openPaymentDialog(item) {
+      this.viewItem = item
+      this.paymentDialog = !this.paymentDialog
     },
     editOrder(item) {
       this.$router.push({

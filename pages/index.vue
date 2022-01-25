@@ -1,15 +1,16 @@
-<template>
-</template>
+<template></template>
 
 <script>
 export default {
-    auth:true,
-    beforeMount() {
-        this.$router.push("/products");
+  auth: true,
+  beforeMount() {
+    if (!this.$auth.loggedIn) {
+      return this.$router.push('/login')
     }
+    this.$router.push('/products')
+  },
 }
 </script>
 
 <style>
-
 </style>

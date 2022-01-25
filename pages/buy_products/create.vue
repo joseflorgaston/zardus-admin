@@ -40,21 +40,6 @@
           >
           </v-select>
         </v-col>
-        <v-col
-          cols="12"
-          sm="6"
-          md="3"
-          v-if="formHeader.paymentMethod == 'Credito'"
-        >
-          <h4>Cantidad de pagos</h4>
-          <v-text-field
-            type="number"
-            :rules="quantityRules"
-            v-model="formHeader.numberOfPayments"
-            placeholder="Cantidad de pagos"
-            prepend-icon="mdi-numeric-2-box-multiple-outline "
-          ></v-text-field>
-        </v-col>
       </v-row>
       <v-divider class="primary my-5"></v-divider>
       <div class="d-flex mb-3">
@@ -82,6 +67,7 @@
             prepend-icon="mdi-currency-usd"
             :rules="quantityRules"
             @keyup="getSubTotal()"
+            @change="getSubTotal()"
             v-model="formDetails.price"
           >
           </v-text-field>
@@ -94,7 +80,6 @@
             :disabled="selectedProduct == null"
             :rules="quantityRules"
             v-model="formDetails.quantity"
-            @keyup="getSubTotal()"
           ></v-text-field>
         </v-col>
       </v-row>
@@ -106,7 +91,9 @@
             >Agregar</v-btn
           >
           <div class="d-flex">
-            <h3>SubTotal: <shared-money :amount="parseInt(subTotal)" /></h3>
+            <h3>
+              SubTotal: <shared-money :amount="parseInt(formDetails.price)" />
+            </h3>
           </div>
         </div>
       </v-col>
@@ -208,7 +195,6 @@ export default {
       deliveryDate: format(parseISO(new Date().toISOString()), 'yyyy-MM-dd'),
       paymentMethod: 'Contado',
       provider: '',
-      numberOfPayments: 0,
       deliveryAddress: '',
     },
     search: null,
@@ -267,12 +253,10 @@ export default {
 
   methods: {
     setItem(item) {
-      console.log(item)
       this.dataItems = item.details
       this.hasItem = true
       this.formHeader.paymentMethod = item.paymentMethod
       this.formHeader.provider = item.provider
-      this.formHeader.numberOfPayments = item.numberOfPayments
       this.total = item.totalAmount
       for (let i = 0; i < item.details.length; i++) {
         const element = item.details[i]
@@ -280,14 +264,7 @@ export default {
       }
     },
     getSubTotal() {
-      if (this.formDetails.quantity > 0 && this.formDetails.price > 0) {
-        if (this.selectedProduct.unitOfMeasure.trim() == 'gramos') {
-          return (this.subTotal = parseInt(
-            (this.formDetails.quantity * (this.formDetails.price / 1000))
-          ))
-        }
-        this.subTotal = this.formDetails.quantity * this.formDetails.price
-      }
+      this.subTotal = this.formDetails.price
     },
     cleanTable() {
       this.total = 0
@@ -298,7 +275,6 @@ export default {
         deliveryDate: format(parseISO(new Date().toISOString()), 'yyyy-MM-dd'),
         paymentMethod: 'Contado',
         provider: '',
-        numberOfPayments: 0,
         deliveryAddress: '',
       }
       this.formDetails = {
@@ -315,10 +291,11 @@ export default {
         totalAmount: this.total,
         provider: this.formHeader.provider,
         paymentMethod: this.formHeader.paymentMethod,
-        numberOfPayments: this.formHeader.numberOfPayments,
         total: this.total,
         details: this.dataItems,
         deliveryAddress: 'N/A',
+        totalPayed: this.formHeader.paymentMethod == 'Contado' ? this.total : 0,
+        userName: this.$auth.$state.user.userName ?? "",
       }
       try {
         if (this.isEdit) {
@@ -373,6 +350,7 @@ export default {
           return false
         }
       }
+      this.subTotal = parseInt(this.formDetails.price)
       this.formDetails.subTotal = this.subTotal
       this.formDetails.product = this.selectedProduct
       const item = {
@@ -418,24 +396,7 @@ export default {
       this.providers = providers.data
     },
   },
-  computed: {
-    computedDateFormattedMomentjs: {
-      get() {
-        return this.formHeader.deliveryDate
-          ? moment(this.formHeader.deliveryDate)
-              .locale('es_py')
-              .format('dddd, DD MMMM, yyyy')
-          : ''
-      },
-      set(value) {
-        return this.formHeader.deliveryDate
-          ? moment(this.formHeader.deliveryDate)
-              .locale('es_py')
-              .format('dddd, DD MMMM, yyyy')
-          : ''
-      },
-    },
-  },
+  
 }
 </script>
 
