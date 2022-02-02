@@ -290,6 +290,7 @@ export default {
         deliveryDate: this.formHeader.deliveryDate,
         totalAmount: this.total,
         provider: this.formHeader.provider,
+        lowerCaseProvider: this.formHeader.provider.toLowerCase(),
         paymentMethod: this.formHeader.paymentMethod,
         total: this.total,
         details: this.dataItems,
@@ -385,7 +386,7 @@ export default {
         return
       }
       if (val.length < 2) return
-      const product = await this.$axios.$get(`/api/products/${val}`)
+      const product = await this.$axios.$get(`/api/allProducts/${val}`)
       this.products = product.data
     },
     async searchProvider(val) {

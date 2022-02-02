@@ -19,6 +19,9 @@
           itemsPerPageOptions: [5, 10, 15],
         }"
       >
+        <template v-slot:[`item.isSelected`]="{ item }">
+          <v-checkbox @change="setSelected(item, $event)"></v-checkbox>
+        </template>
         <template v-slot:[`item.totalAmount`]="{ item }">
           <shared-money :amount="item.totalAmount || 0"></shared-money>
         </template>
@@ -34,11 +37,8 @@
         <template v-slot:[`item.actions`]="{ item }">
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
-              <v-btn icon v-bind="attrs" v-on="on">
-                <v-icon
-                  color="primary"
-                  title="Ver detalle de compra"
-                  @click="viewOrder(item)"
+              <v-btn icon v-bind="attrs" v-on="on" @click="viewOrder(item)">
+                <v-icon color="primary" title="Ver detalle de compra"
                   >mdi-eye</v-icon
                 >
               </v-btn>
@@ -47,11 +47,8 @@
           </v-tooltip>
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
-              <v-btn icon v-bind="attrs" v-on="on">
-                <v-icon
-                  color="primary"
-                  title="Editar Compra"
-                  @click="editOrder(item)"
+              <v-btn icon v-bind="attrs" v-on="on" @click="editOrder(item)">
+                <v-icon color="primary" title="Editar Compra"
                   >mdi-pencil</v-icon
                 >
               </v-btn>
@@ -60,13 +57,13 @@
           </v-tooltip>
           <v-tooltip bottom v-if="item.totalPayed != item.totalAmount">
             <template v-slot:activator="{ on, attrs }">
-              <v-btn icon v-bind="attrs" v-on="on">
-                <v-icon
-                  color="primary"
-                  title="Editar Compra"
-                  @click="openPaymentDialog(item)"
-                  >mdi-cash</v-icon
-                >
+              <v-btn
+                icon
+                v-bind="attrs"
+                v-on="on"
+                @click="openPaymentDialog(item)"
+              >
+                <v-icon color="primary" title="Editar Compra">mdi-cash</v-icon>
               </v-btn>
             </template>
             <span>Agregar Pago</span>
@@ -75,7 +72,10 @@
       </v-data-table>
     </v-card>
     <v-dialog v-model="dialog" persistent min-width="500" width="700">
-      <view-order-dialog :item="viewItem"></view-order-dialog>
+      <view-order-dialog
+        :item="viewItem"
+        :payments="payments"
+      ></view-order-dialog>
     </v-dialog>
     <v-dialog v-model="paymentDialog" persistent min-width="500" width="700">
       <payment-dialog
@@ -119,6 +119,11 @@ export default {
   data: () => ({
     headers: [
       {
+        text: '',
+        value: 'isSelected',
+        class: 'header-color',
+      },
+      {
         text: 'Fecha',
         value: 'createdOn',
         class: 'header-color',
@@ -149,6 +154,8 @@ export default {
         class: 'header-color',
       },
     ],
+    payments: [],
+    selectedItems: [],
     viewItem: {},
     loading: false,
     page: 1,
@@ -156,13 +163,22 @@ export default {
     paymentDialog: false,
   }),
   methods: {
-    viewOrder(item) {
+    async viewOrder(item) {
       this.viewItem = item
+      this.$store.commit('setLoading')
+      this.payments = await this.$axios.$get(
+        `api/supplyOrder/payments/${item._id}`
+      )
+      this.$store.commit('setLoading')
       this.$store.commit('setDialog')
     },
     openPaymentDialog(item) {
       this.viewItem = item
       this.paymentDialog = !this.paymentDialog
+    },
+    setSelected(item, value) {
+      console.log(item);
+      console.log(value);
     },
     editOrder(item) {
       this.$router.push({
@@ -194,6 +210,3 @@ export default {
   },
 }
 </script>
-
-<style>
-</style>

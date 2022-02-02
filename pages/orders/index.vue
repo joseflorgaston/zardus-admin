@@ -1,6 +1,10 @@
 <template>
   <v-container>
-    <pedidos-header title="Pedidos" link="orders/create" searchUrl="/api/orders/" />
+    <pedidos-header
+      title="Pedidos"
+      link="orders/create"
+      searchUrl="/api/orders/"
+    />
     <v-card>
       <v-data-table
         :items="items"
@@ -71,7 +75,12 @@
           </v-tooltip>
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
-              <v-btn icon v-bind="attrs" v-on="on" :disabled="item.status != 'Preparado'">
+              <v-btn
+                icon
+                v-bind="attrs"
+                v-on="on"
+                :disabled="item.status != 'Preparado'"
+              >
                 <v-icon
                   color="success"
                   title="Entregar Pedido"
@@ -100,7 +109,7 @@
       </v-data-table>
     </v-card>
     <v-dialog v-model="dialog" persistent min-width="500" width="700">
-      <view-order-dialog :item="viewItem"></view-order-dialog>
+      <view-order-dialog :item="viewItem" :payments="payments"></view-order-dialog>
     </v-dialog>
     <v-dialog v-model="editDialog" persistent min-width="500" width="700">
       <change-order-status-dialog
@@ -114,7 +123,7 @@
 <script>
 import ViewOrderDialog from '~/components/Dialogs/Orders/ViewOrderDialog.vue'
 import ChangeOrderStatusDialog from '~/components/Dialogs/Orders/ChangeOrderStatusDialog.vue'
-import PedidosHeader from '~/components/Headers/PedidosHeader.vue';
+import PedidosHeader from '~/components/Headers/PedidosHeader.vue'
 export default {
   components: { ViewOrderDialog, ChangeOrderStatusDialog, PedidosHeader },
   computed: {
@@ -159,7 +168,7 @@ export default {
       },
       {
         text: 'Cliente',
-        value: 'client',
+        value: 'customer',
         class: 'header-color',
       },
       {
@@ -183,13 +192,20 @@ export default {
         class: 'header-color',
       },
     ],
+    payments: [],
+    selectedItems: [],
     page: 1,
     viewItem: {},
     itemsPerPage: 10,
   }),
   methods: {
-    viewOrder(item) {
+    async viewOrder(item) {
       this.viewItem = item
+      this.$store.commit('setLoading')
+      this.payments = await this.$axios.$get(
+        `api/order/payments/${item._id}`
+      )
+      this.$store.commit('setLoading')
       this.$store.commit('setDialog')
     },
     editOrder(item) {

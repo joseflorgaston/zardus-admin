@@ -64,7 +64,7 @@
           <v-text-field
             placeholder="Cliente"
             prepend-icon="mdi-account"
-            v-model="formHeader.customerName"
+            v-model="formHeader.customer"
             :rules="rules"
           >
           </v-text-field>
@@ -78,21 +78,6 @@
             prepend-icon="mdi-account-cash-outline"
           >
           </v-select>
-        </v-col>
-        <v-col
-          cols="12"
-          sm="6"
-          md="3"
-          v-if="formHeader.paymentMethod == 'Credito'"
-        >
-          <h4>Cantidad de pagos</h4>
-          <v-text-field
-            type="number"
-            :rules="quantityRules"
-            v-model="formHeader.numberOfPayments"
-            placeholder="Cantidad de pagos"
-            prepend-icon="mdi-numeric-2-box-multiple-outline "
-          ></v-text-field>
         </v-col>
       </v-row>
 
@@ -117,11 +102,7 @@
         </v-col>
         <v-col cols="12" sm="6" md="3">
           <h4>
-            Precio Gs. ({{
-              selectedProduct.unitOfMeasure == 'gramos'
-                ? 'Kg'
-                : selectedProduct.unitOfMeasure
-            }})
+            Precio Gs. 
           </h4>
           <v-text-field
             type="number"
@@ -257,7 +238,7 @@ export default {
     formHeader: {
       deliveryDate: format(parseISO(new Date().toISOString()), 'yyyy-MM-dd'),
       paymentMethod: 'Contado',
-      customerName: '',
+      customer: '',
       numberOfPayments: 0,
       deliveryAddress: '',
     },
@@ -325,7 +306,7 @@ export default {
         'yyyy-MM-dd'
       )
       this.formHeader.paymentMethod = item.paymentMethod
-      this.formHeader.customerName = item.client
+      this.formHeader.customer = item.customer
       this.formHeader.numberOfPayments = item.numberOfPayments
       this.total = item.totalAmount
       for (let i = 0; i < item.details.length; i++) {
@@ -344,7 +325,7 @@ export default {
       this.formHeader = {
         deliveryDate: format(parseISO(new Date().toISOString()), 'yyyy-MM-dd'),
         paymentMethod: 'Contado',
-        customerName: '',
+        customer: '',
         numberOfPayments: 0,
         deliveryAddress: '',
       }
@@ -360,7 +341,8 @@ export default {
       const item = {
         deliveryDate: this.formHeader.deliveryDate,
         totalAmount: this.total,
-        client: this.formHeader.customerName,
+        customer: this.formHeader.customer,
+        lowerCaseCustomer: this.formHeader.customer.toLowerCase(),
         paymentMethod: this.formHeader.paymentMethod,
         numberOfPayments: this.formHeader.numberOfPayments,
         total: this.total,
@@ -422,7 +404,7 @@ export default {
       if (stock < 0) {
         this.$store.commit(
           'setError',
-          'La cantidad del producto agregado supera al stock por ' + stock * -1
+          'La cantidad del producto agregado supera al stock por ' + stock * -1 
         )
         return false
       }
@@ -432,7 +414,6 @@ export default {
       if (!this.stockIsValid()) {
         return
       }
-      this.subTotal = this.subTotal + this.formDetails.price
       this.formDetails.subTotal = this.formDetails.price
       this.formDetails.product = this.selectedProduct
       const item = {
@@ -442,7 +423,7 @@ export default {
         price: this.formDetails.price,
       }
       this.dataItems.push(item)
-      this.total = this.total + this.subTotal
+      this.total = this.total + parseInt(this.formDetails.price)
       this.hasItem = true
     },
     selectProduct(value) {

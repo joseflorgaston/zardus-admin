@@ -19,6 +19,7 @@
     "nuxt": "^2.15.7",
     "vue-apexcharts": "^1.6.2",
     "vue-debounce": "^3.0.2",
+    "vue-json-excel": "^0.3.0",
     "vuetify": "^2.5.5"
   },
   "devDependencies": {
