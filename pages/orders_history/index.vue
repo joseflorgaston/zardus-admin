@@ -18,6 +18,9 @@
         <template v-slot:[`item.totalAmount`]="{ item }">
           <shared-money :amount="item.totalAmount || 0"></shared-money>
         </template>
+        <template v-slot:[`item.totalPayed`]="{ item }">
+          <shared-money :amount="item.totalPayed || 0"></shared-money>
+        </template>
         <template v-slot:[`item.createdOn`]="{ item }">
           <shared-formatted-date
             :date="item.createdOn || ''"
@@ -50,12 +53,13 @@
                   :disabled="item.status != 'Entregado'"
                   color="primary"
                   title="Detalle Pedido"
-                  @click="changeOrderStatus(item._id, 'Pagado')"
+                  @click="addPayment(item, 'Pagado')"
                   >mdi-cash</v-icon
                 >
               </v-btn>
             </template>
-            <span>Cambiar estado a pagado</span>
+            <span v-if="item.paymentMethod == 'Credito'">Agregar Pago</span>
+            <span v-else>Cambiar estado a pagado</span>
           </v-tooltip>
         </template>
         <template v-slot:[`item.status`]="{ item }">
@@ -80,15 +84,27 @@
         :status="'Pagado'"
       ></change-order-status-dialog>
     </v-dialog>
+    <v-dialog v-model="paymentDialog" persistent min-width="500" width="700">
+      <add-payment-dialog
+        :item="viewItem"
+        v-on:closeDialog="openPaymentDialog"
+      ></add-payment-dialog>
+    </v-dialog>
   </v-container>
 </template>
 
 <script>
 import ViewOrderDialog from '~/components/Dialogs/Orders/ViewOrderDialog.vue'
+import AddPaymentDialog from '~/components/Dialogs/Orders/AddPaymentDialog.vue'
 import ChangeOrderStatusDialog from '~/components/Dialogs/Orders/ChangeOrderStatusDialog.vue'
 import OrdersHistoryHeader from '~/components/Headers/OrdersHistoryheader.vue'
 export default {
-  components: { ViewOrderDialog, ChangeOrderStatusDialog, OrdersHistoryHeader },
+  components: {
+    ViewOrderDialog,
+    ChangeOrderStatusDialog,
+    OrdersHistoryHeader,
+    AddPaymentDialog,
+  },
   computed: {
     items: {
       get() {
@@ -132,7 +148,7 @@ export default {
       },
       {
         text: 'Cliente',
-        value: 'client',
+        value: 'customer',
         class: 'header-color',
       },
       {
@@ -143,6 +159,11 @@ export default {
       {
         text: 'Monto Total',
         value: 'totalAmount',
+        class: 'header-color',
+      },
+      {
+        text: 'Monto Pagado',
+        value: 'totalPayed',
         class: 'header-color',
       },
       {
@@ -161,6 +182,7 @@ export default {
     page: 1,
     viewItem: {},
     itemsPerPage: 10,
+    paymentDialog: false,
   }),
   methods: {
     viewOrder(item) {
@@ -189,10 +211,21 @@ export default {
       this.loading = false
     },
     changeOrderStatus(id, status) {
-      console.log(id);
+      console.log(id)
       this.statusModalValue = status
       this.statusModalId = id
       this.$store.commit('setEditDialog')
+    },
+
+    addPayment(item) {
+      if (item.paymentMethod == 'Contado')
+        return this.changeOrderStatus(item._id, 'Pagado')
+
+      this.viewItem = item
+      this.openPaymentDialog()
+    },
+    openPaymentDialog() {
+      this.paymentDialog = !this.paymentDialog
     },
   },
   async beforeMount() {
