@@ -42,7 +42,7 @@
         </div>
         <div class="d-flex justify-center mt-5">
           <v-btn color="primary" @click="sendForgotPasswordEmail()" text
-            >Olvide mi Contraseña</v-btn
+            >Olvidé mi Contraseña</v-btn
           >
         </div>
       </v-form>
