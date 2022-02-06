@@ -40,11 +40,6 @@
             INGRESAR
           </v-btn>
         </div>
-        <div class="d-flex justify-center mt-5">
-          <v-btn color="primary" @click="sendForgotPasswordEmail()" text
-            >Olvidé mi Contraseña</v-btn
-          >
-        </div>
       </v-form>
     </v-card>
     <shared-snackbar></shared-snackbar>
