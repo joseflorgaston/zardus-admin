@@ -82,50 +82,51 @@
           <shared-money :amount="parseInt(element.subTotal)"></shared-money>
         </v-col>
       </v-row>
-    </v-card-text>
-    <v-divider></v-divider>
-    <div v-if="item.paymentMethod == 'Credito'">
+      <div v-if="item.paymentMethod == 'Credito'">
+        <v-divider class="mt-3"></v-divider>
+        <center>
+          <div class="mt-2">
+            <h3>Pagos:</h3>
+          </div>
+        </center>
+        <v-row class="pt-0 pb-0" style="width: 100% !important">
+          <v-col class="pb-0" cols="3">
+            <span class="subtitle-2 font-weight-bold"> Fecha de pago</span>
+          </v-col>
+          <v-col cols="3" class="pb-0">
+            <span class="subtitle-2 font-weight-bold"> Monto Pagado</span>
+          </v-col>
+          <v-col cols="3" class="pb-0">
+            <span class="subtitle-2 font-weight-bold"> Descripcion</span>
+          </v-col>
+          <v-col cols="3" class="pb-0">
+            <span class="subtitle-2 font-weight-bold"> Fecha de carga</span>
+          </v-col>
+        </v-row>
+        <v-row
+          style="width: 100% !important"
+          class="pt-5"
+          v-for="(element, k) in payments"
+          :key="k + item.details.length"
+        >
+          <v-col cols="3" class="pt-0">
+            <shared-formatted-date :date="element.paymentDate">
+            </shared-formatted-date>
+          </v-col>
+          <v-col cols="3" class="pt-0">
+            <shared-money :amount="element.totalAmount"></shared-money>
+          </v-col>
+          <v-col cols="3" class="pt-0">
+            {{ element.description }}
+          </v-col>
+          <v-col cols="3" class="pb-0">
+            <shared-formatted-date :date="element.createdOn">
+            </shared-formatted-date>
+          </v-col>
+        </v-row>
+      </div>
       <v-divider class="mt-3"></v-divider>
-      <center>
-        <div class="mt-2">
-          <h3>Pagos:</h3>
-        </div>
-      </center>
-      <v-row class="pt-0 pb-0">
-        <v-col class="pb-0" cols="3">
-          <span class="subtitle-2 font-weight-bold"> Fecha de pago</span>
-        </v-col>
-        <v-col cols="3" class="pb-0">
-          <span class="subtitle-2 font-weight-bold"> Monto Pagado</span>
-        </v-col>
-        <v-col cols="3" class="pb-0">
-          <span class="subtitle-2 font-weight-bold"> Descripcion</span>
-        </v-col>
-        <v-col cols="3" class="pb-0">
-          <span class="subtitle-2 font-weight-bold"> Fecha de carga</span>
-        </v-col>
-      </v-row>
-      <v-row
-        class="pt-5"
-        v-for="(element, k) in payments"
-        :key="k + item.details.length"
-      >
-        <v-col cols="3" class="pt-0">
-          <shared-formatted-date :date="element.paymentDate">
-          </shared-formatted-date>
-        </v-col>
-        <v-col cols="3" class="pt-0">
-          <shared-money :amount="element.totalAmount"></shared-money>
-        </v-col>
-        <v-col cols="3" class="pt-0">
-          {{ element.description }}
-        </v-col>
-        <v-col cols="3" class="pb-0">
-          <shared-formatted-date :date="element.createdOn">
-          </shared-formatted-date>
-        </v-col>
-      </v-row>
-    </div>
+    </v-card-text>
     <v-card-actions>
       <div class="d-flex">
         <span class="subtitle-2 font-weight-bold">Monto Total:</span>
@@ -153,6 +154,7 @@
 <script>
 import JsonExcel from 'vue-json-excel'
 import SharedFormattedDate from '~/components/SharedComponents/SharedFormattedDate.vue'
+import moment from 'moment'
 export default {
   components: { JsonExcel },
   props: {
@@ -203,13 +205,13 @@ export default {
     getData() {
       const excelData = []
       const item = {
-        Fecha_Entrega: this.item.deliveryDate,
+        Fecha_Entrega: this.formatDate(this.item.deliveryDate),
         Cliente: this.item.customer,
         Monto_Total: this.item.totalAmount,
         Monto_Pagado: this.item.totalPayed,
         Metodo_Pago: this.item.paymentMethod,
         Estado: this.item.status,
-        Fecha_Creacion: this.item.createdOn,
+        Fecha_Creacion: this.formatDate(this.item.createdOn),
         Producto: this.item.details[0].product.name,
         Precio: this.item.details[0].product.price,
         Cantidad:
@@ -234,15 +236,18 @@ export default {
       if (this.payments.length > 0) {
         for (let index = 0; index < this.payments.length; index++) {
           const payments = {
-            Fecha_Pago: this.payments[index].paymentDate,
+            Fecha_Pago: this.formatDate(this.payments[index].paymentDate),
             Monto_Pago: this.payments[index].totalAmount,
             Descripcion: this.payments[index].description,
-            Fecha_Carga: this.payments[index].createdOn,
+            Fecha_Carga: this.formatDate(this.payments[index].createdOn),
           }
           excelData.push(payments)
         }
       }
       return excelData
+    },
+    formatDate(date) {
+      return moment(date).locale('es_py').format('DD/MM/yyyy')
     },
   },
 }

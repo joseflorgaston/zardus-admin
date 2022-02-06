@@ -188,32 +188,32 @@ export default {
       {
         text: 'Nombre',
         value: 'name',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
       {
         text: 'Categoría',
         value: 'category',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
       {
         text: 'Precio',
         value: 'price',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
       {
         text: 'Stock',
         value: 'stock',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
       {
         text: 'Reservado',
         value: 'inOrder',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
       {
         text: 'Acciones',
         value: 'actions',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
     ],
     mixtureDialog: false,

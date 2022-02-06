@@ -136,7 +136,8 @@
 
 <script>
 import JsonExcel from 'vue-json-excel'
-import SharedFormattedDate from '~/components/SharedComponents/SharedFormattedDate.vue'
+import SharedFormattedDate from '~/components/SharedComponents/SharedFormattedDate.vue';
+import moment from 'moment'
 export default {
   components: { JsonExcel, SharedFormattedDate },
   props: {
@@ -179,7 +180,7 @@ export default {
         Monto_Total: this.item.totalAmount,
         Monto_Pagado: this.item.totalPayed,
         Metodo_Pago: this.item.paymentMethod,
-        Fecha_Creacion: this.item.createdOn,
+        Fecha_Creacion: this.formatDate(this.item.createdOn),
         Producto: this.item.details[0].product.name,
         Precio: this.item.details[0].product.price,
         Cantidad:
@@ -209,7 +210,7 @@ export default {
       if (this.payments.length > 0) {
         for (let index = 0; index < this.payments.length; index++) {
           const payments = {
-            Fecha_Pago: this.payments[index].paymentDate,
+            Fecha_Pago: this.formatDate(this.payments[index].paymentDate),
             Monto_Pago: this.payments[index].totalAmount,
             Descripcion: this.payments[index].description,
             Fecha_Carga: this.payments[index].createdOn,
@@ -218,6 +219,9 @@ export default {
         }
       }
       return excelData
+    },
+    formatDate(date) {
+      return moment(date).locale('es_py').format('DD/MM/yyyy')
     },
   },
 }

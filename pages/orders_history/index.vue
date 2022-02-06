@@ -76,7 +76,10 @@
       </v-data-table>
     </v-card>
     <v-dialog v-model="dialog" persistent min-width="500" width="700">
-      <view-order-dialog :item="viewItem"></view-order-dialog>
+      <view-order-dialog
+        :item="viewItem"
+        :payments="payments"
+      ></view-order-dialog>
     </v-dialog>
     <v-dialog v-model="editDialog" persistent min-width="500" width="700">
       <change-order-status-dialog
@@ -139,44 +142,45 @@ export default {
       {
         text: 'Fecha de pedido',
         value: 'createdOn',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
       {
         text: 'Fecha de entrega',
         value: 'deliveryDate',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
       {
         text: 'Cliente',
         value: 'customer',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
       {
         text: 'Metodos de pago',
         value: 'paymentMethod',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
       {
         text: 'Monto Total',
         value: 'totalAmount',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
       {
         text: 'Monto Pagado',
         value: 'totalPayed',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
       {
         text: 'Estado',
         value: 'status',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
       {
         text: 'Acciones',
         value: 'actions',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
     ],
+    payments: [],
     statusModalValue: '',
     statusModalId: '',
     page: 1,
@@ -185,8 +189,11 @@ export default {
     paymentDialog: false,
   }),
   methods: {
-    viewOrder(item) {
+    async viewOrder(item) {
       this.viewItem = item
+      this.$store.commit('setLoading')
+      this.payments = await this.$axios.$get(`api/order/payments/${item._id}`)
+      this.$store.commit('setLoading')
       this.$store.commit('setDialog')
     },
     async nextPage(value) {

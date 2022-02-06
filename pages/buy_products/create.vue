@@ -210,27 +210,27 @@ export default {
       {
         text: 'Producto',
         value: 'product',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
       {
         text: 'Precio',
         value: 'price',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
       {
         text: 'Cantidad',
         value: 'quantity',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
       {
         text: 'Total',
         value: 'subTotal',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
       {
         text: 'Acciones',
         value: 'actions',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
     ],
     menu: false,
@@ -310,7 +310,7 @@ export default {
           this.$store.commit('setSuccess', 'Compra editada exitosamente')
         } else {
           await this.$axios.post('/api/supplyOrder/create', item)
-          this.$store.commit('setSuccess', 'Pedido creado exitosamente')
+          this.$store.commit('setSuccess', 'Compra creada exitosamente')
         }
       } catch (error) {
         console.log(error)

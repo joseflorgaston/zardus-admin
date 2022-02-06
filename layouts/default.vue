@@ -256,7 +256,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .title {
   font-weight: 800;
 }
@@ -269,5 +269,10 @@ export default {
   display: flex;
   height: 100px;
   align-items: flex-end;
+}
+
+.header-color {
+  background: #07575b;
+  color: aliceblue;
 }
 </style>

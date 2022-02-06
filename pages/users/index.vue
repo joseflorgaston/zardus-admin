@@ -133,22 +133,22 @@ export default {
       {
         text: 'Nombre de usuario',
         value: 'userName',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
       {
         text: 'Email',
         value: 'email',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
       {
         text: 'Roles',
         value: 'roles',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
       {
         text: 'Acciones',
         value: 'actions',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
     ],
     mixtureDialog: false,

@@ -254,32 +254,32 @@ export default {
       {
         text: 'Preparado',
         value: 'isPrepared',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
       {
         text: 'Producto',
         value: 'product',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
       {
         text: 'Precio',
         value: 'price',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
       {
         text: 'Cantidad',
         value: 'quantity',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
       {
         text: 'Total',
         value: 'subTotal',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
       {
         text: 'Acciones',
         value: 'actions',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
     ],
     menu: false,

@@ -20,7 +20,7 @@
         }"
       >
         <template v-slot:[`item.isSelected`]="{ item }">
-          <v-checkbox @change="setSelected(item, $event)"></v-checkbox>
+          <v-checkbox :value="isChecked(item)" @change="setSelected(item, $event)"></v-checkbox>
         </template>
         <template v-slot:[`item.totalAmount`]="{ item }">
           <shared-money :amount="item.totalAmount || 0"></shared-money>
@@ -71,6 +71,23 @@
         </template>
       </v-data-table>
     </v-card>
+    <div class="d-flex justify-end ma-5">
+      <v-btn
+        color="green"
+        class="white--text"
+        :disabled="selectedItems.length == 0"
+      >
+        <json-excel
+          :data="selectedItems"
+          :field="fields"
+          :class="selectedItems.length == 0 ? '' : 'btn green white--text'"
+        >
+          Exportar
+          <v-icon class="pl-1">mdi-download</v-icon>
+        </json-excel>
+      </v-btn>
+    </div>
+
     <v-dialog v-model="dialog" persistent min-width="500" width="700">
       <view-order-dialog
         :item="viewItem"
@@ -87,11 +104,13 @@
 </template>
 
 <script>
+import JsonExcel from 'vue-json-excel'
 import PaymentDialog from '~/components/Dialogs/BuyProducts/PaymentDialog.vue'
 import ViewOrderDialog from '~/components/Dialogs/BuyProducts/ViewBuyDetails.vue'
 import PedidosHeader from '~/components/Headers/PedidosHeader.vue'
+import moment from 'moment'
 export default {
-  components: { ViewOrderDialog, PedidosHeader, PaymentDialog },
+  components: { ViewOrderDialog, PedidosHeader, PaymentDialog, JsonExcel },
   computed: {
     items: {
       get() {
@@ -121,39 +140,47 @@ export default {
       {
         text: '',
         value: 'isSelected',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
       {
         text: 'Fecha',
         value: 'createdOn',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
       {
         text: 'Proveedor',
         value: 'provider',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
       {
         text: 'Método de pago',
         value: 'paymentMethod',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
       {
         text: 'Monto',
         value: 'totalAmount',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
       {
         text: 'Monto pagado',
         value: 'totalPayed',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
       {
         text: 'Acciones',
         value: 'actions',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
     ],
+    fields: {
+      Fecha: 'Fecha',
+      'Monto Total': 'Monto Total',
+      Proveedor: 'Proveedor',
+      'Metodo de pago': 'Metodo de pago',
+      'Monto Pagado': 'Monto Pagado',
+      Encargado: 'Encargado',
+    },
     payments: [],
     selectedItems: [],
     viewItem: {},
@@ -172,28 +199,60 @@ export default {
       this.$store.commit('setLoading')
       this.$store.commit('setDialog')
     },
+
     openPaymentDialog(item) {
       this.viewItem = item
       this.paymentDialog = !this.paymentDialog
     },
-    setSelected(item, value) {
-      console.log(item);
-      console.log(value);
+
+    setSelected(item, isChecked) {
+      if (isChecked) return this.selectedItems.push(this.formatExcel(item))
+
+      const index = this.selectedItems.indexOf(this.formatExcel(item))
+      return this.selectedItems.splice(index, 1)
     },
+
+    formatExcel(item) {
+      const formattedItem = {
+        _id: item._id,
+        Fecha: this.formatDate(item.createdOn),
+        'Monto Total': item.totalAmount,
+        Proveedor: item.provider,
+        'Metodo de pago': item.paymentMethod,
+        'Monto Pagado': item.totalPayed,
+        Encargado: item.userName,
+      }
+      return formattedItem
+    },
+
     editOrder(item) {
       this.$router.push({
         path: '/buy_products/create',
         query: { _id: `${item._id}` },
       })
     },
+
+    formatDate(date) {
+      return moment(date).locale('es_py').format('DD/MM/yyyy')
+    },
+
+    isChecked(item) {
+      if(this.selectedItems.filter(x => x._id == item._id).length > 0)
+        return true;
+      
+      return false;
+    },
+
     async nextPage(value) {
       this.page = value
-      await this.getProducts()
+      await this.getSupplyOrders()
     },
+
     async otherItemCount(value) {
       this.itemsPerPage = value
-      await this.getProducts()
+      await this.getSupplyOrders()
     },
+
     async getSupplyOrders() {
       this.loading = true
       this.$store.commit('setLoading')
@@ -204,6 +263,7 @@ export default {
       this.$store.commit('setLoading')
       this.loading = false
     },
+
   },
   async beforeMount() {
     this.getSupplyOrders()

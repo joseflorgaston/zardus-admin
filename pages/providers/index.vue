@@ -123,22 +123,22 @@ export default {
       {
         text: 'Nombre',
         value: 'name',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
       {
         text: 'Dirección',
         value: 'address',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
       {
         text: 'Contacto',
         value: 'contact',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
       {
         text: 'Acciones',
         value: 'actions',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
     ],
     page: 1,

@@ -30,6 +30,7 @@
         </template>
         <template v-slot:[`item.deliveryDate`]="{ item }">
           <shared-formatted-date
+            :class="getDeliveryDateColor(item.deliveryDate)"
             :date="item.deliveryDate || ''"
           ></shared-formatted-date>
         </template>
@@ -159,37 +160,37 @@ export default {
       {
         text: 'Fecha',
         value: 'createdOn',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
       {
         text: 'Fecha entrega',
         value: 'deliveryDate',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
       {
         text: 'Cliente',
         value: 'customer',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
       {
         text: 'Método de pago',
         value: 'paymentMethod',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
       {
         text: 'Monto',
         value: 'totalAmount',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
       {
         text: 'Estado',
         value: 'status',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
       {
         text: 'Acciones',
         value: 'actions',
-        class: 'header-color',
+        class: 'header-color white--text',
       },
     ],
     payments: [],
@@ -237,6 +238,14 @@ export default {
       this.statusModalId = id
       this.$store.commit('setEditDialog')
     },
+    getDeliveryDateColor(deliveryDate) {
+      var today = new Date();
+      var date = new Date(deliveryDate)
+      if (today > date) {
+        return 'red--text font-weight-bold';
+      } 
+      return 'black--text';
+    }
   },
   async beforeMount() {
     this.getOrders()
