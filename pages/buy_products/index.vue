@@ -138,7 +138,7 @@ export default {
   data: () => ({
     headers: [
       {
-        text: '',
+        text: 'Exp',
         value: 'isSelected',
         class: 'header-color white--text',
       },

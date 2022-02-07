@@ -15,6 +15,12 @@
           itemsPerPageOptions: [5, 10, 15],
         }"
       >
+        <template v-slot:[`item.isSelected`]="{ item }">
+          <v-checkbox
+            :value="isChecked(item)"
+            @change="setSelected(item, $event)"
+          ></v-checkbox>
+        </template>
         <template v-slot:[`item.totalAmount`]="{ item }">
           <shared-money :amount="item.totalAmount || 0"></shared-money>
         </template>
@@ -35,25 +41,24 @@
         <template v-slot:[`item.actions`]="{ item }">
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
-              <v-btn icon v-bind="attrs" v-on="on">
-                <v-icon
-                  color="primary"
-                  title="Detalle Pedido"
-                  @click="viewOrder(item)"
-                  >mdi-eye</v-icon
-                >
+              <v-btn icon v-bind="attrs" v-on="on" @click="viewOrder(item)">
+                <v-icon color="primary" title="Detalle Pedido">mdi-eye</v-icon>
               </v-btn>
             </template>
             <span>Ver Pedido</span>
           </v-tooltip>
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
-              <v-btn icon v-bind="attrs" v-on="on">
+              <v-btn
+                icon
+                v-bind="attrs"
+                v-on="on"
+                @click="addPayment(item, 'Pagado')"
+              >
                 <v-icon
                   :disabled="item.status != 'Entregado'"
                   color="primary"
                   title="Detalle Pedido"
-                  @click="addPayment(item, 'Pagado')"
                   >mdi-cash</v-icon
                 >
               </v-btn>
@@ -75,6 +80,22 @@
         </template>
       </v-data-table>
     </v-card>
+    <div class="d-flex justify-end ma-5">
+      <v-btn
+        color="green"
+        class="white--text"
+        :disabled="selectedItems.length == 0"
+      >
+        <json-excel
+          :data="selectedItems"
+          :field="fields"
+          :class="selectedItems.length == 0 ? '' : 'btn green white--text'"
+        >
+          Exportar
+          <v-icon class="pl-1">mdi-download</v-icon>
+        </json-excel>
+      </v-btn>
+    </div>
     <v-dialog v-model="dialog" persistent min-width="500" width="700">
       <view-order-dialog
         :item="viewItem"
@@ -101,12 +122,15 @@ import ViewOrderDialog from '~/components/Dialogs/Orders/ViewOrderDialog.vue'
 import AddPaymentDialog from '~/components/Dialogs/Orders/AddPaymentDialog.vue'
 import ChangeOrderStatusDialog from '~/components/Dialogs/Orders/ChangeOrderStatusDialog.vue'
 import OrdersHistoryHeader from '~/components/Headers/OrdersHistoryheader.vue'
+import moment from 'moment'
+import JsonExcel from 'vue-json-excel'
 export default {
   components: {
     ViewOrderDialog,
     ChangeOrderStatusDialog,
     OrdersHistoryHeader,
     AddPaymentDialog,
+    JsonExcel,
   },
   computed: {
     items: {
@@ -139,6 +163,11 @@ export default {
     disabledSwitch: true,
     loading: true,
     headers: [
+      {
+        text: 'Exp',
+        value: 'isSelected',
+        class: 'header-color white--text',
+      },
       {
         text: 'Fecha de pedido',
         value: 'createdOn',
@@ -180,7 +209,16 @@ export default {
         class: 'header-color white--text',
       },
     ],
+    fields: {
+      Fecha: 'Fecha',
+      'Monto Total': 'Monto Total',
+      Proveedor: 'Proveedor',
+      'Metodo de pago': 'Metodo de pago',
+      'Monto Pagado': 'Monto Pagado',
+      Encargado: 'Encargado',
+    },
     payments: [],
+    selectedItems: [],
     statusModalValue: '',
     statusModalId: '',
     page: 1,
@@ -233,6 +271,38 @@ export default {
     },
     openPaymentDialog() {
       this.paymentDialog = !this.paymentDialog
+    },
+
+    setSelected(item, isChecked) {
+      if (isChecked) return this.selectedItems.push(this.formatExcel(item))
+
+      const index = this.selectedItems.indexOf(this.formatExcel(item))
+      return this.selectedItems.splice(index, 1)
+    },
+
+    formatExcel(item) {
+      const formattedItem = {
+        _id: item._id,
+        'Fecha de entrega': this.formatDate(item.deliveryDate),
+        'Monto Total': item.totalAmount,
+        Cliente: item.customer,
+        'Metodo de pago': item.paymentMethod,
+        'Monto Pagado': item.totalPayed,
+        Encargado: item.userName,
+        Estado: item.status,
+      }
+      return formattedItem
+    },
+
+    isChecked(item) {
+      if (this.selectedItems.filter((x) => x._id == item._id).length > 0)
+        return true
+
+      return false
+    },
+
+    formatDate(date) {
+      return moment(date).locale('es_py').format('DD/MM/yyyy')
     },
   },
   async beforeMount() {

@@ -3,7 +3,9 @@
     <center class="pt-3"><h2>¿Desea cerrar sesion?</h2></center>
 
     <v-card-actions class="d-flex justify-center pt-3">
-      <v-btn color="primary" class="px-2 white--text" @click="closeDialog()">Cancelar</v-btn>
+      <v-btn color="primary" class="px-2 white--text" @click="closeDialog()"
+        >Cancelar</v-btn
+      >
       <v-btn color="red" class="px-2 white--text" @click="logout()"
         >Cerrar sesion</v-btn
       >
@@ -16,6 +18,8 @@ export default {
   methods: {
     async logout() {
       try {
+        this.$auth.$storage.removeUniversal('user')
+        this.$auth.$storage.removeLocalStorage('user')
         await this.$auth.logout()
         await this.$router.push({ path: '/login' })
       } catch (e) {
@@ -24,8 +28,8 @@ export default {
       }
     },
     closeDialog() {
-        this.$emit('closeDialog');
-    }
+      this.$emit('closeDialog')
+    },
   },
 }
 </script>

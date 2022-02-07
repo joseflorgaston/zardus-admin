@@ -67,12 +67,12 @@ export default {
     async userLogin() {
       this.wasSubmitted = true
       try {
-        console.log(this.$auth)
         let res = await this.$auth.loginWith('local', {
           data: this.login,
         })
 
         this.$auth.setUser(res.data)
+        this.$auth.$storage.setLocalStorage('user', res.data)
         this.$store.commit('setUser', res.data)
         await this.$router.push({ path: '/' })
       } catch (e) {
@@ -105,7 +105,7 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
+<style>
 .container {
   width: 100%;
   height: 100%;
