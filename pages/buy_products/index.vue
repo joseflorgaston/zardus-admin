@@ -58,7 +58,7 @@
             </template>
             <span>Editar Compra</span>
           </v-tooltip>
-          <v-tooltip bottom v-if="item.totalPayed != item.totalAmount">
+          <v-tooltip bottom v-show="item.totalPayed != item.totalAmount">
             <template v-slot:activator="{ on, attrs }">
               <v-btn
                 icon

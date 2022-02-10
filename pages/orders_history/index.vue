@@ -73,13 +73,13 @@
           </v-tooltip>
         </template>
         <template v-slot:[`item.status`]="{ item }">
-          <div v-if="item.status == 'Pagado'" class="chip success">
+          <div v-show="item.status == 'Pagado'" class="chip success">
             {{ item.status }}
           </div>
-          <div v-if="item.status == 'Entregado'" class="chip warning">
+          <div v-show="item.status == 'Entregado'" class="chip warning">
             {{ item.status }}
           </div>
-          <div v-if="item.status == 'Cancelado'" class="chip error">
+          <div v-show="item.status == 'Cancelado'" class="chip error">
             {{ item.status }}
           </div>
         </template>

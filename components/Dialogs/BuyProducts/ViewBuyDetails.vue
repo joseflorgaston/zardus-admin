@@ -66,7 +66,7 @@
           <shared-money :amount="element.subTotal"></shared-money>
         </v-col>
       </v-row>
-      <div v-if="item.paymentMethod == 'Credito'">
+      <div v-show="item.paymentMethod == 'Credito'">
         <v-divider class="mt-3"></v-divider>
         <center>
           <div class="mt-2">

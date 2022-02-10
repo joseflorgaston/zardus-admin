@@ -56,7 +56,7 @@
         :loading="loading"
       ></v-text-field>
     </v-col>
-    <v-col cols="12" sm="3" offset-md="1" md="2" v-if="hasButton">
+    <v-col cols="12" sm="3" offset-md="1" md="2" v-show="hasButton">
       <v-btn color="primary" width="100%" @click="goToPage()">
         <v-icon class="mr-2">mdi-plus</v-icon>
         Agregar

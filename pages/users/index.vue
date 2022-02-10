@@ -21,7 +21,7 @@
               <v-tooltip bottom>
                 <template v-slot:activator="{ on, attrs }">
                   <v-btn
-                    v-if="item.userName != 'jose'"
+                    v-show="item.userName != 'jose'"
                     icon
                     @click="openEditDialog(item)"
                     v-bind="attrs"
@@ -35,7 +35,7 @@
               <v-tooltip bottom>
                 <template v-slot:activator="{ on, attrs }">
                   <v-btn
-                    v-if="item.userName != 'jose'"
+                    v-show="item.userName != 'jose'"
                     icon
                     @click="openDeleteDialog(item)"
                     v-bind="attrs"

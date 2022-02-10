@@ -3,9 +3,9 @@
     <shared-header title="Balances"></shared-header>
     <v-row>
       <v-col cols="6">
-        <shared-loading-card v-if="loading" />
+        <shared-loading-card v-show="loading" />
         <balances-statistics-card
-          v-else
+          v-show="!loading"
           title="TOTAL TRANSACCIONES"
           chartId="chart1"
           :loading="loading"
@@ -15,13 +15,7 @@
         />
       </v-col>
       <v-col cols="6">
-        <shared-loading-card v-if="loading" />
-        <!--<balances-pie-chart
-          v-else
-          title="Cantidad pedidos"
-          :values="activeBusinesses"
-          id="activeBusiness"
-        ></balances-pie-chart> -->
+        <shared-loading-card v-show="loading" />
       </v-col>
       <v-col cols="12" md="6">
         <center><h3>Ganancias</h3></center>

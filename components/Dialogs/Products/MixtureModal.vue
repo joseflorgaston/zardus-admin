@@ -115,7 +115,7 @@
         </div>
       </v-container>
     </v-form>
-    <center v-if="ingredients.length > 0"><h3>Ingredientes:</h3></center>
+    <center v-show="ingredients.length > 0"><h3>Ingredientes:</h3></center>
     <div
       class="d-flex justify-center"
       v-for="(ingredient, i) in ingredients"

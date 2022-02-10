@@ -277,8 +277,8 @@ export const actions = {
     try {
       const profits = await this.$axios.$get(`/api/profits`, {
         params: {
-          page: params.pagination.page - 1,
-          itemsPerPage: params.pagination.itemsPerPage,
+          page: pagination.page - 1,
+          itemsPerPage: pagination.itemsPerPage,
         }
       });
       commit("setCount", profits.count)
@@ -292,8 +292,8 @@ export const actions = {
     try {
       const expenses = await this.$axios.$get(`/api/expenses`, {
         params: {
-          page: params.pagination.page - 1,
-          itemsPerPage: params.pagination.itemsPerPage,
+          page: pagination.page - 1,
+          itemsPerPage: pagination.itemsPerPage,
         }
       });
       commit("setCount2", expenses.count)

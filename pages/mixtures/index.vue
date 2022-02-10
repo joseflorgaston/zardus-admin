@@ -76,7 +76,7 @@
               </div>
             </template>
             <template v-slot:[`item.inOrder`]="{ item }">
-              <div v-if="item.inOrder != null" class="d-flex">
+              <div class="d-flex">
                 <shared-money
                   :amount="item.inOrder || 0"
                   currency=""
@@ -84,7 +84,6 @@
                 ></shared-money>
                 {{ item.unitOfMeasure }}
               </div>
-              <div v-else>0</div>
             </template>
           </v-data-table>
         </v-card>

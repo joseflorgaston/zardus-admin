@@ -100,16 +100,16 @@
           </v-tooltip>
         </template>
         <template v-slot:[`item.status`]="{ item }">
-          <div v-if="item.status == 'Aguardando'" class="chip blue ligthen-1">
+          <div v-show="item.status == 'Aguardando'" class="chip blue ligthen-1">
             {{ item.status }}
           </div>
-          <div v-if="item.status == 'Preparado'" class="chip yellow darken-3">
+          <div v-show="item.status == 'Preparado'" class="chip yellow darken-3">
             {{ item.status }}
           </div>
-          <div v-if="item.status == 'Entregado'" class="chip success">
+          <div v-show="item.status == 'Entregado'" class="chip success">
             {{ item.status }}
           </div>
-          <div v-if="item.status == 'Cancelado'" class="chip error">
+          <div v-show="item.status == 'Cancelado'" class="chip error">
             {{ item.status }}
           </div>
         </template>
