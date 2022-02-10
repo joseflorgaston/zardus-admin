@@ -1,6 +1,9 @@
 
 export const state = () => ({
   items: [],
+  items2: [],
+  count: 0,
+  count2: 0,
   editItem: {},
   dialog: false,
   editDialog: false,
@@ -9,14 +12,24 @@ export const state = () => ({
   snackbar: false,
   snackbarColor: 'success',
   message: '',
-  count: 0,
-  user: {}
+  user: {},
+  filterDates: [],
+  searchText: ''
 })
 
 export const mutations = {
 
   setItems(state, items) {
     state.items = items;
+  },
+  setItems2(state, items) {
+    state.items2 = items;
+  },
+  setCount(state, value) {
+    state.count = value;
+  },
+  setCount2(state, value) {
+    state.count2 = value;
   },
   setEditItem(state, item) {
     state.editItem = item;
@@ -46,12 +59,19 @@ export const mutations = {
   closeSnackbar(state) {
     state.snackbar = false;
   },
-  setCount(state, value) {
-    state.count = value;
-  },
   setUser(state, user) {
     state.user = user;
   },
+  setFilterDates(state, dates) {
+    state.filterDates = dates;
+  },
+  setSearchText(state, text) {
+    state.searchText = text;
+  },
+  clearFilters(state) {
+    state.filterDates = [];
+    state.searchText = ''
+  }
 
 }
 export const actions = {
@@ -193,9 +213,9 @@ export const actions = {
     }
   },
 
-  async getSupplyOrders({ commit }, pagination) {
+  async getSupplyOrders({ commit }, params) {
     try {
-      const orders = await this.$axios.$get(`/api/supplyOrders/${(pagination.page - 1) * pagination.itemsPerPage}/${pagination.itemsPerPage}`);
+      const orders = await this.$axios.$get(`/api/supplyOrders/${(params.pagination.page - 1) * params.pagination.itemsPerPage}/${params.pagination.itemsPerPage}`);
       commit("setCount", orders.count)
       commit('setItems', orders.data);
     } catch (error) {
@@ -213,12 +233,22 @@ export const actions = {
     }
   },
 
-  async sharedSearch({ commit }, searchUrl) {
+  async sharedSearch({ commit }, params) {
     try {
-      console.log(searchUrl);
-      const search = await this.$axios.$get(`${searchUrl}`);
+
+      const search = await this.$axios.$get(`${params.searchUrl}`,
+        {
+          params: {
+            page: params.pagination.page - 1,
+            itemsPerPage: params.pagination.itemsPerPage,
+            searchText: params.searchText,
+            dates: params.dates
+          }
+        });
+
       commit("setCount", search.count)
       commit('setItems', search.data);
+
     } catch (error) {
       commit("setError", "Ha ocurrido un error");
     }
@@ -242,5 +272,35 @@ export const actions = {
       commit("setError", "Ha ocurrido un error");
     }
   },
+
+  async getProfits({ commit }, pagination) {
+    try {
+      const profits = await this.$axios.$get(`/api/profits`, {
+        params: {
+          page: params.pagination.page - 1,
+          itemsPerPage: params.pagination.itemsPerPage,
+        }
+      });
+      commit("setCount", profits.count)
+      commit('setItems', profits.data);
+    } catch (error) {
+      commit("setError", "Ha ocurrido un error");
+    }
+  },
+
+  async getExpenses({ commit }, pagination) {
+    try {
+      const expenses = await this.$axios.$get(`/api/expenses`, {
+        params: {
+          page: params.pagination.page - 1,
+          itemsPerPage: params.pagination.itemsPerPage,
+        }
+      });
+      commit("setCount2", expenses.count)
+      commit('setItems2', expenses.data);
+    } catch (error) {
+      commit("setError", "Ha ocurrido un error");
+    }
+  }
 
 }

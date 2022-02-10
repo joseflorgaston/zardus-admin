@@ -43,7 +43,7 @@
           </div>
         </v-list-item>
         <v-list-item
-          v-if="isAdmin()"
+          v-show="isAdmin"
           to="/users"
           router
           exact
@@ -114,7 +114,7 @@
         <v-list-item
           style="width: 100%; padding: 0px !important; margin: 0px !important"
         >
-          <v-list-group v-if="isAdmin()">
+          <v-list-group v-show="isAdmin">
             <template v-slot:activator>
               <v-list-item-action>
                 <v-icon>mdi-clipboard-text-outline </v-icon>
@@ -130,7 +130,7 @@
             </template>
             <v-list style="padding-top: 0px; padding-left: 12px">
               <v-list-item
-                to='/balances'
+                to="/balances"
                 exact
                 exact-active-class="active-link"
               >
@@ -215,6 +215,22 @@ export default {
         return this.$store.commit('setLoading')
       },
     },
+    isAdmin: {
+      get() {
+        if (this.$auth.$storage.getLocalStorage('user') == null) return false
+        if (
+          this.$auth.$storage
+            .getLocalStorage('user')
+            .roles.includes('ROLE_ADMIN')
+        )
+          return true
+
+        return false
+      },
+      set(value) {
+        return value
+      },
+    },
   },
   data() {
     return {
@@ -246,8 +262,7 @@ export default {
       title: 'Bienvenido',
     }
   },
-  async beforeMount() {
-    console.log(this.$auth)
+  async mounted() {
     if (!this.$auth.loggedIn) {
       this.$router.push('/login')
     }
@@ -255,15 +270,6 @@ export default {
   methods: {
     closeDialog() {
       this.logoutModal = false
-    },
-    isAdmin() {
-      if (this.$auth.$storage.getLocalStorage('user') == null) return false
-      if (
-        this.$auth.$storage.getLocalStorage('user').roles.includes('ROLE_ADMIN')
-      )
-        return true
-
-      return false
     },
   },
 }

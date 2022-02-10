@@ -3,7 +3,7 @@
     <pedidos-header
       title="Pedidos"
       link="orders/create"
-      searchUrl="/api/orders/"
+      :searchUrl="searchUrl"
     />
     <v-card>
       <v-data-table
@@ -238,6 +238,7 @@ export default {
       'Monto Pagado': 'Monto Pagado',
       Encargado: 'Encargado',
     },
+    searchUrl: '/api/orders/',
     payments: [],
     selectedItems: [],
     page: 1,
@@ -246,6 +247,7 @@ export default {
   }),
 
   async beforeMount() {
+    this.$store.commit('clearFilters');
     this.getOrders()
   },
 
@@ -274,9 +276,14 @@ export default {
     async getOrders() {
       this.loading = true
       this.$store.commit('setLoading')
-      await this.$store.dispatch('getOrders', {
-        page: this.page,
-        itemsPerPage: this.itemsPerPage,
+      await this.$store.dispatch('sharedSearch', {
+        pagination: {
+          page: this.page,
+          itemsPerPage: this.itemsPerPage,
+        },
+        searchUrl: this.searchUrl,
+        searchText: this.$store.state.searchText ?? '',
+        dates: this.$store.state.filterDates ?? [],
       })
       this.$store.commit('setLoading')
       this.loading = false

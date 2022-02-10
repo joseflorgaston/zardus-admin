@@ -3,7 +3,7 @@
     <pedidos-header
       title="Compras"
       link="buy_products/create"
-      searchUrl="/api/supplyOrders/"
+      :searchUrl="searchUrl"
     />
     <v-card>
       <v-data-table
@@ -20,7 +20,10 @@
         }"
       >
         <template v-slot:[`item.isSelected`]="{ item }">
-          <v-checkbox :value="isChecked(item)" @change="setSelected(item, $event)"></v-checkbox>
+          <v-checkbox
+            :value="isChecked(item)"
+            @change="setSelected(item, $event)"
+          ></v-checkbox>
         </template>
         <template v-slot:[`item.totalAmount`]="{ item }">
           <shared-money :amount="item.totalAmount || 0"></shared-money>
@@ -173,6 +176,7 @@ export default {
         class: 'header-color white--text',
       },
     ],
+    searchUrl: '/api/supplyOrders/',
     fields: {
       Fecha: 'Fecha',
       'Monto Total': 'Monto Total',
@@ -237,10 +241,10 @@ export default {
     },
 
     isChecked(item) {
-      if(this.selectedItems.filter(x => x._id == item._id).length > 0)
-        return true;
-      
-      return false;
+      if (this.selectedItems.filter((x) => x._id == item._id).length > 0)
+        return true
+
+      return false
     },
 
     async nextPage(value) {
@@ -256,16 +260,21 @@ export default {
     async getSupplyOrders() {
       this.loading = true
       this.$store.commit('setLoading')
-      await this.$store.dispatch('getSupplyOrders', {
-        page: this.page,
-        itemsPerPage: this.itemsPerPage,
+      await this.$store.dispatch('sharedSearch', {
+        pagination: {
+          page: this.page,
+          itemsPerPage: this.itemsPerPage,
+        },
+        searchUrl: this.searchUrl,
+        searchText: this.$store.state.searchText,
+        dates: this.$store.state.filterDates ?? [],
       })
       this.$store.commit('setLoading')
       this.loading = false
     },
-
   },
   async beforeMount() {
+    this.$store.commit('clearFilters')
     this.getSupplyOrders()
   },
 }

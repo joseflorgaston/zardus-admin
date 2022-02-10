@@ -1,6 +1,11 @@
 <template>
   <v-container>
-    <orders-history-header title="Pedidos"> </orders-history-header>
+    <pedidos-header
+      title="Historial de pedidos"
+      link="orders/create"
+      :searchUrl="searchUrl"
+      :hasButton="false"
+    />
     <v-card class="mt-5">
       <v-data-table
         :items="items"
@@ -122,6 +127,7 @@ import ViewOrderDialog from '~/components/Dialogs/Orders/ViewOrderDialog.vue'
 import AddPaymentDialog from '~/components/Dialogs/Orders/AddPaymentDialog.vue'
 import ChangeOrderStatusDialog from '~/components/Dialogs/Orders/ChangeOrderStatusDialog.vue'
 import OrdersHistoryHeader from '~/components/Headers/OrdersHistoryheader.vue'
+import PedidosHeader from '~/components/Headers/PedidosHeader.vue'
 import moment from 'moment'
 import JsonExcel from 'vue-json-excel'
 export default {
@@ -130,6 +136,7 @@ export default {
     ChangeOrderStatusDialog,
     OrdersHistoryHeader,
     AddPaymentDialog,
+    PedidosHeader,
     JsonExcel,
   },
   computed: {
@@ -217,6 +224,7 @@ export default {
       'Monto Pagado': 'Monto Pagado',
       Encargado: 'Encargado',
     },
+    searchUrl: 'api/orders/history',
     payments: [],
     selectedItems: [],
     statusModalValue: '',
@@ -236,21 +244,26 @@ export default {
     },
     async nextPage(value) {
       this.page = value
-      await this.getOrders()
+      await this.getOrdersHistory()
     },
     async otherItemCount(value) {
       this.itemsPerPage = value
-      await this.getOrders()
+      await this.getOrdersHistory()
     },
     editOrder(item) {
       console.log(item)
     },
-    async getOrders() {
+    async getOrdersHistory() {
       this.loading = true
       this.$store.commit('setLoading')
-      await this.$store.dispatch('getHistoryOrders', {
-        page: this.page,
-        itemsPerPage: this.itemsPerPage,
+      await this.$store.dispatch('sharedSearch', {
+        pagination: {
+          page: this.page,
+          itemsPerPage: this.itemsPerPage,
+        },
+        searchUrl: this.searchUrl,
+        searchText: this.$store.state.searchText,
+        dates: this.$store.state.filterDates ?? [],
       })
       this.$store.commit('setLoading')
       this.loading = false
@@ -306,7 +319,8 @@ export default {
     },
   },
   async beforeMount() {
-    this.getOrders()
+    this.$store.commit('clearFilters')
+    this.getOrdersHistory()
   },
 }
 </script>

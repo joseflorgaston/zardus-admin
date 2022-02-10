@@ -16,12 +16,22 @@
       </v-col>
       <v-col cols="6">
         <shared-loading-card v-if="loading" />
-        <balances-pie-chart
+        <!--<balances-pie-chart
           v-else
           title="Cantidad pedidos"
           :values="activeBusinesses"
           id="activeBusiness"
-        ></balances-pie-chart>
+        ></balances-pie-chart> -->
+      </v-col>
+      <v-col cols="12" md="6">
+        <center><h3>Ganancias</h3></center>
+        <v-data-table :headers="expensesHeader" :items="expensesData">
+        </v-data-table>
+      </v-col>
+      <v-col cols="12" md="6">
+        <center><h3>Gastos</h3></center>
+        <v-data-table :headers="profitsHeader" :items="profitsData">
+        </v-data-table>
       </v-col>
     </v-row>
   </div>
@@ -31,6 +41,46 @@
 import BalancesPieChart from '~/components/Balances/BalancesPieChart.vue'
 export default {
   components: { BalancesPieChart },
+  computed: {
+    profitsData: {
+      get() {
+        return this.$store.state.items
+      },
+      set(values) {
+        this.$store.commit('setItems', values)
+      },
+    },
+    profitsCount() {
+      return this.$store.state.count
+    },
+    expensesData: {
+      get() {
+        return this.$store.state.items2
+      },
+      set(values) {
+        this.$store.commit('setItems', values)
+      },
+    },
+    expensesCount() {
+      return this.$store.state.count2
+    },
+  },
+  async beforeMount() {
+    this.loading = true
+    this.$store.commit('setLoading')
+    await this.getProfits()
+    await this.getExpenses()
+    this.$store.commit('setLoading')
+    this.loading = false
+  },
+  methods: {
+    async getProfits() {
+      await this.$store.dispatch('getProfits', this.profitPagination)
+    },
+    async getExpenses() {
+      await this.$store.dispatch('getExpenses', this.expensesPagination)
+    },
+  },
   data: () => ({
     loading: false,
     labels: ['Ganancias', 'Gastos'],
@@ -71,12 +121,59 @@ export default {
       ],
     },
     activeBusinesses: [5, 8],
+    profitPagination: {
+      page: 1,
+      itemsPerPage: 10,
+    },
+    expensesPagination: {
+      page: 1,
+      itemsPerPage: 10,
+    },
+    profitsHeader: [
+      {
+        text: 'Fecha de Pago',
+        value: 'paymentDate',
+        class: 'header-color white--text',
+      },
+      {
+        text: 'Descripcion',
+        value: 'description',
+        class: 'header-color white--text',
+      },
+      {
+        text: 'Monto Total',
+        value: 'totalAmount',
+        class: 'header-color white--text',
+      },
+      {
+        text: 'Acciones',
+        value: 'actions',
+        class: 'header-color white--text',
+      },
+    ],
+    expensesHeader: [
+      {
+        text: 'Fecha de Pago',
+        value: 'paymentDate',
+        class: 'header-color white--text',
+      },
+      {
+        text: 'Descripcion',
+        value: 'description',
+        class: 'header-color white--text',
+      },
+      {
+        text: 'Monto Total',
+        value: 'totalAmount',
+        class: 'header-color white--text',
+      },
+      {
+        text: 'Acciones',
+        value: 'actions',
+        class: 'header-color white--text',
+      },
+    ],
   }),
-  async beforeMount() {
-    this.loading = true
-    await setTimeout(1000)
-    this.loading = false
-  },
 }
 </script>
 
