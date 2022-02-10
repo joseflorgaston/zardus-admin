@@ -43,6 +43,23 @@
           </div>
         </v-list-item>
         <v-list-item
+          v-show="isAdmin"
+          to="/users"
+          router
+          exact
+          exact-active-class="active-link"
+          style="padding: 0px"
+        >
+          <div class="d-flex pl-4">
+            <v-list-item-action>
+              <v-icon>mdi-account-multiple</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title v-text="'Usuarios'" />
+            </v-list-item-content>
+          </div>
+        </v-list-item>
+        <v-list-item
           style="width: 100%; padding: 0px !important; margin: 0px !important"
         >
           <v-list-group>
@@ -61,8 +78,7 @@
             </template>
             <v-list style="padding-top: 0px; padding-left: 12px">
               <v-list-item
-                :to="'buy_products'"
-                router
+                to="/buy_products"
                 exact
                 exact-active-class="active-link"
               >
@@ -73,11 +89,7 @@
                   <v-list-item-title class="default-font" v-text="'Compras'" />
                 </v-list-item-content>
               </v-list-item>
-              <v-list-item
-                :to="'orders'"
-                router
-                active-class="active-link"
-              >
+              <v-list-item to="/orders" active-class="active-link">
                 <v-list-item-action>
                   <v-icon>mdi-clipboard-list-outline </v-icon>
                 </v-list-item-action>
@@ -85,16 +97,15 @@
                   <v-list-item-title class="default-font" v-text="'Pedidos'" />
                 </v-list-item-content>
               </v-list-item>
-              <v-list-item
-                :to="'orders_history'"
-                router
-                active-class="active-link"
-              >
+              <v-list-item to="/orders_history" active-class="active-link">
                 <v-list-item-action>
                   <v-icon>mdi-list-status </v-icon>
                 </v-list-item-action>
                 <v-list-item-content>
-                  <v-list-item-title class="default-font" v-text="'Historial de pedidos'" />
+                  <v-list-item-title
+                    class="default-font"
+                    v-text="'Historial de pedidos'"
+                  />
                 </v-list-item-content>
               </v-list-item>
             </v-list>
@@ -103,7 +114,7 @@
         <v-list-item
           style="width: 100%; padding: 0px !important; margin: 0px !important"
         >
-          <v-list-group>
+          <v-list-group v-show="isAdmin">
             <template v-slot:activator>
               <v-list-item-action>
                 <v-icon>mdi-clipboard-text-outline </v-icon>
@@ -119,8 +130,7 @@
             </template>
             <v-list style="padding-top: 0px; padding-left: 12px">
               <v-list-item
-                :to="'balances'"
-                router
+                to="/balances"
                 exact
                 exact-active-class="active-link"
               >
@@ -132,8 +142,7 @@
                 </v-list-item-content>
               </v-list-item>
               <v-list-item
-                :to="'expenses'"
-                router
+                to="/expenses"
                 exact
                 exact-active-class="active-link"
               >
@@ -193,9 +202,9 @@
 </template>
 
 <script>
-import LogoutModal from '../components/Dialogs/LogoutDialog.vue';
+import LogoutModal from '../components/Dialogs/LogoutDialog.vue'
 export default {
-  components: {LogoutModal},
+  components: { LogoutModal },
   auth: true,
   computed: {
     loading: {
@@ -204,6 +213,22 @@ export default {
       },
       set(value) {
         return this.$store.commit('setLoading')
+      },
+    },
+    isAdmin: {
+      get() {
+        if (this.$auth.$storage.getLocalStorage('user') == null) return false
+        if (
+          this.$auth.$storage
+            .getLocalStorage('user')
+            .roles.includes('ROLE_ADMIN')
+        )
+          return true
+
+        return false
+      },
+      set(value) {
+        return value
       },
     },
   },
@@ -229,11 +254,6 @@ export default {
           title: 'Proveedores',
           to: '/providers',
         },
-        {
-          icon: 'mdi-account-multiple ',
-          title: 'Usuarios',
-          to: '/users',
-        },
       ],
       logoutModal: false,
       miniVariant: false,
@@ -242,16 +262,15 @@ export default {
       title: 'Bienvenido',
     }
   },
-  async beforeMount() {
-    console.log(this.$auth);
-    if(!this.$auth.loggedIn){
-      this.$router.push('/login');
+  async mounted() {
+    if (!this.$auth.loggedIn) {
+      this.$router.push('/login')
     }
   },
   methods: {
     closeDialog() {
-      this.logoutModal = false;
-    }
+      this.logoutModal = false
+    },
   },
 }
 </script>

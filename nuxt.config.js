@@ -26,7 +26,7 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
-    { src: '~/plugins/myplugin.js', mode: 'client' }
+    { src: '~/plugins/myplugin.js' }
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -47,7 +47,7 @@ export default {
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
-    baseURL: 'https://pacific-ravine-45457.herokuapp.com/'//'http://localhost:5000/'
+    baseURL: 'http://localhost:5000/' //'https://pacific-ravine-45457.herokuapp.com/' // 
   },
 
   auth: {

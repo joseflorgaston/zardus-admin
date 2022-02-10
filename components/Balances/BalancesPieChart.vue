@@ -1,24 +1,21 @@
 <template>
-  <v-card
-    width="400px"
-    height="400px"
-    class="pb-5"
-  >
+  <v-card width="400px" height="400px" class="pb-5">
     <div class="text-center pt-5">
-        <h2>{{ this.title }}</h2>
+      <h2>{{ this.title }}</h2>
     </div>
-    <div :id="id">
-      <apex-charts class="ma-6"
-          width="380px"
+    <div :id="id" v-show="process.browser">
+      <!--<apex-charts
+        class="ma-6"
+        width="380px"
         :options="chartOptions"
         :series="values"
-      ></apex-charts>
+      ></apex-charts> -->
     </div>
   </v-card>
 </template>
 
 <script>
-import ApexCharts from "vue-apexcharts";
+// import ApexCharts from 'vue-apexcharts'
 export default {
   props: {
     title: {
@@ -34,16 +31,16 @@ export default {
       required: true,
     },
   },
-  components: { ApexCharts },
+  components: {  },
   data: () => ({
     series: [],
     chartOptions: {
       chart: {
         width: 400,
-        type: "pie",
+        type: 'pie',
         animations: {
           enabled: true,
-          easing: "easeout",
+          easing: 'easeout',
           speed: 700,
           animateGradually: {
             enabled: false,
@@ -53,34 +50,36 @@ export default {
             enabled: false,
             speed: 350,
           },
-          responsive: [{
-            breakpoint: 480,
-            options: {
-              chart: {
-                width: 200
+          responsive: [
+            {
+              breakpoint: 480,
+              options: {
+                chart: {
+                  width: 200,
+                },
+                legend: {
+                  position: 'bottom',
+                },
               },
-              legend: {
-                position: 'bottom'
-              }
-            }
-          }]
+            },
+          ],
         },
       },
-      colors: ["#64BB8D", "#0C2334"],
+      colors: ['#64BB8D', '#0C2334'],
       dataLabels: {
         enabled: false,
       },
-      labels: ["Activos", "Inactivos"],
+      labels: ['Activos', 'Inactivos'],
       legend: {
-        position: "top",
+        position: 'top',
       },
     },
   }),
-};
+}
 </script>
 
 <style>
-.align-middle{
+.align-middle {
   align-items: center;
 }
 </style>

@@ -138,7 +138,7 @@
         >
       </div>
     </div>
-    <v-card-actions>
+    <v-card-actions class="d-flex flex-wrap">
       <v-spacer></v-spacer>
       <v-btn
         color="primary"

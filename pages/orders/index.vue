@@ -3,7 +3,7 @@
     <pedidos-header
       title="Pedidos"
       link="orders/create"
-      searchUrl="/api/orders/"
+      :searchUrl="searchUrl"
     />
     <v-card>
       <v-data-table
@@ -19,6 +19,12 @@
           itemsPerPageOptions: [5, 10, 15],
         }"
       >
+        <template v-slot:[`item.isSelected`]="{ item }">
+          <v-checkbox
+            :value="isChecked(item)"
+            @change="setSelected(item, $event)"
+          ></v-checkbox>
+        </template>
         <template v-slot:[`item.totalAmount`]="{ item }">
           <shared-money :amount="item.totalAmount || 0"></shared-money>
         </template>
@@ -109,8 +115,27 @@
         </template>
       </v-data-table>
     </v-card>
+    <div class="d-flex justify-end ma-5">
+      <v-btn
+        color="green"
+        class="white--text"
+        :disabled="selectedItems.length == 0"
+      >
+        <json-excel
+          :data="selectedItems"
+          :field="fields"
+          :class="selectedItems.length == 0 ? '' : 'btn green white--text'"
+        >
+          Exportar
+          <v-icon class="pl-1">mdi-download</v-icon>
+        </json-excel>
+      </v-btn>
+    </div>
     <v-dialog v-model="dialog" persistent min-width="500" width="700">
-      <view-order-dialog :item="viewItem" :payments="payments"></view-order-dialog>
+      <view-order-dialog
+        :item="viewItem"
+        :payments="payments"
+      ></view-order-dialog>
     </v-dialog>
     <v-dialog v-model="editDialog" persistent min-width="500" width="700">
       <change-order-status-dialog
@@ -122,11 +147,18 @@
 </template>
 
 <script>
+import JsonExcel from 'vue-json-excel'
 import ViewOrderDialog from '~/components/Dialogs/Orders/ViewOrderDialog.vue'
 import ChangeOrderStatusDialog from '~/components/Dialogs/Orders/ChangeOrderStatusDialog.vue'
 import PedidosHeader from '~/components/Headers/PedidosHeader.vue'
+import moment from 'moment'
 export default {
-  components: { ViewOrderDialog, ChangeOrderStatusDialog, PedidosHeader },
+  components: {
+    ViewOrderDialog,
+    ChangeOrderStatusDialog,
+    PedidosHeader,
+    JsonExcel,
+  },
   computed: {
     items: {
       get() {
@@ -158,7 +190,12 @@ export default {
     statusModalId: '',
     headers: [
       {
-        text: 'Fecha',
+        text: 'Exp',
+        value: 'isSelected',
+        class: 'header-color white--text',
+      },
+      {
+        text: 'Fecha Pedido',
         value: 'createdOn',
         class: 'header-color white--text',
       },
@@ -193,19 +230,32 @@ export default {
         class: 'header-color white--text',
       },
     ],
+    fields: {
+      Fecha: 'Fecha',
+      'Monto Total': 'Monto Total',
+      Proveedor: 'Proveedor',
+      'Metodo de pago': 'Metodo de pago',
+      'Monto Pagado': 'Monto Pagado',
+      Encargado: 'Encargado',
+    },
+    searchUrl: '/api/orders/',
     payments: [],
     selectedItems: [],
     page: 1,
     viewItem: {},
     itemsPerPage: 10,
   }),
+
+  async beforeMount() {
+    this.$store.commit('clearFilters');
+    this.getOrders()
+  },
+
   methods: {
     async viewOrder(item) {
       this.viewItem = item
       this.$store.commit('setLoading')
-      this.payments = await this.$axios.$get(
-        `api/order/payments/${item._id}`
-      )
+      this.payments = await this.$axios.$get(`api/order/payments/${item._id}`)
       this.$store.commit('setLoading')
       this.$store.commit('setDialog')
     },
@@ -217,18 +267,23 @@ export default {
     },
     async nextPage(value) {
       this.page = value
-      await this.getProducts()
+      await this.getOrders()
     },
     async otherItemCount(value) {
       this.itemsPerPage = value
-      await this.getProducts()
+      await this.getOrders()
     },
     async getOrders() {
       this.loading = true
       this.$store.commit('setLoading')
-      await this.$store.dispatch('getOrders', {
-        page: this.page,
-        itemsPerPage: this.itemsPerPage,
+      await this.$store.dispatch('sharedSearch', {
+        pagination: {
+          page: this.page,
+          itemsPerPage: this.itemsPerPage,
+        },
+        searchUrl: this.searchUrl,
+        searchText: this.$store.state.searchText ?? '',
+        dates: this.$store.state.filterDates ?? [],
       })
       this.$store.commit('setLoading')
       this.loading = false
@@ -239,16 +294,44 @@ export default {
       this.$store.commit('setEditDialog')
     },
     getDeliveryDateColor(deliveryDate) {
-      var today = new Date();
+      var today = new Date()
       var date = new Date(deliveryDate)
       if (today > date) {
-        return 'red--text font-weight-bold';
-      } 
-      return 'black--text';
-    }
-  },
-  async beforeMount() {
-    this.getOrders()
+        return 'red--text font-weight-bold'
+      }
+      return 'black--text'
+    },
+    setSelected(item, isChecked) {
+      if (isChecked) return this.selectedItems.push(this.formatExcel(item))
+
+      const index = this.selectedItems.indexOf(this.formatExcel(item))
+      return this.selectedItems.splice(index, 1)
+    },
+
+    formatExcel(item) {
+      const formattedItem = {
+        _id: item._id,
+        'Fecha de entrega': this.formatDate(item.deliveryDate),
+        'Monto Total': item.totalAmount,
+        Cliente: item.customer,
+        'Metodo de pago': item.paymentMethod,
+        'Monto Pagado': item.totalPayed,
+        Encargado: item.userName,
+        Estado: item.status,
+      }
+      return formattedItem
+    },
+
+    isChecked(item) {
+      if (this.selectedItems.filter((x) => x._id == item._id).length > 0)
+        return true
+
+      return false
+    },
+
+    formatDate(date) {
+      return moment(date).locale('es_py').format('DD/MM/yyyy')
+    },
   },
 }
 </script>

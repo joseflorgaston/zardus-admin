@@ -66,7 +66,7 @@
     </v-form>
     <v-divider></v-divider>
 
-    <v-card-actions>
+    <v-card-actions class="d-flex flex-wrap">
       <v-btn color="error" @click="openDeleteDialog">
         Eliminar Producto
       </v-btn>

@@ -1,0 +1,1 @@
+__NUXT_JSONP__("/balances", {data:[{}],fetch:{},mutations:[]});

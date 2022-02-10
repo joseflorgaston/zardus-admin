@@ -1,6 +1,10 @@
 <template>
   <div>
-    <product-header title="Productos" class="mt-1 mb-0 pb-0" v-on:mixtureModal="openMixtureModal()"></product-header>
+    <product-header
+      title="Productos"
+      class="mt-1 mb-0 pb-0"
+      v-on:mixtureModal="openMixtureModal()"
+    ></product-header>
     <v-row class="pt-0">
       <v-col cols="12" md="11">
         <v-card>
@@ -50,12 +54,22 @@
             </template>
             <template v-slot:[`item.stock`]="{ item }">
               <div class="d-flex">
-              <shared-money :amount="item.stock || 0" currency="" class="mr-1"></shared-money> {{ item.unitOfMeasure }}
+                <shared-money
+                  :amount="item.stock || 0"
+                  currency=""
+                  class="mr-1"
+                ></shared-money>
+                {{ item.unitOfMeasure }}
               </div>
             </template>
             <template v-slot:[`item.inOrder`]="{ item }">
               <div v-if="item.inOrder != null" class="d-flex">
-                <shared-money :amount="item.inOrder || 0" currency="" class="mr-1"></shared-money> {{ item.unitOfMeasure }}
+                <shared-money
+                  :amount="item.inOrder || 0"
+                  currency=""
+                  class="mr-1"
+                ></shared-money>
+                {{ item.unitOfMeasure }}
               </div>
               <div v-else>0</div>
             </template>
@@ -94,7 +108,7 @@ export default {
     ProductHeader,
     NewProductDialog,
     EditProductDialog,
-    DeleteDialog
+    DeleteDialog,
   },
   computed: {
     items: {
@@ -180,8 +194,8 @@ export default {
     itemsPerPage: 10,
   }),
   async beforeMount() {
-    if(!this.$auth.loggedIn){
-      return this.$router.push('/login');
+    if (!this.$auth.loggedIn) {
+      return this.$router.push('/login')
     }
     await this.getProducts()
   },
@@ -199,8 +213,8 @@ export default {
       this.$store.commit('setEditDialog')
     },
     openMixtureModal() {
-      console.log(this.mixtureDialog);
-      this.mixtureDialog = !this.mixtureDialog;
+      console.log(this.mixtureDialog)
+      this.mixtureDialog = !this.mixtureDialog
     },
     openDeleteDialog(item) {
       this.editedItem = item

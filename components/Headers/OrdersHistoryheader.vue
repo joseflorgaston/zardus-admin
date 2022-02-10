@@ -44,7 +44,7 @@ export default {
         if (this.searchText.length == 0) {
           await this.$store.dispatch('sharedSearch', '/api/orders/history/0/10')
         } else {
-          await this.$store.dispatch('sharedSearch', '/api/orders/history/search/' + this.searchText)
+          await this.$store.dispatch('sharedSearch', '/api/ordershistory/search/' + this.searchText)
         }
         this.loading = false
       }, 600)
