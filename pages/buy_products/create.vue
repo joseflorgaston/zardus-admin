@@ -355,10 +355,10 @@ export default {
       this.formDetails.subTotal = this.subTotal
       this.formDetails.product = this.selectedProduct
       const item = {
-        subTotal: this.formDetails.subTotal,
+        subTotal: parseInt(this.formDetails.subTotal),
         product: this.selectedProduct,
-        quantity: this.formDetails.quantity,
-        price: this.formDetails.price,
+        quantity: parseInt(this.formDetails.quantity),
+        price: parseInt(this.formDetails.price),
       }
       this.dataItems.push(item)
       console.log(this.dataItems)

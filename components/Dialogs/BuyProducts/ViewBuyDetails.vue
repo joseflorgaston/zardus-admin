@@ -57,13 +57,13 @@
           {{ element.product.name }}
         </v-col>
         <v-col cols="3" class="pt-0">
-          <shared-money :amount="element.product.price"></shared-money>
+          <shared-money :amount="parseInt(element.product.price)"></shared-money>
         </v-col>
         <v-col cols="3" class="pt-0">
           {{ element.quantity }} {{ element.product.unitOfMeasure }}
         </v-col>
         <v-col cols="3" class="pt-0">
-          <shared-money :amount="element.subTotal"></shared-money>
+          <shared-money :amount="parseInt(element.subTotal)"></shared-money>
         </v-col>
       </v-row>
       <div v-show="item.paymentMethod == 'Credito'">
@@ -97,7 +97,7 @@
             </shared-formatted-date>
           </v-col>
           <v-col cols="3" class="pt-0">
-            <shared-money :amount="element.totalAmount"></shared-money>
+            <shared-money :amount="parseInt(element.totalAmount)"></shared-money>
           </v-col>
           <v-col cols="3" class="pt-0">
             {{ element.description }}
@@ -114,7 +114,7 @@
       <div class="d-flex">
         <span class="subtitle-2 font-weight-bold">Monto Total:</span>
         <shared-money
-          :amount="item.totalAmount"
+          :amount="parseInt(item.totalAmount)"
           class="pl-1 subtitle-2"
         ></shared-money>
       </div>

@@ -47,7 +47,7 @@ export default {
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
-    baseURL: 'https://pacific-ravine-45457.herokuapp.com/' // 'http://localhost:5000/' //
+    baseURL: 'http://localhost:5000/' // 'https://pacific-ravine-45457.herokuapp.com/' // 
   },
 
   auth: {
