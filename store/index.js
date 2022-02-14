@@ -242,7 +242,7 @@ export const actions = {
             page: params.pagination.page - 1,
             itemsPerPage: params.pagination.itemsPerPage,
             searchText: params.searchText,
-            dates: params.dates
+            dates: params.dates ?? []
           }
         });
 

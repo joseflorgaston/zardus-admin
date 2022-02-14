@@ -69,7 +69,7 @@
             color="accent"
             label="Cantidad por ingredientes"
             v-model="form.quantityPerIngredients"
-            :rules="quantityRules"
+            :rules="nonZeroRules"
           >
           </v-text-field>
         </v-col>
@@ -100,13 +100,13 @@
               type="number"
               v-model="productQuantity"
               :label="'Cantidad (' + product.unitOfMeasure + ')'"
-              :rules="quantityRules"
+              :rules="nonZeroRules"
             >
             </v-text-field>
           </div>
           <div class="col-12 col-sm-6 col-md-3">
-            <v-btn @click="addToIngredients" :disabled="!isValid"
-              >Anadir ingrendiente.</v-btn
+            <v-btn @click="addToIngredients" color="success" :disabled="!isValid"
+              >Añadir ingrendiente</v-btn
             >
           </div>
           <div class="col-12">
@@ -158,6 +158,10 @@ export default {
       (v) => v > -1 || 'Este campo no puede ser negativo',
       (v) => !!v || 'Este campo es requerido',
     ],
+    nonZeroRules: [
+      (v) => v > 0 || 'Este campo no puede ser negativo',
+      (v) => !!v || 'Este campo es requerido',
+    ],
   }),
   watch: {
     async searchProducts(val) {
@@ -196,9 +200,6 @@ export default {
       return true
     },
     addToIngredients() {
-      if (!this.validateStock()) {
-        return
-      }
       const newIngredient = {
         _id: this.product._id,
         name: this.product.name,
@@ -211,6 +212,10 @@ export default {
     selectProduct() {
       try {
       } catch (error) {}
+    },
+    resetForm() {
+      this.form = {}
+      this.ingredients = []
     },
     async save() {
       try {
@@ -225,7 +230,8 @@ export default {
         mixture.stock = parseInt(mixture.stock);
         mixture.quantityPerIngredients = parseInt(mixture.quantityPerIngredients);
         await this.$axios.post('/api/mixture/create', mixture);
-        this.$emit('mixtureModal');
+        this.closeDialog();
+        this.resetForm()
         this.$store.commit('setSuccess', 'Mezcla creada exitosamente');
         await this.$store.dispatch('getMixtures', { page: 1, itemsPerPage: 10 })
         this.$store.commit('setLoading');

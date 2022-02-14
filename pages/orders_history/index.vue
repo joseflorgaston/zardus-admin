@@ -52,25 +52,6 @@
             </template>
             <span>Ver Pedido</span>
           </v-tooltip>
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                icon
-                v-bind="attrs"
-                v-on="on"
-                @click="addPayment(item, 'Pagado')"
-              >
-                <v-icon
-                  :disabled="item.status != 'Entregado'"
-                  color="primary"
-                  title="Detalle Pedido"
-                  >mdi-cash</v-icon
-                >
-              </v-btn>
-            </template>
-            <span v-if="item.paymentMethod == 'Credito'">Agregar Pago</span>
-            <span v-else>Cambiar estado a pagado</span>
-          </v-tooltip>
         </template>
         <template v-slot:[`item.status`]="{ item }">
           <div v-show="item.status == 'Pagado'" class="chip success">
@@ -272,7 +253,6 @@ export default {
       console.log(id)
       this.statusModalValue = status
       this.statusModalId = id
-      this.$store.commit('setEditDialog')
     },
 
     addPayment(item) {

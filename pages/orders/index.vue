@@ -25,6 +25,9 @@
             @change="setSelected(item, $event)"
           ></v-checkbox>
         </template>
+        <template v-slot:[`item.totalPayed`]="{ item }">
+          <shared-money :amount="item.totalPayed || 0"></shared-money>
+        </template>
         <template v-slot:[`item.totalAmount`]="{ item }">
           <shared-money :amount="item.totalAmount || 0"></shared-money>
         </template>
@@ -67,9 +70,15 @@
             </template>
             <span>Editar Pedido</span>
           </v-tooltip>
+
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
-              <v-btn icon v-bind="attrs" v-on="on">
+              <v-btn
+                icon
+                v-bind="attrs"
+                v-on="on"
+                v-show="item.status != 'Entregado'"
+              >
                 <v-icon
                   color="error"
                   title="Cancelar Pedido"
@@ -87,6 +96,7 @@
                 v-bind="attrs"
                 v-on="on"
                 :disabled="item.status != 'Preparado'"
+                v-show="item.status != 'Entregado'"
               >
                 <v-icon
                   color="success"
@@ -97,6 +107,26 @@
               </v-btn>
             </template>
             <span>Cambiar estado a Entregado</span>
+          </v-tooltip>
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                icon
+                v-bind="attrs"
+                v-on="on"
+                @click="addPayment(item, 'Pagado')"
+                v-show="item.status == 'Entregado'"
+              >
+                <v-icon
+                  :disabled="item.status != 'Entregado'"
+                  color="primary"
+                  title="Detalle Pedido"
+                  >mdi-cash</v-icon
+                >
+              </v-btn>
+            </template>
+            <span v-if="item.paymentMethod == 'Credito'">Agregar Pago</span>
+            <span v-else>Cambiar estado a pagado</span>
           </v-tooltip>
         </template>
         <template v-slot:[`item.status`]="{ item }">
@@ -131,17 +161,41 @@
         </json-excel>
       </v-btn>
     </div>
-    <v-dialog v-model="dialog" persistent min-width="500" width="700">
+    <v-dialog
+      v-model="dialog"
+      persistent
+      min-width="500"
+      width="700"
+      max-width="100%"
+    >
       <view-order-dialog
         :item="viewItem"
         :payments="payments"
       ></view-order-dialog>
     </v-dialog>
-    <v-dialog v-model="editDialog" persistent min-width="500" width="700">
+    <v-dialog
+      v-model="editDialog"
+      persistent
+      min-width="500"
+      width="700"
+      max-width="100%"
+    >
       <change-order-status-dialog
         :id="statusModalId"
         :status="statusModalValue"
       ></change-order-status-dialog>
+    </v-dialog>
+    <v-dialog
+      v-model="paymentDialog"
+      persistent
+      min-width="500"
+      width="700"
+      max-width="100%"
+    >
+      <add-payment-dialog
+        :item="paymentItem"
+        v-on:closeDialog="openPaymentDialog"
+      ></add-payment-dialog>
     </v-dialog>
   </v-container>
 </template>
@@ -151,6 +205,7 @@ import JsonExcel from 'vue-json-excel'
 import ViewOrderDialog from '~/components/Dialogs/Orders/ViewOrderDialog.vue'
 import ChangeOrderStatusDialog from '~/components/Dialogs/Orders/ChangeOrderStatusDialog.vue'
 import PedidosHeader from '~/components/Headers/PedidosHeader.vue'
+import AddPaymentDialog from '~/components/Dialogs/Orders/AddPaymentDialog.vue'
 import moment from 'moment'
 export default {
   components: {
@@ -158,6 +213,7 @@ export default {
     ChangeOrderStatusDialog,
     PedidosHeader,
     JsonExcel,
+    AddPaymentDialog,
   },
   computed: {
     items: {
@@ -188,6 +244,8 @@ export default {
     loading: true,
     statusModalValue: '',
     statusModalId: '',
+    paymentDialog: false,
+    paymentItem: {},
     headers: [
       {
         text: 'Exp',
@@ -220,6 +278,11 @@ export default {
         class: 'header-color white--text',
       },
       {
+        text: 'Monto Pagado',
+        value: 'totalPayed',
+        class: 'header-color white--text',
+      },
+      {
         text: 'Estado',
         value: 'status',
         class: 'header-color white--text',
@@ -247,7 +310,7 @@ export default {
   }),
 
   async beforeMount() {
-    this.$store.commit('clearFilters');
+    this.$store.commit('clearFilters')
     this.getOrders()
   },
 
@@ -258,6 +321,17 @@ export default {
       this.payments = await this.$axios.$get(`api/order/payments/${item._id}`)
       this.$store.commit('setLoading')
       this.$store.commit('setDialog')
+    },
+    addPayment(item) {
+      console.log(item)
+      if (item.paymentMethod == 'Contado')
+        return this.changeState(item._id, 'Pagado')
+
+      this.paymentItem = item
+      this.openPaymentDialog()
+    },
+    openPaymentDialog() {
+      this.paymentDialog = !this.paymentDialog
     },
     editOrder(item) {
       this.$router.push({

@@ -4,6 +4,14 @@
 
 
 /*!
+ * Chart.js v3.5.1
+ * https://www.chartjs.org
+ * (c) 2021 Chart.js Contributors
+ * Released under the MIT License
+ */
+
+
+/*!
   * vue-router v3.5.2
   * (c) 2021 Evan You
   * @license MIT
@@ -44,21 +52,4 @@
  * Released under the MIT License.
  */
 
-
-/*!
- * Chart.js v3.5.1
- * https://www.chartjs.org
- * (c) 2021 Chart.js Contributors
- * Released under the MIT License
- */
-
-
 //! moment.js locale configuration
-
-
-/*!
- * Chart.js v3.5.1
- * https://www.chartjs.org
- * (c) 2021 Chart.js Contributors
- * Released under the MIT License
- */

@@ -57,7 +57,9 @@
           {{ element.product.name }}
         </v-col>
         <v-col cols="3" class="pt-0">
-          <shared-money :amount="parseInt(element.product.price)"></shared-money>
+          <shared-money
+            :amount="parseInt(element.product.price)"
+          ></shared-money>
         </v-col>
         <v-col cols="3" class="pt-0">
           {{ element.quantity }} {{ element.product.unitOfMeasure }}
@@ -97,7 +99,9 @@
             </shared-formatted-date>
           </v-col>
           <v-col cols="3" class="pt-0">
-            <shared-money :amount="parseInt(element.totalAmount)"></shared-money>
+            <shared-money
+              :amount="parseInt(element.totalAmount)"
+            ></shared-money>
           </v-col>
           <v-col cols="3" class="pt-0">
             {{ element.description }}
@@ -136,7 +140,7 @@
 
 <script>
 import JsonExcel from 'vue-json-excel'
-import SharedFormattedDate from '~/components/SharedComponents/SharedFormattedDate.vue';
+import SharedFormattedDate from '~/components/SharedComponents/SharedFormattedDate.vue'
 import moment from 'moment'
 export default {
   components: { JsonExcel, SharedFormattedDate },
@@ -148,6 +152,10 @@ export default {
     payments: {
       type: [],
       required: false,
+    },
+    isFromBalance: {
+      type: Boolean,
+      default: false,
     },
   },
   data: () => ({
@@ -170,6 +178,8 @@ export default {
   }),
   methods: {
     closeDialog() {
+      if (this.isFromBalance) return this.$emit('expensesDialog')
+
       this.$store.commit('setDialog')
     },
     exportToExcel() {},

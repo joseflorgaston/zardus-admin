@@ -32,7 +32,9 @@
           </v-autocomplete>
         </v-col>
         <v-col offset="1" offset-sm="0" cols="10" sm="4">
-          <h4>Precio. ({{ form.unitOfMeasure == 'gramos' ? 'Kg' : "unidades" }})</h4>
+          <h4>
+            Precio. ({{ form.unitOfMeasure == 'gramos' ? 'Kg' : 'unidades' }})
+          </h4>
           <v-text-field
             type="number"
             color="accent"
@@ -92,7 +94,7 @@ export default {
       price: 0,
       unitOfMeasure: 'unidades',
       stock: 0,
-      type: 'Product'
+      type: 'Product',
     },
     categories: [
       'Especias',
@@ -104,24 +106,26 @@ export default {
   }),
   methods: {
     closeDialog() {
+      this.$store.commit('setDialog')
+    },
+    resetForm() {
       this.form = {
         name: '',
         category: '',
         price: 0,
         unitOfMeasure: 'gs',
         stock: 0,
-        type: ''
+        type: '',
       }
-      this.$store.commit('setDialog')
     },
     async save() {
       this.form.price = parseInt(this.form.price)
       this.form.stock = parseInt(this.form.stock)
-      console.log(this.form)
+      this.closeDialog()
       this.$store.commit('setLoading')
       await this.$store.dispatch('saveProduct', this.form)
-      this.closeDialog()
       await this.$store.dispatch('getProducts', { page: 1, itemsPerPage: 10 })
+      this.resetForm();
       this.$store.commit('setLoading')
     },
   },

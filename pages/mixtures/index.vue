@@ -30,7 +30,7 @@
                     v-bind="attrs"
                     v-on="on"
                   >
-                    <v-icon color="primary" title="editar">mdi-plus</v-icon>
+                    <v-icon color="primary">mdi-plus</v-icon>
                   </v-btn>
                 </template>
                 <span>Modificar stock</span>
@@ -43,7 +43,7 @@
                     v-bind="attrs"
                     v-on="on"
                   >
-                    <v-icon color="primary" title="editar">mdi-pencil</v-icon>
+                    <v-icon color="primary">mdi-pencil</v-icon>
                   </v-btn>
                 </template>
                 <span>Editar Mezcla</span>
@@ -55,8 +55,9 @@
                     @click="openDeleteDialog(item)"
                     v-bind="attrs"
                     v-on="on"
+                    :disabled="item.inOrder > 0"
                   >
-                    <v-icon color="error" title="eliminar">mdi-delete</v-icon>
+                    <v-icon color="error">mdi-delete</v-icon>
                   </v-btn>
                 </template>
                 <span>Eliminar Producto</span>

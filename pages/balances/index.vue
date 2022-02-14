@@ -108,9 +108,17 @@
     </v-row>
     <v-dialog v-model="dialog" persistent min-width="500" width="700">
       <view-order-dialog
-        :item="viewItem"
-        :payments="payments"
+        :item="profitsDetails"
+        :payments="profitPayments"
       ></view-order-dialog>
+    </v-dialog>
+    <v-dialog v-model="expensesDialog" persistent min-width="500" width="700">
+      <view-buy-details
+        :item="expensesDetails"
+        :payments="expensesPayments"
+        :isFromBalance="true"
+        v-on:expensesDialog="closeExpensesDialog()"
+      ></view-buy-details>
     </v-dialog>
   </div>
 </template>
@@ -118,8 +126,10 @@
 <script>
 import BalancesPieChart from '~/components/Balances/BalancesPieChart.vue'
 import ViewOrderDialog from '~/components/Dialogs/BuyProducts/ViewBuyDetails.vue'
+import ViewBuyDetails from '~/components/Dialogs/BuyProducts/ViewBuyDetails.vue'
+
 export default {
-  components: { BalancesPieChart, ViewOrderDialog },
+  components: { BalancesPieChart, ViewOrderDialog, ViewBuyDetails },
   computed: {
     profitsData: {
       get() {
@@ -188,8 +198,8 @@ export default {
     },
     async openViewProfitsDetails(item) {
       this.$store.commit('setLoading')
-      this.viewItem = await this.$axios.$get('/api/order/' + item.orderId)
-      this.payments = await this.$axios.$get(
+      this.profitsDetails = await this.$axios.$get('/api/order/' + item.orderId)
+      this.profitPayments = await this.$axios.$get(
         `api/order/payments/${item.orderId}`
       )
       this.$store.commit('setDialog')
@@ -197,18 +207,34 @@ export default {
     },
 
     async openViewExpensesDetails(item) {
-      this.$store.commit('setLoading')
-      this.$store.commit('setLoading')
+      try {
+        this.$store.commit('setLoading')
+        this.expensesDetails = await this.$axios.$get(
+          '/api/supplyOrder/' + item.supplyOrderId
+        )
+        this.expensesPayments = await this.$axios.$get(
+          `/api/supplyOrder/payments/${item.supplyOrderId}`
+        );
+        this.expensesDialog = true
+      } catch (error) {
+      } finally {
+        this.$store.commit('setLoading')
+      }
     },
+    closeExpensesDialog() {
+      this.expensesDialog = false
+    }
   },
   data: () => ({
     loading: false,
     profitsLoading: false,
-    viewItem: {},
-    payments: [],
     expensesLoading: false,
-    viewProfitsDetails: false,
-    viewExpensesDetails: false,
+    profitPayments: [],
+    profitsDetails: {},
+    profitsDialog: false,
+    expensesPayments: [],
+    expensesDetails: {},
+    expensesDialog: false,
     labels: ['Ganancias', 'Gastos'],
     colors: ['#00E676', '#DD2C00'],
     transactionsQuantity: {
@@ -246,7 +272,6 @@ export default {
         },
       ],
     },
-    activeBusinesses: [5, 8],
     profitPagination: {
       page: 1,
       itemsPerPage: 10,

@@ -72,7 +72,7 @@
         </v-col>
         <v-col cols="3" class="pt-0">
           <shared-money
-            :amount="parseInt(element.product.price)"
+            :amount="parseInt(element.price)"
           ></shared-money>
         </v-col>
         <v-col cols="2" class="pt-0">
@@ -82,7 +82,7 @@
           <shared-money :amount="parseInt(element.subTotal)"></shared-money>
         </v-col>
       </v-row>
-      <div v-show="item.paymentMethod == 'Credito'">
+      <div v-show="item.paymentMethod == 'Credito' && payments.length > 0">
         <v-divider class="mt-3"></v-divider>
         <center>
           <div class="mt-2">
@@ -165,6 +165,7 @@ export default {
     payments: {
       type: [],
       required: false,
+      default: []
     },
   },
   data: () => ({

@@ -42,6 +42,7 @@
                     @click="openDeleteDialog(item)"
                     v-bind="attrs"
                     v-on="on"
+                    :disabled="item.inOrder > 0"
                   >
                     <v-icon color="error" title="eliminar">mdi-delete</v-icon>
                   </v-btn>

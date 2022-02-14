@@ -259,13 +259,16 @@ export default {
       miniVariant: false,
       right: true,
       rightDrawer: false,
-      title: 'Bienvenido',
+      title: 'Bienvenido ',
     }
   },
   async mounted() {
     if (!this.$auth.loggedIn) {
       this.$router.push('/login')
     }
+    this.title = this.title + this.$auth.$storage.getLocalStorage('user').userName
+    console.log('xd')
+    console.log(this.$auth.$storage.getLocalStorage('user'))
   },
   methods: {
     closeDialog() {

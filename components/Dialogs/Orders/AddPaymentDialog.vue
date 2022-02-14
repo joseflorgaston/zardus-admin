@@ -83,7 +83,7 @@
         @click="addPayment"
         class="pa-4"
         color="primary"
-        :disabled="!isValid"
+        :disabled="!isValid || !enabled"
         >Agregar Pago</v-btn
       >
       <v-btn text @click="closeDialog" class="pa-4">Cerrar</v-btn>
@@ -106,6 +106,7 @@ export default {
     payAmount: 0,
     isValid: true,
     menu: false,
+    enabled: true,
     paymentDate: format(parseISO(new Date().toISOString()), 'yyyy-MM-dd'),
   }),
   methods: {
@@ -114,6 +115,7 @@ export default {
     },
     async addPayment() {
       try {
+        this.enabled = false;
         this.$store.commit('setLoading')
         const item = {
           _id: this.item._id,
@@ -137,11 +139,17 @@ export default {
         console.log(error)
       } finally {
         this.closeDialog()
-        this.$store.commit('setLoading')
-        await this.$store.dispatch('getHistoryOrders', {
-          page: 1,
-          itemsPerPage: 10,
+        this.enabled = true
+        await this.$store.dispatch('sharedSearch', {
+          pagination: {
+            page: 1,
+            itemsPerPage: 10,
+          },
+          searchUrl: '/api/orders/',
+          searchText: this.$store.state.searchText,
+          dates: this.$store.state.filterDates,
         })
+        this.$store.commit('setLoading')
       }
     },
     today() {
