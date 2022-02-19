@@ -15,7 +15,7 @@
       ></v-text-field>
     </v-col>
     <v-col cols="12" sm="3" offset-md="1" md="2">
-      <v-btn color="primary" width="100%" max-width="250" @click="openCreateDialog()">
+      <v-btn color="primary" width="100%" max-width="250" @click="createExpense()">
         <v-icon class="mr-2">mdi-plus</v-icon>
         Agregar
       </v-btn>
@@ -36,8 +36,8 @@ export default {
     },
   },
   methods: {
-    openCreateDialog() {
-      this.$store.commit('setDialog')
+    createExpense() {
+      this.$router.push('/expenses/create')
     },
   },
 }
