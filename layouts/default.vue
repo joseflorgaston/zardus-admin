@@ -267,7 +267,6 @@ export default {
       this.$router.push('/login')
     }
     this.title = this.title + this.$auth.$storage.getLocalStorage('user').userName
-    console.log('xd')
     console.log(this.$auth.$storage.getLocalStorage('user'))
   },
   methods: {

@@ -101,6 +101,7 @@
       <payment-dialog
         :item="viewItem"
         v-on:closeDialog="openPaymentDialog"
+        :getSupplyOrders="getSupplyOrders"
       ></payment-dialog>
     </v-dialog>
   </v-container>

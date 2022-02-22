@@ -3,6 +3,7 @@
 <script>
 export default {
   auth: true,
+  layout: 'empty',
   beforeMount() {
     if (!this.$auth.loggedIn) {
       return this.$router.push('/login')

@@ -101,6 +101,9 @@ export default {
       type: Object,
       required: true,
     },
+    getSupplyOrders: {
+      type: Function,
+    },
   },
   data: () => ({
     payAmount: 0,
@@ -125,22 +128,18 @@ export default {
           totalPayed: this.item.totalPayed,
           userName: this.item.userName,
           payAmount: parseInt(this.payAmount),
-          paymentDate: this.paymentDate
+          paymentDate: this.paymentDate,
         }
         item.totalPayed += parseInt(this.payAmount)
-        console.log(item)
         await this.$axios.$post(`api/supplyOrder/setPayment/${item._id}`, item)
-        this.$store.commit('setSuccess', "Pago guardado exitosamente")
+        this.$store.commit('setSuccess', 'Pago guardado exitosamente')
       } catch (error) {
         this.$store.commit('setError', 'Ha ocurrido un error')
         console.log(error)
       } finally {
         this.closeDialog()
+        await this.getSupplyOrders()
         this.$store.commit('setLoading')
-        await this.$store.dispatch('getSupplyOrders', {
-          page: 1,
-          itemsPerPage: 10,
-        })
       }
     },
     today() {
