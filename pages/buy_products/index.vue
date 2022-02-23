@@ -64,6 +64,7 @@
                 icon
                 v-bind="attrs"
                 v-on="on"
+                :disabled="item.totalPayed == item.totalAmount"
                 @click="openPaymentDialog(item)"
               >
                 <v-icon color="primary" title="Editar Compra">mdi-cash</v-icon>

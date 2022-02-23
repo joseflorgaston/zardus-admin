@@ -1,6 +1,5 @@
 <template>
   <div>
-    <shared-header title="Balances"></shared-header>
     <v-row>
       <v-col cols="6">
         <shared-loading-card v-show="loading" />
@@ -91,7 +90,8 @@
               <template v-slot:activator="{ on, attrs }">
                 <v-btn
                   icon
-                  @click="openViewExpensesDetails(item)"
+                  @click="openViewExpensesDialog(item)"
+                  :disabled="item.type == 'Expense'"
                   v-bind="attrs"
                   v-on="on"
                 >
@@ -157,74 +157,6 @@ export default {
       return this.$store.state.dialog
     },
   },
-  async beforeMount() {
-    this.loading = true
-    this.$store.commit('setLoading')
-    await this.getProfits()
-    await this.getExpenses()
-    this.$store.commit('setLoading')
-    this.loading = false
-  },
-  methods: {
-    async getProfits() {
-      await this.$store.dispatch('getProfits', this.profitPagination)
-    },
-    async getExpenses() {
-      await this.$store.dispatch('getExpenses', this.expensesPagination)
-    },
-    async nextProfitsPage(value) {
-      this.profitsLoading = true
-      this.profitPagination.page = value
-      await this.getProfits()
-      this.profitsLoading = false
-    },
-    async changeProfitsCount(value) {
-      this.profitsLoading = true
-      this.profitPagination.itemsPerPage = value
-      await this.getProfits()
-      this.profitsLoading = false
-    },
-    async nextExpensesPage(value) {
-      this.expensesLoading = true
-      this.expensesPagination.page = value
-      await this.getExpenses()
-      this.expensesLoading = false
-    },
-    async changeExpensesCount(value) {
-      this.expensesLoading = true
-      this.expensesPagination.itemsPerPage = value
-      await this.getExpenses()
-      this.expensesLoading = false
-    },
-    async openViewProfitsDetails(item) {
-      this.$store.commit('setLoading')
-      this.profitsDetails = await this.$axios.$get('/api/order/' + item.orderId)
-      this.profitPayments = await this.$axios.$get(
-        `api/order/payments/${item.orderId}`
-      )
-      this.$store.commit('setDialog')
-      this.$store.commit('setLoading')
-    },
-
-    async openViewExpensesDetails(item) {
-      try {
-        this.$store.commit('setLoading')
-        this.expensesDetails = await this.$axios.$get(
-          '/api/supplyOrder/' + item.supplyOrderId
-        )
-        this.expensesPayments = await this.$axios.$get(
-          `/api/supplyOrder/payments/${item.supplyOrderId}`
-        );
-        this.expensesDialog = true
-      } catch (error) {
-      } finally {
-        this.$store.commit('setLoading')
-      }
-    },
-    closeExpensesDialog() {
-      this.expensesDialog = false
-    }
-  },
   data: () => ({
     loading: false,
     profitsLoading: false,
@@ -235,6 +167,7 @@ export default {
     expensesPayments: [],
     expensesDetails: {},
     expensesDialog: false,
+    expenseDetailDialog: false,
     labels: ['Ganancias', 'Gastos'],
     colors: ['#00E676', '#DD2C00'],
     transactionsQuantity: {
@@ -325,6 +258,77 @@ export default {
       },
     ],
   }),
+  async beforeMount() {
+    this.loading = true
+    this.$store.commit('setLoading')
+    await this.getProfits()
+    await this.getExpenses()
+    this.$store.commit('setLoading')
+    this.loading = false
+  },
+  methods: {
+    async getProfits() {
+      await this.$store.dispatch('getProfits', this.profitPagination)
+    },
+    async getExpenses() {
+      await this.$store.dispatch('getExpenses', this.expensesPagination)
+    },
+    async nextProfitsPage(value) {
+      this.profitsLoading = true
+      this.profitPagination.page = value
+      await this.getProfits()
+      this.profitsLoading = false
+    },
+    async changeProfitsCount(value) {
+      this.profitsLoading = true
+      this.profitPagination.itemsPerPage = value
+      await this.getProfits()
+      this.profitsLoading = false
+    },
+    async nextExpensesPage(value) {
+      this.expensesLoading = true
+      this.expensesPagination.page = value
+      await this.getExpenses()
+      this.expensesLoading = false
+    },
+    async changeExpensesCount(value) {
+      this.expensesLoading = true
+      this.expensesPagination.itemsPerPage = value
+      await this.getExpenses()
+      this.expensesLoading = false
+    },
+    async openViewProfitsDetails(item) {
+      this.$store.commit('setLoading')
+      this.profitsDetails = await this.$axios.$get('/api/order/' + item.orderId)
+      this.profitPayments = await this.$axios.$get(
+        `api/order/payments/${item.orderId}`
+      )
+      this.$store.commit('setDialog')
+      this.$store.commit('setLoading')
+    },
+    async openViewExpensesDialog(item) {
+      try {
+        this.$store.commit('setLoading')
+        await this.openSupplyOrderDetails(item)
+        this.expensesDialog = true
+      } catch (error) {
+      } finally {
+        this.$store.commit('setLoading')
+      }
+    },
+    closeExpensesDialog() {
+      this.expensesDialog = false
+    },
+    async openSupplyOrderDetails(item) {
+      this.expensesDetails = await this.$axios.$get(
+        '/api/supplyOrder/' + item.supplyOrderId
+      )
+      this.expensesPayments = await this.$axios.$get(
+        `/api/supplyOrder/payments/${item.supplyOrderId}`
+      )
+    },
+    openExpenseDetails() {},
+  },
 }
 </script>
 

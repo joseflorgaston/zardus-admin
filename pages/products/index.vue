@@ -209,7 +209,6 @@ export default {
         price: item.price.toString(),
         stock: item.stock.toString(),
       }
-      console.log(this.editedItem)
       this.$store.commit('setEditDialog')
     },
     openMixtureModal() {

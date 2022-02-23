@@ -75,6 +75,7 @@
       </v-row>
     </v-form>
     <v-card-actions>
+      <v-spacer></v-spacer>
       <v-btn color="primary" :disabled="!isValid" @click="addExpense"
         >Agregar</v-btn
       >

@@ -1,7 +1,9 @@
 <template>
   <div>
-    <users-header class="mb-5"></users-header>
     <v-row class="pt-0">
+      <v-col cols="12" md="11">
+        <users-header></users-header>
+      </v-col>
       <v-col cols="12" md="11">
         <v-card>
           <v-data-table
@@ -165,7 +167,7 @@ export default {
         userName: item.userName,
         email: item.email,
         password: '',
-        name: item.userName
+        name: item.userName,
       }
       console.log(this.editedItem)
       this.$store.commit('setEditDialog')

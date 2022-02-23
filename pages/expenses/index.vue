@@ -23,9 +23,9 @@
         <template v-slot:[`item.totalAmount`]="{ item }">
           <shared-money :amount="item.totalAmount || 0"></shared-money>
         </template>
-        <template v-slot:[`item.createdOn`]="{ item }">
+        <template v-slot:[`item.paymentDate`]="{ item }">
           <shared-formatted-date
-            :date="item.createdOn || ''"
+            :date="item.paymentDate || ''"
             :hasHour="true"
           ></shared-formatted-date>
         </template>
@@ -45,7 +45,7 @@
           </v-tooltip>
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
-              <v-btn icon v-bind="attrs" v-on="on" @click="deleteExpense()">
+              <v-btn icon v-bind="attrs" v-on="on" @click="deleteExpense(item)">
                 <v-icon color="primary" title="Editar Compra"
                   >mdi-delete</v-icon
                 >
@@ -58,7 +58,36 @@
     </v-card>
 
     <v-dialog v-model="addExpenseDialog" persistent min-width="500" width="700">
-      <create-expense-dialog :closeDialog="addExpense" :getExpenses="getExpenses"></create-expense-dialog>
+      <create-expense-dialog
+        :closeDialog="addExpense"
+        :getExpenses="getExpenses"
+      ></create-expense-dialog>
+    </v-dialog>
+    <v-dialog
+      v-model="editExpenseDialog"
+      persistent
+      min-width="500"
+      width="700"
+    >
+      <edit-expense-dialog
+        :closeDialog="editExpense"
+        :getExpenses="getExpenses"
+        :editItem="editItem"
+      ></edit-expense-dialog>
+    </v-dialog>
+    <v-dialog
+      v-model="deleteExpenseDialog"
+      persistent
+      min-width="500"
+      width="700"
+    >
+      <delete-expense-dialog
+        :close="deleteExpense"
+        :description="editItem.description"
+        :amount="editItem.totalAmount"
+        :getExpenses="getExpenses"
+        :id="editItem._id"
+      ></delete-expense-dialog>
     </v-dialog>
   </v-container>
 </template>
@@ -66,11 +95,19 @@
 <script>
 import JsonExcel from 'vue-json-excel'
 import CreateExpenseDialog from '~/components/Dialogs/Expenses/CreateExpenseDialog.vue'
+import EditExpenseDialog from '~/components/Dialogs/Expenses/EditExpenseDialog.vue'
+import DeleteExpenseDialog from '~/components/Dialogs/Expenses/DeleteExpenseDialog.vue'
 import ExpensesHeader from '~/components/SharedComponents/SharedHeader.vue'
 import moment from 'moment'
 
 export default {
-  components: { CreateExpenseDialog, ExpensesHeader, JsonExcel },
+  components: {
+    CreateExpenseDialog,
+    ExpensesHeader,
+    EditExpenseDialog,
+    DeleteExpenseDialog,
+    JsonExcel,
+  },
   computed: {
     items: {
       get() {
@@ -99,7 +136,7 @@ export default {
     headers: [
       {
         text: 'Fecha',
-        value: 'createdOn',
+        value: 'paymentDate',
         class: 'header-color white--text',
       },
       {
@@ -124,13 +161,32 @@ export default {
     page: 1,
     itemsPerPage: 10,
     addExpenseDialog: false,
+    editExpenseDialog: false,
+    deleteExpenseDialog: false,
   }),
   methods: {
     addExpense() {
       this.addExpenseDialog = !this.addExpenseDialog
     },
 
-    editExpense(item) {},
+    editExpense(item) {
+      this.editItem = {
+        _id: item._id,
+        createdOn: item.createdOn,
+        paymentDate: item.paymentDate,
+        type: item.type,
+        description: item.description,
+        totalAmount: item.totalAmount,
+      }
+      this.editExpenseDialog = !this.editExpenseDialog
+    },
+
+    deleteExpense(item) {
+      this.editItem._id = item._id
+      this.editItem.description = item.description
+      this.editItem.totalAmount = item.totalAmount
+      this.deleteExpenseDialog = !this.deleteExpenseDialog
+    },
 
     formatDate(date) {
       return moment(date).locale('es_py').format('DD/MM/yyyy')
