@@ -1,38 +1,50 @@
 <template>
-  <v-card width="400px" height="350px">
-    <v-card-text class="text-center d-flex justify-space-between">
-      {{ title }}
-      <v-tooltip bottom>
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn
-            color="white"
-            style="background: #64bb8d"
-            icon
-            height="25"
-            v-bind="attrs"
-            v-on="on"
-            width="25"
-            @click="changeCondition"
-          >
-            <v-icon> mdi-sync </v-icon>
-          </v-btn>
-        </template>
-        <span>Cambiar a {{ getNext() }}</span>
-      </v-tooltip>
-    </v-card-text>
-    <div class="text-center">
-      <center>
-        <h3>{{ getTitle() }}</h3>
-      </center>
-    </div>
-    <div class="pl-5 ma-3" style="width: 83%; height: 55%">
-      <canvas
-        :id="chartId"
-        @change="putNewValues()"
-        style="width: 100%; height: 100% !important"
-      ></canvas>
-    </div>
-  </v-card>
+  <div>
+    <v-card width="400px" height="350px" v-show="loading">
+      <div
+        class="d-flex flex-wrap align-center justify-center"
+        style="width: 100%; height: 100%"
+      >
+        <v-progress-circular color="primary" indeterminate size="50">
+        </v-progress-circular>
+      </div>
+    </v-card>
+    <v-card width="400px" height="350px" v-show="!loading">
+      <v-card-text class="text-center d-flex justify-space-between">
+        {{ title }}
+        <div style="width: 40%; height: 40px">
+          <v-select
+            v-model="range"
+            :items="ranges"
+            label="Cambiar rango"
+            dense
+            @change="getStatistics"
+          ></v-select>
+        </div>
+      </v-card-text>
+      <div class="text-center">
+        <h3>{{ text }}</h3>
+      </div>
+      <div class="d-flex flex-wrap justify-center">
+        <shared-money
+          :amount="totalProfits"
+          class="pr-1 subtitle-2 success--text"
+        ></shared-money>
+        /
+        <shared-money
+          :amount="totalExpenses"
+          class="pl-1 subtitle-2 error--text"
+        ></shared-money>
+      </div>
+      <div class="pl-5 ma-3" style="width: 83%; height: 55%">
+        <canvas
+          :id="chartId"
+          @change="putNewValues()"
+          style="width: 100%; height: 100% !important"
+        ></canvas>
+      </div>
+    </v-card>
+  </div>
 </template>
 
 <script>
@@ -46,48 +58,20 @@ export default Vue.extend({
     Chart,
   },
 
-  props: {
-    chartId: {
-      type: String,
-      required: true,
-    },
-    title: {
-      type: String,
-      required: true,
-    },
-    chartValues: {
-      type: Object,
-      default: {
-        headers: {
-          monthly: [],
-        },
-        values: [
-          {
-            monthly: [],
-          },
-          {
-            monthly: [],
-          },
-        ],
-      },
-    },
-    loading: {
-      type: Boolean,
-      default: true,
-    },
-    label: {
-      type: [],
-      default: '',
-    },
-    colors: {
-      type: [],
-    },
-  },
+  props: {},
+  data: () => ({
+    barChart: {},
+    totalProfits: 0,
+    totalExpenses: 0,
+    range: 'Mes',
+    ranges: ['Hoy', 'Semana', 'Mes', 'Total'],
+    title: 'Total Transacciones',
+    chartId: 'balanceStatistic',
+    text: 'Ultimos 30 dias',
+    loading: true,
+  }),
 
   watch: {
-    chartValues: function () {
-      this.barChart.update
-    },
   },
   computed: {
     height() {
@@ -106,119 +90,145 @@ export default Vue.extend({
     },
   },
 
-  data() {
-    return {
-      barChart: {},
-      text: 'Ultimos 30 dias',
-    }
-  },
-
-  mounted() {
-    console.log(this.chartValues)
-    const ctx = document.getElementById(this.chartId).getContext('2d')
-    var datasets = []
-    for (let index = 0; index < this.chartValues.values.length; index++) {
-      datasets.push({
-        label: `${this.label[index]}`,
-        data: this.chartValues.values[index].monthly,
-        backgroundColor: this.colors[index],
-        borderColor: ['#0C2334'],
-        borderWidth: 0,
-      })
-    }
-    this.barChart = new Chart(ctx, {
-      type: 'bar',
-      scale: 'scale',
-      data: {
-        labels: this.chartValues.headers.monthly,
-        datasets: datasets,
-      },
-      options: {
-        scales: {
-          y: {
-            beginAtZero: true,
-          },
-        },
-      },
-    })
+  async mounted() {
+    await this.getMonthlyStatistic()
   },
 
   methods: {
-    getTitle() {
-      dayjs.locale('es')
-      var date = new Date()
-      if (this.text === 'Ultimos 30 dias') {
-        return 'Ultimos 30 dias'
-      } else if (this.text === 'Diario') {
-        return dayjs(date).locale('es-py').format('dddd-DD-MM').toUpperCase()
-      } else if (this.text === 'Ultimos 7 dias') {
-        return 'Ultimos 7 dias'
+    setDataSets(length, label, data, color, headers) {
+      const ctx = document.getElementById(this.chartId).getContext('2d')
+      var datasets = []
+      for (let index = 0; index < length; index++) {
+        datasets.push({
+          label: `${label[index]}`,
+          data: data[index],
+          backgroundColor: color[index],
+          borderColor: ['#0C2334'],
+          borderWidth: 0,
+        })
       }
-    },
-    myEventHandler(e) {
-      console.log(e)
+      this.barChart = new Chart(ctx, {
+        type: 'bar',
+        scale: 'scale',
+        data: {
+          labels: headers,
+          datasets: datasets,
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true,
+            },
+          },
+        },
+      })
       this.barChart.update()
     },
-    getNext() {
-      if (this.text === 'Ultimos 30 dias') {
-        return 'Diario'
+    async getStatistics() {
+      this.barChart.destroy()
+      this.loading = true
+      if (this.range == this.ranges[0]) {
+        return await this.getDailyStatistic()
       }
-      if (this.text === 'Diario') {
-        return 'Ultimos 7 dias'
+      if (this.range == this.ranges[1]) {
+        return await this.getWeeklyStatistic()
       }
-      if (this.text === 'Ultimos 7 dias') {
-        return 'Ultimos 30 dias'
+      if (this.range == this.ranges[2]) {
+        return await this.getMonthlyStatistic()
+      }
+      return this.getTotalStatistic()
+    },
+    async getDailyStatistic() {
+      try {
+        let date = new Date()
+        this.text = dayjs(date)
+          .locale('es-py')
+          .format('dddd-DD-MM')
+          .toUpperCase()
+        const statistic = await this.$axios.$get('/api/balance/statistics', {
+          params: {
+            type: 'Daily',
+          },
+        })
+        this.totalExpenses = statistic.expenses
+        this.totalProfits = statistic.profits
+        this.setDataSets(
+          2,
+          ['Ganancias', 'Gastos'],
+          [[statistic.profits], [statistic.expenses]],
+          ['#00E676', '#DD2C00'],
+          [this.text]
+        )
+      } catch (error) {
+      } finally {
+        this.loading = false
       }
     },
-    changeCondition() {
-      if (this.text === 'Diario') {
-        this.text = 'Ultimos 7 dias'
-        var datasets = []
-        for (let index = 0; index < this.chartValues.values.length; index++) {
-          datasets.push({
-            label: `${this.label[index]}`,
-            data: this.chartValues.values[index].weekly,
-            backgroundColor: this.colors[index],
-            borderColor: ['#0C2334'],
-            borderWidth: 0,
-          })
-        }
-        this.barChart.data.labels = this.chartValues.headers.weekly
-        this.barChart.data.datasets = datasets
-        this.barChart.update()
-      } else if (this.text === 'Ultimos 7 dias') {
-        this.text = 'Ultimos 30 dias'
-        this.barChart.data.labels = this.chartValues.headers.monthly
-        var datasets = []
-        for (let index = 0; index < this.chartValues.values.length; index++) {
-          datasets.push({
-            label: `${this.label[index]}`,
-            data: this.chartValues.values[index].monthly,
-            backgroundColor: this.colors[index],
-            borderColor: ['#0C2334'],
-            borderWidth: 0,
-          })
-        }
-        this.barChart.data.datasets = datasets
-        this.barChart.update()
-      } else if (this.text === 'Ultimos 30 dias') {
-        this.text = 'Diario'
-        this.barChart.data.labels = this.chartValues.headers.daily
-        var datasets = []
-        for (let index = 0; index < this.chartValues.values.length; index++) {
-          datasets.push({
-            label: `${this.label[index]}`,
-            data: this.chartValues.values[index].daily,
-            backgroundColor: this.colors[index],
-            borderColor: ['#0C2334'],
-            borderWidth: 0,
-          })
-        }
-        this.barChart.update()
+    async getTotalStatistic() {
+      try {
+        const statistic = await this.$axios.$get('/api/balance/statistics', {
+          params: {
+            type: 'Total',
+          },
+        })
+        this.totalExpenses = statistic.expenses
+        this.totalProfits = statistic.profits
+        this.setDataSets(
+          2,
+          ['Ganancias', 'Gastos'],
+          [[statistic.profits], [statistic.expenses]],
+          ['#00E676', '#DD2C00'],
+          ["Total"]
+        )
+      } catch (error) {
+      } finally {
+        this.loading = false
       }
     },
-    putNewValues(event) {
-      console.log(event)
+    async getWeeklyStatistic() {
+      try {
+        const statistic = await this.$axios.$get('/api/balance/statistics', {
+          params: {
+            type: 'Weekly',
+          },
+        })
+        this.totalExpenses = statistic.expenses.total
+        this.totalProfits = statistic.profits.total
+        this.setDataSets(
+          2,
+          ['Ganancias', 'Gastos'],
+          [statistic.profits.values, statistic.expenses.values],
+          ['#00E676', '#DD2C00'],
+          ['Dia 1', 'Dia 2', 'Dia 3', 'Dia 4', 'Dia 5', 'Dia 6', 'Dia 7']
+        )
+      } catch (error) {
+        console.log(error)
+      } finally {
+        this.loading = false
+      }
+    },
+    async getMonthlyStatistic() {
+      try {
+        const statistic = await this.$axios.$get('/api/balance/statistics', {
+          params: {
+            type: 'Monthly',
+          },
+        })
+        console.log(statistic.expenses.values)
+        this.totalExpenses = statistic.expenses.total
+        this.totalProfits = statistic.profits.total
+        this.setDataSets(
+          2,
+          ['Ganancias', 'Gastos'],
+          [statistic.profits.values, statistic.expenses.values],
+          ['#00E676', '#DD2C00'],
+          ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4']
+        )
+        this.loading = false
+      } catch (error) {
+      } finally {
+        this.loading = false
+      }
     },
   },
 })

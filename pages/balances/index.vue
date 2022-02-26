@@ -1,21 +1,10 @@
 <template>
   <div>
     <v-row>
-      <v-col cols="6">
-        <shared-loading-card v-show="loading" />
-        <balances-statistics-card
-          v-show="!loading"
-          title="TOTAL TRANSACCIONES"
-          chartId="chart1"
-          :loading="loading"
-          :chartValues="transactionsQuantity"
-          :label="labels"
-          :colors="colors"
-        />
+      <v-col cols="12" sm="6">
+        <balances-statistics-card />
       </v-col>
-      <v-col cols="6">
-        <shared-loading-card v-show="loading" />
-      </v-col>
+      <v-col cols="6"> </v-col>
       <v-col cols="12" md="6">
         <center><h3>Ganancias</h3></center>
         <v-data-table
@@ -168,43 +157,6 @@ export default {
     expensesDetails: {},
     expensesDialog: false,
     expenseDetailDialog: false,
-    labels: ['Ganancias', 'Gastos'],
-    colors: ['#00E676', '#DD2C00'],
-    transactionsQuantity: {
-      headers: {
-        monthly: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'],
-        daily: ['Hoy'],
-        weekly: ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
-      },
-      values: [
-        {
-          monthly: ['4760000', '3890000', '8540000', '12221000'],
-          daily: ['274000'],
-          weekly: [
-            '440000',
-            '165000',
-            '252000',
-            '460000',
-            '276250',
-            '301700',
-            '274000',
-          ],
-        },
-        {
-          monthly: ['1142000', '1860000', '758250', '7967000'],
-          daily: ['128000'],
-          weekly: [
-            '140000',
-            '132000',
-            '336000',
-            '68000',
-            '14450',
-            '32740',
-            '128000',
-          ],
-        },
-      ],
-    },
     profitPagination: {
       page: 1,
       itemsPerPage: 10,
