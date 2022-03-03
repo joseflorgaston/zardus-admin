@@ -131,6 +131,10 @@ export default {
         }
         item.totalPayed += parseInt(this.payAmount)
         if (item.totalAmount == item.totalPayed) item.status = 'Pagado'
+        if(item.totalAmount < item.totalPayed) {
+          this.$store.commit("setError", "El monto pagado supera el monto total");
+          return this.$store.commit('setLoading')
+        }
 
         await this.$axios.$post(`api/order/setPayment/${item._id}`, item)
         this.$store.commit('setSuccess', 'Pago guardado exitosamente')
@@ -138,7 +142,8 @@ export default {
         this.$store.commit('setError', 'Ha ocurrido un error')
         console.log(error)
       } finally {
-        this.closeDialog()
+        this.closeDialog();
+        this.payAmount = 0
         this.enabled = true
         await this.$store.dispatch('sharedSearch', {
           pagination: {

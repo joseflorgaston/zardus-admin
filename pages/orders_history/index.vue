@@ -40,7 +40,7 @@
         </template>
         <template v-slot:[`item.deliveryDate`]="{ item }">
           <shared-formatted-date
-            :date="item.deliveryDate || ''"
+            :date="universalDate(item.deliveryDate) || ''"
           ></shared-formatted-date>
         </template>
         <template v-slot:[`item.actions`]="{ item }">
@@ -222,6 +222,12 @@ export default {
       this.payments = await this.$axios.$get(`api/order/payments/${item._id}`)
       this.$store.commit('setLoading')
       this.$store.commit('setDialog')
+    },
+    universalDate(deliveryDate) {
+      if (!deliveryDate) {
+        return null
+      }
+      return deliveryDate.substring(0, deliveryDate.length - 2)
     },
     async nextPage(value) {
       this.page = value

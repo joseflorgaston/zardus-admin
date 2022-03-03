@@ -161,10 +161,22 @@
         </v-list-item>
       </v-list>
       <template #append>
-        <div class="pb-8 pb-md-5 d-flex justify-center">
+        <div class="pb-2 px-4 d-flex justify-center">
           <v-btn
             class="mt-auto"
             outlined
+            color="black"
+            width="100%"
+            @click.prevent="changePasswordModal = true"
+          >
+            Cambiar Contraseña
+          </v-btn>
+        </div>
+        <div class="pb-8 px-4 pb-md-5 d-flex justify-center">
+          <v-btn
+            class="mt-auto"
+            outlined
+            width="100%"
             color="error"
             @click.prevent="logoutModal = true"
           >
@@ -190,6 +202,9 @@
       <v-dialog v-model="logoutModal" width="300">
         <logout-modal v-on:closeDialog="closeDialog()"></logout-modal>
       </v-dialog>
+      <v-dialog v-model="changePasswordModal" persistent max-width="500">
+        <change-password-modal v-on:closeDialog="closeChangePasswordModal()"></change-password-modal>
+      </v-dialog>
     </v-main>
     <v-overlay :value="loading">
       <v-progress-circular
@@ -203,8 +218,9 @@
 
 <script>
 import LogoutModal from '../components/Dialogs/LogoutDialog.vue'
+import changePasswordModal from '../components/Dialogs/ChangePasswordDialog.vue'
 export default {
-  components: { LogoutModal },
+  components: { LogoutModal, changePasswordModal },
   auth: true,
   computed: {
     loading: {
@@ -255,24 +271,29 @@ export default {
           to: '/providers',
         },
       ],
+      changePasswordModal: false,
       logoutModal: false,
       miniVariant: false,
       right: true,
       rightDrawer: false,
-      title: 'Bienvenido ',
+      title: 'Bienvenido/a ',
     }
   },
   async mounted() {
     if (!this.$auth.loggedIn) {
       this.$router.push('/login')
     }
-    this.title = this.title + this.$auth.$storage.getLocalStorage('user').userName
+    this.title =
+      this.title + this.$auth.$storage.getLocalStorage('user').userName
     console.log(this.$auth.$storage.getLocalStorage('user'))
   },
   methods: {
     closeDialog() {
       this.logoutModal = false
     },
+    closeChangePasswordModal() {
+      this.changePasswordModal = false;
+    }
   },
 }
 </script>

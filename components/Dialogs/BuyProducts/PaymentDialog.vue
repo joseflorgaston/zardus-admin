@@ -113,6 +113,7 @@ export default {
   }),
   methods: {
     closeDialog() {
+      this.payAmount = 0;
       this.$emit('closeDialog', this.item)
     },
     async addPayment() {

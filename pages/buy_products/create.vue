@@ -296,7 +296,7 @@ export default {
         details: this.dataItems,
         deliveryAddress: 'N/A',
         totalPayed: this.formHeader.paymentMethod == 'Contado' ? this.total : 0,
-        userName: this.$auth.$state.user.userName ?? "",
+        userName: this.$auth.$storage.getLocalStorage('user').userName ?? "",
       }
       try {
         if (this.isEdit) {

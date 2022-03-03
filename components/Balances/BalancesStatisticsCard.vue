@@ -142,8 +142,8 @@ export default Vue.extend({
       try {
         let date = new Date()
         this.text = dayjs(date)
-          .locale('es-py')
-          .format('dddd-DD-MM')
+          .locale('es')
+          .format('dddd/DD/MM')
           .toUpperCase()
         const statistic = await this.$axios.$get('/api/balance/statistics', {
           params: {
