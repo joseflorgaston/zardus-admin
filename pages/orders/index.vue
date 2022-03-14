@@ -59,7 +59,7 @@
           </v-tooltip>
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
-              <v-btn icon v-bind="attrs" v-on="on">
+              <v-btn icon v-bind="attrs" :disabled="item.status == 'Entregado'" v-on="on">
                 <v-icon
                   color="primary"
                   title="Editar Pedido"
@@ -280,6 +280,11 @@ export default {
       {
         text: 'Monto Pagado',
         value: 'totalPayed',
+        class: 'header-color white--text',
+      },
+      {
+        text: 'Comprobante',
+        value: 'invoiceNumber',
         class: 'header-color white--text',
       },
       {

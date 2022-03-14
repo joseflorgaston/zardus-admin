@@ -71,7 +71,18 @@
               (v) => v > 0 || 'Este campo debe ser mayor a 0',
               (v) => !!v || 'Este campo es requerido',
             ]"
+            prepend-icon="mdi-cash"
             @keyup="validateAmount"
+          >
+          </v-text-field>
+        </v-col>
+        <v-col offset="1" cols="10">
+          <h4>Nro de comprobante</h4>
+          <v-text-field
+            v-model="invoiceNumber"
+            :rules="[(v) => !!v || 'Este campo es requerido']"
+            prepend-icon="mdi-receipt"
+            placeholder="Nro de comprobante"
           >
           </v-text-field>
         </v-col>
@@ -104,6 +115,7 @@ export default {
   },
   data: () => ({
     payAmount: 0,
+    invoiceNumber: '',
     isValid: true,
     menu: false,
     enabled: true,
@@ -115,7 +127,7 @@ export default {
     },
     async addPayment() {
       try {
-        this.enabled = false;
+        this.enabled = false
         this.$store.commit('setLoading')
         const item = {
           _id: this.item._id,
@@ -127,12 +139,16 @@ export default {
           totalPayed: this.item.totalPayed,
           userName: this.item.userName,
           payAmount: parseInt(this.payAmount),
+          invoiceNumber: this.invoiceNumber,
           paymentDate: this.paymentDate,
         }
         item.totalPayed += parseInt(this.payAmount)
         if (item.totalAmount == item.totalPayed) item.status = 'Pagado'
-        if(item.totalAmount < item.totalPayed) {
-          this.$store.commit("setError", "El monto pagado supera el monto total");
+        if (item.totalAmount < item.totalPayed) {
+          this.$store.commit(
+            'setError',
+            'El monto pagado supera el monto total'
+          )
           return this.$store.commit('setLoading')
         }
 
@@ -142,7 +158,7 @@ export default {
         this.$store.commit('setError', 'Ha ocurrido un error')
         console.log(error)
       } finally {
-        this.closeDialog();
+        this.closeDialog()
         this.payAmount = 0
         this.enabled = true
         await this.$store.dispatch('sharedSearch', {

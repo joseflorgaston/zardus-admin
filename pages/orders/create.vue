@@ -79,6 +79,16 @@
           >
           </v-select>
         </v-col>
+        <v-col cols="12" sm="4" md="3">
+          <h4>Nro. de comprobante.</h4>
+          <v-text-field
+            v-model="formHeader.invoiceNumber"
+            placeholder="Nro de comprobante"
+            prepend-icon="mdi-receipt"
+            :rules="rules"
+          >
+          </v-text-field>
+        </v-col>
       </v-row>
 
       <v-divider class="primary my-5"></v-divider>
@@ -101,14 +111,13 @@
           </v-autocomplete>
         </v-col>
         <v-col cols="12" sm="6" md="3">
-          <h4>
-            Precio Gs. 
-          </h4>
+          <h4>Precio Gs.</h4>
           <v-text-field
             type="number"
             prepend-icon="mdi-currency-usd"
             :rules="quantityRules"
             @keyup="getSubTotal()"
+            @change="getSubTotal()"
             v-model="formDetails.price"
           >
           </v-text-field>
@@ -119,6 +128,8 @@
             type="number"
             prepend-icon="mdi-numeric-2-box-multiple-outline "
             :disabled="selectedProduct == null"
+            @keyup="getSubTotal()"
+            @change="getSubTotal()"
             :rules="quantityRules"
             v-model="formDetails.quantity"
           ></v-text-field>
@@ -134,9 +145,7 @@
             >
           </div>
           <div class="d-flex">
-            <h3>
-              SubTotal: <shared-money :amount="parseInt(formDetails.price)" />
-            </h3>
+            <h3>SubTotal: <shared-money :amount="parseInt(subTotal)" /></h3>
           </div>
         </div>
       </v-col>
@@ -239,6 +248,7 @@ export default {
       deliveryDate: format(parseISO(new Date().toISOString()), 'yyyy-MM-dd'),
       paymentMethod: 'Contado',
       customer: '',
+      invoiceNumber: '',
       numberOfPayments: 0,
       deliveryAddress: '',
     },
@@ -308,6 +318,7 @@ export default {
       this.formHeader.paymentMethod = item.paymentMethod
       this.formHeader.customer = item.customer
       this.formHeader.numberOfPayments = item.numberOfPayments
+      this.formHeader.invoiceNumber = item.invoiceNumber
       this.total = item.totalAmount
       for (let i = 0; i < item.details.length; i++) {
         const element = item.details[i]
@@ -315,7 +326,13 @@ export default {
       }
     },
     getSubTotal() {
-      this.subTotal = this.formDetails.price
+      console.log(this.selectedProduct.unitOfMeasure)
+      if (this.selectedProduct.unitOfMeasure == 'gramos')
+        return (this.subTotal =
+          this.formDetails.price * (this.formDetails.quantity / 1000))
+
+      return (this.subTotal =
+        this.formDetails.price * this.formDetails.quantity)
     },
     cleanTable() {
       this.total = 0
@@ -345,6 +362,7 @@ export default {
         lowerCaseCustomer: this.formHeader.customer.toLowerCase(),
         paymentMethod: this.formHeader.paymentMethod,
         numberOfPayments: this.formHeader.numberOfPayments,
+        invoiceNumber: this.formHeader.invoiceNumber,
         total: this.total,
         details: this.dataItems,
         deliveryAddress: 'N/A',
@@ -399,12 +417,15 @@ export default {
           return false
         }
       }
+      console.log(this.selectedProduct)
+      console.log(this.selectedProduct.inOrder)
       let stock = this.selectedProduct.stock - this.selectedProduct.inOrder
+      console.log(stock)
       stock = stock - this.formDetails.quantity
       if (stock < 0) {
         this.$store.commit(
           'setError',
-          'La cantidad del producto agregado supera al stock por ' + stock * -1 
+          'La cantidad del producto agregado supera al stock por ' + stock * -1
         )
         return false
       }
@@ -414,16 +435,16 @@ export default {
       if (!this.stockIsValid()) {
         return
       }
-      this.formDetails.subTotal = this.formDetails.price
+      this.formDetails.subTotal = this.subTotal
       this.formDetails.product = this.selectedProduct
       const item = {
-        subTotal: parseInt(this.formDetails.price),
+        subTotal: this.subTotal,
         product: this.selectedProduct,
         quantity: this.formDetails.quantity,
         price: parseInt(this.formDetails.price),
       }
       this.dataItems.push(item)
-      this.total = this.total + parseInt(this.formDetails.price)
+      this.total = this.total + parseInt(this.subTotal)
       this.hasItem = true
     },
     selectProduct(value) {
@@ -432,6 +453,7 @@ export default {
       this.formDetails.price = value.price
       this.formDetails.quantity = 0
       this.subTotal = 0
+      console.log(value)
       this.selectedProduct = value
     },
   },

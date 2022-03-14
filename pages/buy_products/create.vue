@@ -15,7 +15,7 @@
         </v-tooltip>
       </div>
       <v-row>
-        <v-col cols="12" sm="6" md="3">
+        <v-col cols="12" sm="4" md="3">
           <h4>Proveedor</h4>
           <v-autocomplete
             prepend-icon="mdi-truck"
@@ -30,8 +30,8 @@
           >
           </v-autocomplete>
         </v-col>
-        <v-col cols="12" sm="6" md="3">
-          <h4>Metodo de pago</h4>
+        <v-col cols="12" sm="4" md="3">
+          <h4>Método de pago</h4>
           <v-select
             :items="['Contado', 'Credito']"
             :rules="rules"
@@ -39,6 +39,16 @@
             prepend-icon="mdi-account-cash-outline"
           >
           </v-select>
+        </v-col>
+        <v-col cols="12" sm="4" md="3">
+          <h4>Nro. de comprobante.</h4>
+          <v-text-field
+            v-model="formHeader.invoiceNumber"
+            placeholder="Nro de comprobante"
+            prepend-icon="mdi-receipt"
+            :rules="rules"
+          >
+          </v-text-field>
         </v-col>
       </v-row>
       <v-divider class="primary my-5"></v-divider>
@@ -54,6 +64,7 @@
             :items="products"
             item-text="name"
             v-model="autocomplete"
+            id="autocomplete"
             :search-input.sync="search"
             @change="selectProduct($event)"
             return-object
@@ -66,8 +77,8 @@
             type="number"
             prepend-icon="mdi-currency-usd"
             :rules="quantityRules"
-            @keyup="getSubTotal()"
-            @change="getSubTotal()"
+            @keyup="setSubTotal()"
+            @change="setSubTotal()"
             v-model="formDetails.price"
           >
           </v-text-field>
@@ -77,6 +88,8 @@
           <v-text-field
             type="number"
             prepend-icon="mdi-numeric-2-box-multiple-outline "
+            @keyup="setSubTotal()"
+            @change="setSubTotal()"
             :disabled="selectedProduct == null"
             :rules="quantityRules"
             v-model="formDetails.quantity"
@@ -91,9 +104,7 @@
             >Agregar</v-btn
           >
           <div class="d-flex">
-            <h3>
-              SubTotal: <shared-money :amount="parseInt(formDetails.price)" />
-            </h3>
+            <h3>SubTotal: <shared-money :amount="parseInt(subTotal)" /></h3>
           </div>
         </div>
       </v-col>
@@ -196,6 +207,7 @@ export default {
       paymentMethod: 'Contado',
       provider: '',
       deliveryAddress: '',
+      invoiceNumber: '',
     },
     search: null,
     searchProvider: null,
@@ -242,7 +254,6 @@ export default {
     this.$store.commit('setLoading')
     if (this.$route.query._id != null) {
       this.isEdit = true
-      console.log(this.$route.query._id)
       const item = await this.$axios.$get(
         '/api/supplyOrder/' + this.$route.query._id
       )
@@ -257,14 +268,19 @@ export default {
       this.hasItem = true
       this.formHeader.paymentMethod = item.paymentMethod
       this.formHeader.provider = item.provider
+      this.formHeader.invoiceNumber = item.invoiceNumber
       this.total = item.totalAmount
       for (let i = 0; i < item.details.length; i++) {
         const element = item.details[i]
         this.editItem.push(element)
       }
     },
-    getSubTotal() {
-      this.subTotal = this.formDetails.price
+    setSubTotal() {
+      if (!this.formDetails.price || !this.formDetails.quantity) return
+
+      this.subTotal = parseInt(
+        this.formDetails.price * (this.formDetails.quantity / 1000)
+      )
     },
     cleanTable() {
       this.total = 0
@@ -296,7 +312,8 @@ export default {
         details: this.dataItems,
         deliveryAddress: 'N/A',
         totalPayed: this.formHeader.paymentMethod == 'Contado' ? this.total : 0,
-        userName: this.$auth.$storage.getLocalStorage('user').userName ?? "",
+        userName: this.$auth.$storage.getLocalStorage('user').userName ?? '',
+        invoiceNumber: this.formHeader.invoiceNumber,
       }
       try {
         if (this.isEdit) {
@@ -351,7 +368,6 @@ export default {
           return false
         }
       }
-      this.subTotal = parseInt(this.formDetails.price)
       this.formDetails.subTotal = this.subTotal
       this.formDetails.product = this.selectedProduct
       const item = {
@@ -361,9 +377,9 @@ export default {
         price: parseInt(this.formDetails.price),
       }
       this.dataItems.push(item)
-      console.log(this.dataItems)
       this.total = this.total + this.subTotal
       this.hasItem = true
+      document.getElementById('autocomplete').focus()
     },
     selectProduct(value) {
       if (value == null) return
@@ -397,7 +413,6 @@ export default {
       this.providers = providers.data
     },
   },
-  
 }
 </script>
 

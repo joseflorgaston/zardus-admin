@@ -250,13 +250,23 @@ export default {
       this.expensesLoading = false
     },
     async openViewProfitsDetails(item) {
-      this.$store.commit('setLoading')
-      this.profitsDetails = await this.$axios.$get('/api/order/' + item.orderId)
-      this.profitPayments = await this.$axios.$get(
-        `api/order/payments/${item.orderId}`
-      )
-      this.$store.commit('setDialog')
-      this.$store.commit('setLoading')
+      try {
+        this.$store.commit('setLoading')
+        console.log(item.orderId)
+        this.profitsDetails = await this.$axios.$get(
+          '/api/order/' + item.orderId
+        )
+        this.profitPayments = await this.$axios.$get(
+          `api/order/payments/${item.orderId}`
+        )
+        console.log('profit details', this.profitsDetails)
+        console.log('profit payments', this.profitPayments)
+        this.$store.commit('setDialog')
+      } catch (error) {
+        this.$store.commit('setError', 'Ha ocurrido un error')
+      } finally {
+        this.$store.commit('setLoading')
+      }
     },
     async openViewExpensesDialog(item) {
       try {

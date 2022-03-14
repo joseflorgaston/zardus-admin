@@ -31,6 +31,14 @@
           <span class="font-weight-black">Encargado:</span>
           <span>{{ item.userName }}</span>
         </v-col>
+        <v-col cols="12" sm="6">
+          <span class="font-weight-black">Nro comprobante:</span>
+          <span>{{ item.invoiceNumber }}</span>
+        </v-col>
+        <v-col cols="12" sm="6">
+          <span class="font-weight-black">Cant de productos:</span>
+          <span>{{ item.details.length }}</span>
+        </v-col>
       </v-row>
       <v-divider class="mt-3"></v-divider>
       <center>
@@ -58,7 +66,7 @@
         </v-col>
         <v-col cols="3" class="pt-0">
           <shared-money
-            :amount="parseInt(element.product.price)"
+            :amount="parseInt(element.price)"
           ></shared-money>
         </v-col>
         <v-col cols="3" class="pt-0">

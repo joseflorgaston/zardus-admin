@@ -75,6 +75,18 @@
           >
           </v-text-field>
         </v-col>
+        <v-col offset="1" cols="10">
+          <h4>Nro de comprobante</h4>
+          <v-text-field
+            v-model="invoiceNumber"
+            :rules="[
+              (v) => !!v || 'Este campo es requerido',
+            ]"
+            prepend-icon="mdi-receipt"
+            placeholder="Nro de comprobante"
+          >
+          </v-text-field>
+        </v-col>
       </v-row>
     </v-form>
     <v-card-actions>
@@ -106,6 +118,7 @@ export default {
     },
   },
   data: () => ({
+    invoiceNumber:'',
     payAmount: 0,
     isValid: true,
     menu: false,
@@ -113,7 +126,7 @@ export default {
   }),
   methods: {
     closeDialog() {
-      this.payAmount = 0;
+      this.payAmount = 0
       this.$emit('closeDialog', this.item)
     },
     async addPayment() {
@@ -129,6 +142,7 @@ export default {
           totalPayed: this.item.totalPayed,
           userName: this.item.userName,
           payAmount: parseInt(this.payAmount),
+          invoiceNumber: this.invoiceNumber,
           paymentDate: this.paymentDate,
         }
         item.totalPayed += parseInt(this.payAmount)

@@ -50,7 +50,7 @@
           </v-tooltip>
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
-              <v-btn icon v-bind="attrs" v-on="on" @click="editOrder(item)">
+              <v-btn icon v-bind="attrs" :disabled="item.totalPayed > 0" v-on="on" @click="editOrder(item)">
                 <v-icon color="primary" title="Editar Compra"
                   >mdi-pencil</v-icon
                 >
@@ -170,6 +170,11 @@ export default {
       {
         text: 'Monto pagado',
         value: 'totalPayed',
+        class: 'header-color white--text',
+      },
+      {
+        text: 'Comprobante',
+        value: 'invoiceNumber',
         class: 'header-color white--text',
       },
       {
