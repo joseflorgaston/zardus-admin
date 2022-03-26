@@ -4,28 +4,16 @@
       <div class="d-flex justify-center mb-10">
         <img src="../../assets/images/Zardus_logo.png" alt="logo" width="200" />
       </div>
-      <center><h3 style="color: #0c2334">Iniciar Sesion</h3></center>
-      <v-form
-        ref="form"
-        v-model="isFormValid"
-        style="width: 100%"
-        @submit.prevent="userLogin"
-      >
+      <center>
+        <h3 style="color: #0c2334">Iniciar Sesion</h3>
+      </center>
+      <v-form ref="form" v-model="isFormValid" style="width: 100%" @submit.prevent="userLogin">
         <div class="field">
-          <v-text-field
-            v-model="login.userName"
-            label="Usuario"
-            :rules="rules"
-          ></v-text-field>
+          <v-text-field v-model="login.userName" label="Usuario" :rules="rules"></v-text-field>
         </div>
 
         <div class="field">
-          <v-text-field
-            v-model="login.password"
-            label="Contraseña"
-            type="password"
-            :rules="rules"
-          ></v-text-field>
+          <v-text-field v-model="login.password" label="Contraseña" type="password" :rules="rules"></v-text-field>
         </div>
 
         <div class="field d-flex justify-center mt-8 mb-8">
@@ -36,9 +24,7 @@
             :disabled="!isFormValid || wasSubmitted"
             :loading="wasSubmitted"
             @click="userLogin()"
-          >
-            INGRESAR
-          </v-btn>
+          >INGRESAR</v-btn>
         </div>
       </v-form>
     </v-card>
@@ -50,23 +36,22 @@
 import Vue from 'vue'
 
 export default {
-  data() {
-    return {
-      isFormValid: false,
-      login: {
-        userName: '',
-        password: '',
-      },
-      wasSubmitted: false,
-      openModal: false,
-      rules: [(v) => !!v || 'Por favor, completa este campo'],
-    }
-  },
+  data: () => ({
+    isFormValid: false,
+    login: {
+      userName: '',
+      password: '',
+    },
+    wasSubmitted: false,
+    openModal: false,
+    rules: [(v) => !!v || 'Por favor, completa este campo'],
+  }),
   layout: 'empty',
   methods: {
     async userLogin() {
       this.wasSubmitted = true
       try {
+        this.login.userName = this.login.userName.trim();
         let res = await this.$auth.loginWith('local', {
           data: this.login,
         })
