@@ -6,42 +6,23 @@
       </v-col>
       <v-col cols="6"> </v-col>
       <v-col cols="12" md="6">
-        <center><h3>Ganancias</h3></center>
-        <v-data-table
-          :headers="profitsHeader"
-          :items="profitsData"
-          :server-items-length="profitsCount"
-          :page="profitPagination.page"
-          :items-per-page="profitPagination.itemsPerPage"
-          @update:page="nextProfitsPage"
-          @update:items-per-page="changeProfitsCount"
-          :loading="profitsLoading"
-          loading-text="Cargando"
-        >
+        <center>
+          <h3>Ganancias</h3>
+        </center>
+        <v-data-table :headers="profitsHeader" :items="profitsData" :server-items-length="profitsCount"
+          :page="profitPagination.page" :items-per-page="profitPagination.itemsPerPage" @update:page="nextProfitsPage"
+          @update:items-per-page="changeProfitsCount" :loading="profitsLoading" loading-text="Cargando">
           <template v-slot:[`item.totalAmount`]="{ item }">
-            <shared-money
-              :amount="item.totalAmount || 0"
-              class="success--text font-weight-bold"
-            ></shared-money>
+            <shared-money :amount="item.totalAmount || 0" class="success--text font-weight-bold"></shared-money>
           </template>
           <template v-slot:[`item.paymentDate`]="{ item }">
-            <shared-formatted-date
-              :date="item.paymentDate || ''"
-              :hasHour="true"
-            ></shared-formatted-date>
+            <shared-formatted-date :date="item.paymentDate || ''" :hasHour="true"></shared-formatted-date>
           </template>
           <template v-slot:[`item.actions`]="{ item }">
             <v-tooltip bottom>
               <template v-slot:activator="{ on, attrs }">
-                <v-btn
-                  icon
-                  @click="openViewProfitsDetails(item)"
-                  v-bind="attrs"
-                  v-on="on"
-                >
-                  <v-icon color="primary" title="Ver detalle de compra"
-                    >mdi-eye</v-icon
-                  >
+                <v-btn icon @click="openViewProfitsDetails(item)" v-bind="attrs" v-on="on">
+                  <v-icon color="primary" title="Ver detalle de compra">mdi-eye</v-icon>
                 </v-btn>
               </template>
               <span>Ver detalles</span>
@@ -50,43 +31,25 @@
         </v-data-table>
       </v-col>
       <v-col cols="12" md="6">
-        <center><h3>Gastos</h3></center>
-        <v-data-table
-          :headers="expensesHeader"
-          :items="expensesData"
-          :server-items-length="expensesCount"
-          :page="expensesPagination.page"
-          :items-per-page="expensesPagination.itemsPerPage"
-          @update:page="nextExpensesPage"
-          @update:items-per-page="changeExpensesCount"
-          :loading="expensesLoading"
-          loading-text="Cargando"
-        >
+        <center>
+          <h3>Gastos</h3>
+        </center>
+        <v-data-table :headers="expensesHeader" :items="expensesData" :server-items-length="expensesCount"
+          :page="expensesPagination.page" :items-per-page="expensesPagination.itemsPerPage"
+          @update:page="nextExpensesPage" @update:items-per-page="changeExpensesCount" :loading="expensesLoading"
+          loading-text="Cargando">
           <template v-slot:[`item.totalAmount`]="{ item }">
-            <shared-money
-              :amount="-item.totalAmount || 0"
-              class="red--text font-weight-bold"
-            ></shared-money>
+            <shared-money :amount="-item.totalAmount || 0" class="red--text font-weight-bold"></shared-money>
           </template>
           <template v-slot:[`item.paymentDate`]="{ item }">
-            <shared-formatted-date
-              :date="item.paymentDate || ''"
-              :hasHour="true"
-            ></shared-formatted-date>
+            <shared-formatted-date :date="item.paymentDate || ''" :hasHour="true"></shared-formatted-date>
           </template>
           <template v-slot:[`item.actions`]="{ item }">
             <v-tooltip bottom>
               <template v-slot:activator="{ on, attrs }">
-                <v-btn
-                  icon
-                  @click="openViewExpensesDialog(item)"
-                  :disabled="item.type == 'Expense'"
-                  v-bind="attrs"
-                  v-on="on"
-                >
-                  <v-icon color="primary" title="Ver detalle de compra"
-                    >mdi-eye</v-icon
-                  >
+                <v-btn icon @click="openViewExpensesDialog(item)" :disabled="item.type == 'Expense'" v-bind="attrs"
+                  v-on="on">
+                  <v-icon color="primary" title="Ver detalle de compra">mdi-eye</v-icon>
                 </v-btn>
               </template>
               <span>Ver detalles</span>
@@ -96,18 +59,11 @@
       </v-col>
     </v-row>
     <v-dialog v-model="dialog" persistent min-width="500" width="700">
-      <view-order-dialog
-        :item="profitsDetails"
-        :payments="profitPayments"
-      ></view-order-dialog>
+      <view-order-dialog :item="profitsDetails" :payments="profitPayments"></view-order-dialog>
     </v-dialog>
     <v-dialog v-model="expensesDialog" persistent min-width="500" width="700">
-      <view-buy-details
-        :item="expensesDetails"
-        :payments="expensesPayments"
-        :isFromBalance="true"
-        v-on:expensesDialog="closeExpensesDialog()"
-      ></view-buy-details>
+      <view-buy-details :item="expensesDetails" :payments="expensesPayments" :isFromBalance="true"
+        v-on:expensesDialog="closeExpensesDialog()"></view-buy-details>
     </v-dialog>
   </div>
 </template>
@@ -252,15 +208,12 @@ export default {
     async openViewProfitsDetails(item) {
       try {
         this.$store.commit('setLoading')
-        console.log(item.orderId)
         this.profitsDetails = await this.$axios.$get(
           '/api/order/' + item.orderId
         )
         this.profitPayments = await this.$axios.$get(
           `api/order/payments/${item.orderId}`
         )
-        console.log('profit details', this.profitsDetails)
-        console.log('profit payments', this.profitPayments)
         this.$store.commit('setDialog')
       } catch (error) {
         this.$store.commit('setError', 'Ha ocurrido un error')
@@ -289,7 +242,7 @@ export default {
         `/api/supplyOrder/payments/${item.supplyOrderId}`
       )
     },
-    openExpenseDetails() {},
+    openExpenseDetails() { },
   },
 }
 </script>

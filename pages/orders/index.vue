@@ -334,7 +334,6 @@ export default {
       return deliveryDate.substring(0, deliveryDate.length - 2)
     },
     addPayment(item) {
-      console.log(item)
       if (item.paymentMethod == 'Contado')
         return this.changeState(item._id, 'Pagado')
 

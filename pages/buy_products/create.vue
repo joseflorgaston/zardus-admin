@@ -1,184 +1,154 @@
 <template>
-  <v-container class="white">
+  <v-card>
     <v-form v-model="isValid">
-      <div class="d-flex">
-        <h2>Nueva Compra</h2>
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn icon class="mx-6" v-bind="attrs" v-on="on">
-              <v-icon color="primary" large @click="cleanHeader()"
-                >mdi-broom</v-icon
-              >
-            </v-btn>
-          </template>
-          <span>Limpiar Formulario</span>
-        </v-tooltip>
+      <div class="container-fluid d-flex flex-wrap px-sm-4 align-center">
+        <div></div>
+        <div class="col-12 mt-3 d-flex flex-wrap">
+          <h2>Nueva Compra</h2>
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn icon class="mx-6" v-bind="attrs" v-on="on">
+                <v-icon color="primary" large @click="cleanHeader()">mdi-broom</v-icon>
+              </v-btn>
+            </template>
+            <span>Limpiar Formulario</span>
+          </v-tooltip>
+        </div>
+        <div class="col-12">
+          <v-divider></v-divider>
+        </div>
       </div>
-      <v-row>
-        <v-col cols="12" sm="4" md="3">
+      <div class="container-fluid d-flex flex-wrap px-sm-4 align-center">
+        <div class="col-12 col-sm-4">
           <h4>Proveedor</h4>
-          <v-autocomplete
-            prepend-icon="mdi-truck"
-            placeholder="Proveedor"
-            :rules="rules"
-            :items="providers"
-            item-text="name"
-            v-model="provider"
-            :search-input.sync="searchProvider"
-            @change="selectProvider($event)"
-            return-object
-          >
+          <v-autocomplete prepend-inner-icon="mdi-truck" placeholder="Proveedor" :rules="rules" :items="providers"
+            item-text="name" v-model="provider" :search-input.sync="searchProvider" @change="selectProvider($event)"
+            return-object outlined dense>
           </v-autocomplete>
-        </v-col>
-        <v-col cols="12" sm="4" md="3">
+        </div>
+        <div class="col-12 col-sm-4">
           <h4>Método de pago</h4>
-          <v-select
-            :items="['Contado', 'Credito']"
-            :rules="rules"
-            v-model="formHeader.paymentMethod"
-            prepend-icon="mdi-account-cash-outline"
-          >
+          <v-select :items="['Contado', 'Credito']" :rules="rules" v-model="formHeader.paymentMethod"
+            prepend-inner-icon="mdi-account-cash-outline" dense outlined>
           </v-select>
-        </v-col>
-        <v-col cols="12" sm="4" md="3">
+        </div>
+        <div class="col-12 col-sm-4">
           <h4>Nro. de comprobante.</h4>
-          <v-text-field
-            v-model="formHeader.invoiceNumber"
-            placeholder="Nro de comprobante"
-            prepend-icon="mdi-receipt"
-            :rules="rules"
-          >
+          <v-text-field v-model="formHeader.invoiceNumber" placeholder="Nro de comprobante" prepend-inner-icon="mdi-receipt"
+            :rules="rules" name="invoiceNumber" outlined dense>
           </v-text-field>
-        </v-col>
-      </v-row>
-      <v-divider class="primary my-5"></v-divider>
-      <div class="d-flex mb-3">
-        <h2>Agregar Producto.</h2>
+        </div>
+        <div class="col-12" style="padding-top: 0px">
+          <v-divider></v-divider>
+        </div>
       </div>
-      <v-row>
-        <v-col cols="12" sm="6" md="4">
+      <div class="container-fluid d-flex flex-wrap px-sm-4 align-center">
+        <div class="col-12">
+          <h2>Agregar Producto.</h2>
+        </div>
+      </div>
+      <div class="container-fluid d-flex flex-wrap px-sm-4 align-center">
+        <div class="col-12 col-sm-6 col-md-4">
           <h4>Producto</h4>
-          <v-autocomplete
-            prepend-icon="mdi-seed"
-            :rules="rules"
-            :items="products"
-            item-text="name"
-            v-model="autocomplete"
-            id="autocomplete"
-            :search-input.sync="search"
-            @change="selectProduct($event)"
-            return-object
-          >
+          <v-autocomplete prepend-inner-icon="mdi-seed" :rules="rules" :items="products" item-text="name"
+            v-model="autocomplete" id="autocomplete" :search-input.sync="search" @change="selectProduct($event)"
+            return-object dense outlined>
           </v-autocomplete>
-        </v-col>
-        <v-col cols="12" sm="6" md="3">
+        </div>
+        <div class="col-12 col-sm-6 col-md-4">
           <h4>Precio Gs.</h4>
-          <v-text-field
-            type="number"
-            prepend-icon="mdi-currency-usd"
-            :rules="quantityRules"
-            @keyup="setSubTotal()"
-            @change="setSubTotal()"
-            v-model="formDetails.price"
-          >
+          <v-text-field type="number" prepend-inner-icon="mdi-currency-usd" :rules="quantityRules" @keyup="setSubTotal()"
+            @change="setSubTotal()" v-model="formDetails.price" name="price" outlined dense>
           </v-text-field>
-        </v-col>
-        <v-col cols="12" sm="6" md="3">
+        </div>
+        <div class="col-12 col-sm-6 col-md-4">
           <h4>Cantidad ({{ this.selectedProduct.unitOfMeasure }})</h4>
-          <v-text-field
-            type="number"
-            prepend-icon="mdi-numeric-2-box-multiple-outline "
-            @keyup="setSubTotal()"
-            @change="setSubTotal()"
-            :disabled="selectedProduct == null"
-            :rules="quantityRules"
-            v-model="formDetails.quantity"
-          ></v-text-field>
-        </v-col>
-      </v-row>
+          <v-text-field type="number" prepend-inner-icon="mdi-numeric-2-box-multiple-outline " @keyup="setSubTotal()"
+            @change="setSubTotal()" :disabled="selectedProduct == null" :rules="quantityRules"
+            v-model="formDetails.quantity" name="quantity" dense outlined></v-text-field>
+        </div>
+      </div>
     </v-form>
-    <v-row>
-      <v-col cols="12" sm="12" md="10">
-        <div class="d-flex justify-space-between">
-          <v-btn color="primary" :disabled="!isValid" @click="addProduct()"
-            >Agregar</v-btn
-          >
+    <div class="container-fluid d-flex flex-wrap px-sm-4 align-center">
+      <div class="col-12 col-md-10">
+        <div class="d-flex justify-space-between flex-wrap">
+          <v-btn color="primary" :disabled="!isValid" @click="addProduct()">Agregar</v-btn>
           <div class="d-flex">
-            <h3>SubTotal: <shared-money :amount="parseInt(subTotal)" /></h3>
+            <h3>SubTotal:
+              <shared-money :amount="parseInt(subTotal)" />
+            </h3>
           </div>
         </div>
-      </v-col>
-    </v-row>
-    <v-divider class="primary my-5"></v-divider>
-    <div class="d-flex mb-3 justify-space-between">
-      <div class="d-flex">
-        <h2>Productos seleccionados</h2>
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn icon class="mx-6" v-bind="attrs" v-on="on">
-              <v-icon color="primary" large @click="cleanTable"
-                >mdi-broom</v-icon
-              >
-            </v-btn>
-          </template>
-          <span>Limpiar Tabla</span>
-        </v-tooltip>
       </div>
-      <span class="caption pt-3">
-        <v-icon color="blue" class="mb-1" small
-          >mdi-alert-circle-outline
-        </v-icon>
-        <span class="subtitle-2">
-          Para crear el pedido clickea el boton guardar</span
-        >
-      </span>
+      <div class="col-12">
+        <v-divider></v-divider>
+      </div>
     </div>
-    <v-card class="mt-5" elevation="4" outlined>
-      <v-data-table :items="dataItems" :headers="dataHeaders">
-        <template v-slot:[`item.product`]="{ item }">
-          {{ item.product.name }}
-        </template>
-        <template v-slot:[`item.subTotal`]="{ item }">
-          <shared-money :amount="parseInt(item.subTotal)"></shared-money>
-        </template>
-        <template v-slot:[`item.price`]="{ item }">
-          <div class="d-flex">
-            <shared-money :amount="parseInt(item.price)"></shared-money>
-          </div>
-        </template>
-        <template v-slot:[`item.quantity`]="{ item }">
-          <div class="d-flex">
-            {{ item.quantity }} {{ item.product.unitOfMeasure }}
-          </div>
-        </template>
-        <template v-slot:[`item.actions`]="{ item }">
-          <v-btn icon>
-            <v-icon color="error" @click="removeItem(item)" title="Remover item"
-              >mdi-close</v-icon
-            >
-          </v-btn>
-        </template>
-      </v-data-table>
-    </v-card>
-    <v-row>
-      <v-col cols="12" sm="12" md="10">
+    <div class="container-fluid d-flex flex-wrap px-sm-4 align-center">
+      <div class="col-12">
         <div class="d-flex justify-space-between">
-          <v-btn
-            color="primary"
-            class="my-4"
-            @click="saveOrder"
-            :disabled="!hasItem"
-            >Guardar</v-btn
-          >
+          <div class="d-flex flex-wrap">
+            <h2>Productos seleccionados</h2>
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn icon class="mx-6" v-bind="attrs" v-on="on">
+                  <v-icon color="primary" large @click="cleanTable">mdi-broom</v-icon>
+                </v-btn>
+              </template>
+              <span>Limpiar Tabla</span>
+            </v-tooltip>
+          </div>
+          <span class="caption pt-3">
+            <v-icon color="blue" class="mb-1" small>mdi-alert-circle-outline
+            </v-icon>
+            <span class="subtitle-2">
+              Para crear el pedido clickea el boton guardar</span>
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="container-fluid d-flex flex-wrap px-sm-4 align-center">
+      <div class="col-12">
+        <v-card class="mt-5" outlined>
+          <v-data-table :items="dataItems" :headers="dataHeaders">
+            <template v-slot:[`item.product`]="{ item }">
+              {{ item.product.name }}
+            </template>
+            <template v-slot:[`item.subTotal`]="{ item }">
+              <shared-money :amount="parseInt(item.subTotal)"></shared-money>
+            </template>
+            <template v-slot:[`item.price`]="{ item }">
+              <div class="d-flex">
+                <shared-money :amount="parseInt(item.price)"></shared-money>
+              </div>
+            </template>
+            <template v-slot:[`item.quantity`]="{ item }">
+              <div class="d-flex">
+                {{ item.quantity }} {{ item.product.unitOfMeasure }}
+              </div>
+            </template>
+            <template v-slot:[`item.actions`]="{ item }">
+              <v-btn icon>
+                <v-icon color="error" @click="removeItem(item)" title="Remover item">mdi-close</v-icon>
+              </v-btn>
+            </template>
+          </v-data-table>
+        </v-card>
+      </div>
+    </div>
+    <div class="container-fluid d-flex flex-wrap px-sm-4 align-center">
+      <div class="col-12">
+        <div class="d-flex justify-space-between">
+          <v-btn color="primary" class="my-4" @click="saveOrder" :disabled="!hasItem">Guardar</v-btn>
           <div class="d-flex mt-2 mr-5">
             <h3>
               Total: <shared-money :amount="parseInt(total)"></shared-money>
             </h3>
           </div>
         </div>
-      </v-col>
-    </v-row>
-  </v-container>
+      </div>
+    </div>
+  </v-card>
 </template>
 
 <script>

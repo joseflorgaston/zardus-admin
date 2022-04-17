@@ -2,7 +2,8 @@
   <div class="container d-flex flex-column align-center justify-center">
     <v-card class="pa-16" raised>
       <div class="d-flex justify-center mb-10">
-        <img src="../../assets/images/Zardus_logo.png" alt="logo" width="200" />
+        <img lazy-src="https://picsum.photos/id/11/10/6" src="~/assets/images/Zardus_logo.png" alt="logo" width="200"
+          height="100%" />
       </div>
       <center>
         <h3 style="color: #0c2334">Iniciar Sesion</h3>
@@ -17,14 +18,8 @@
         </div>
 
         <div class="field d-flex justify-center mt-8 mb-8">
-          <v-btn
-            type="submit"
-            color="primary"
-            rounded
-            :disabled="!isFormValid || wasSubmitted"
-            :loading="wasSubmitted"
-            @click="userLogin()"
-          >INGRESAR</v-btn>
+          <v-btn type="submit" color="primary" rounded :disabled="!isFormValid || wasSubmitted" :loading="wasSubmitted"
+            @click="userLogin()">INGRESAR</v-btn>
         </div>
       </v-form>
     </v-card>
@@ -32,9 +27,7 @@
   </div>
 </template>
 
-<script lang="ts">
-import Vue from 'vue'
-
+<script>
 export default {
   data: () => ({
     isFormValid: false,
@@ -49,6 +42,7 @@ export default {
   layout: 'empty',
   methods: {
     async userLogin() {
+      this.$store.commit('setLoading')
       this.wasSubmitted = true
       try {
         this.login.userName = this.login.userName.trim();
@@ -66,6 +60,7 @@ export default {
         this.$store.commit('setError', 'Credenciales incorrectos')
       } finally {
         this.wasSubmitted = false
+        this.$store.commit('setLoading')
       }
     },
     async sendForgotPasswordEmail() {

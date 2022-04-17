@@ -3,14 +3,6 @@
     <div class="text-center pt-5">
       <h2>{{ this.title }}</h2>
     </div>
-    <div :id="id" v-show="process.browser">
-      <!--<apex-charts
-        class="ma-6"
-        width="380px"
-        :options="chartOptions"
-        :series="values"
-      ></apex-charts> -->
-    </div>
   </v-card>
 </template>
 

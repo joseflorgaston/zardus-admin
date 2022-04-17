@@ -87,7 +87,6 @@ export default {
     },
     async save() {
       this.editItem.roles = [this.editItem.roles]
-      console.log(this.form)
       this.$store.commit('setLoading')
       await this.$axios.put('/api/user/' + this.editItem._id, this.editItem)
       this.closeDialog()

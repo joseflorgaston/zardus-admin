@@ -49,9 +49,7 @@ export default {
         this.$store.commit('setLoading')
         this.$store.commit('setDeleteDialog')
         await this.$axios.$delete(`${this.deleteUrl}/` + this.editItem._id)
-        console.log("setSuccess");
         this.$store.commit('setSuccess', this.title + " Eliminado exitosamente");
-        console.log(this.getUrl);
         const items = await this.$axios.$get(`${this.getUrl}`)
         this.$store.commit('setItems', items.data)
         this.$store.commit('setCount', items.count)

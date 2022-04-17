@@ -85,7 +85,6 @@ export default {
     },
     async save() {
       this.form.roles = [this.form.roles]
-      console.log(this.form)
       this.$store.commit('setLoading')
       await this.$axios.post('/api/auth/signup', this.form);
       this.closeDialog()

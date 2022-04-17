@@ -19,6 +19,13 @@ export default {
     ]
   },
 
+  vue: {
+    config: {
+      productionTip: true,
+      devtools: true
+    }
+  },
+
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
     "assets/styles.css"
@@ -35,7 +42,7 @@ export default {
   // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
   buildModules: [
     // https://go.nuxtjs.dev/vuetify
-    '@nuxtjs/vuetify',
+    '@nuxtjs/vuetify' //,'nuxt-compress'
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
@@ -85,7 +92,7 @@ export default {
       dark: false,
       themes: {
         dark: {
-          primary: '#D8E1E0',
+          primary: '#452453',
           secondary: '#EDDFF7',
           tertiary: '#E9D5ED',
           $default: '#D5DBED',
@@ -115,7 +122,4 @@ export default {
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
-  build: {
-
-  }
 }

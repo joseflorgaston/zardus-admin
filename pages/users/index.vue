@@ -169,7 +169,6 @@ export default {
         password: '',
         name: item.userName,
       }
-      console.log(this.editedItem)
       this.$store.commit('setEditDialog')
     },
     openDeleteDialog(item) {

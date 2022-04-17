@@ -1,15 +1,13 @@
 <template>
-  <v-container class="white">
-    <v-form v-model="isValid">
-      <div class="d-flex justify-space-between pb-4">
+  <v-card>
+    <v-form class="px-4 px-sm-8" v-model="isValid">
+      <div class="d-flex justify-space-between pt-6">
         <div class="d-flex">
           <h2>Nuevo Pedido</h2>
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
               <v-btn icon class="mx-6" v-bind="attrs" v-on="on">
-                <v-icon color="primary" large @click="cleanHeader()"
-                  >mdi-broom</v-icon
-                >
+                <v-icon color="primary" large @click="cleanHeader()">mdi-broom</v-icon>
               </v-btn>
             </template>
             <span>Limpiar Formulario</span>
@@ -19,41 +17,25 @@
           <h2>{{ this.today }}</h2>
         </div>
       </div>
-      <v-row>
+      <div class="d-flex flex-wrap">
+        <div class="col-12">
+          <v-divider></v-divider>
+        </div>
+      </div>
+      <v-row class="py-3">
         <v-col cols="12" sm="6" md="3">
           <h4>Fecha de entrega</h4>
-          <v-menu
-            ref="menu"
-            v-model="menu"
-            :return-value.sync="computedDateFormattedMomentjs"
-            :close-on-content-click="false"
-            transition="scale-transition"
-            min-width="auto"
-          >
+          <v-menu ref="menu" v-model="menu" :return-value.sync="computedDateFormattedMomentjs"
+            :close-on-content-click="false" transition="scale-transition" min-width="auto">
             <template v-slot:activator="{ on, attrs }">
-              <v-combobox
-                v-model="computedDateFormattedMomentjs"
-                color="primary"
-                prepend-icon="mdi-calendar"
-                readonly
-                v-bind="attrs"
-                v-on="on"
-              ></v-combobox>
+              <v-combobox v-model="computedDateFormattedMomentjs" color="primary" prepend-inner-icon="mdi-calendar"
+                readonly v-bind="attrs" v-on="on" outlined dense></v-combobox>
             </template>
-            <v-date-picker
-              v-model="formHeader.deliveryDate"
-              locale="es-py"
-              title="Entrega"
-              header-color="primary"
-              scrollable
-            >
+            <v-date-picker v-model="formHeader.deliveryDate" locale="es-py" title="Entrega" header-color="primary"
+              scrollable>
               <v-spacer></v-spacer>
               <v-btn text color="primary" @click="menu = false"> Cancel </v-btn>
-              <v-btn
-                text
-                color="primary"
-                @click="$refs.menu.save(formHeader.deliveryDate)"
-              >
+              <v-btn text color="primary" @click="$refs.menu.save(formHeader.deliveryDate)">
                 OK
               </v-btn>
             </v-date-picker>
@@ -61,159 +43,122 @@
         </v-col>
         <v-col cols="12" sm="6" md="3">
           <h4>Cliente</h4>
-          <v-text-field
-            placeholder="Cliente"
-            prepend-icon="mdi-account"
-            v-model="formHeader.customer"
-            :rules="rules"
-          >
+          <v-text-field placeholder="Cliente" prepend-inner-icon="mdi-account" v-model="formHeader.customer"
+            :rules="rules" name="customer" outlined dense>
           </v-text-field>
         </v-col>
         <v-col cols="12" sm="6" md="3">
           <h4>Metodo de pago</h4>
-          <v-select
-            :items="['Contado', 'Credito']"
-            :rules="rules"
-            v-model="formHeader.paymentMethod"
-            prepend-icon="mdi-account-cash-outline"
-          >
+          <v-select :items="['Contado', 'Credito']" :rules="rules" v-model="formHeader.paymentMethod"
+            prepend-inner-icon="mdi-account-cash-outline" dense outlined>
           </v-select>
         </v-col>
         <v-col cols="12" sm="4" md="3">
           <h4>Nro. de comprobante.</h4>
-          <v-text-field
-            v-model="formHeader.invoiceNumber"
-            placeholder="Nro de comprobante"
-            prepend-icon="mdi-receipt"
-            :rules="rules"
-          >
+          <v-text-field v-model="formHeader.invoiceNumber" placeholder="Nro de comprobante"
+            prepend-inner-icon="mdi-receipt" :rules="rules" name="invoiceNumber" dense outlined>
           </v-text-field>
         </v-col>
+        <v-col cols="12">
+          <v-divider class="mb-5"></v-divider>
+        </v-col>
       </v-row>
-
-      <v-divider class="primary my-5"></v-divider>
       <div class="d-flex mb-3">
         <h2>Agregar Producto.</h2>
       </div>
       <v-row>
         <v-col cols="12" sm="6" md="4">
           <h4>Producto</h4>
-          <v-autocomplete
-            prepend-icon="mdi-seed"
-            :rules="rules"
-            :items="products"
-            item-text="name"
-            v-model="autocomplete"
-            :search-input.sync="search"
-            @change="selectProduct($event)"
-            return-object
-          >
+          <v-autocomplete prepend-inner-icon="mdi-seed" :rules="rules" :items="products" item-text="name"
+            v-model="autocomplete" :search-input.sync="search" @change="selectProduct($event)" return-object outlined
+            dense>
           </v-autocomplete>
         </v-col>
         <v-col cols="12" sm="6" md="3">
           <h4>Precio Gs.</h4>
-          <v-text-field
-            type="number"
-            prepend-icon="mdi-currency-usd"
-            :rules="quantityRules"
-            @keyup="getSubTotal()"
-            @change="getSubTotal()"
-            v-model="formDetails.price"
-          >
+          <v-text-field type="number" prepend-inner-icon="mdi-currency-usd" :rules="quantityRules"
+            @keyup="getSubTotal()" @change="getSubTotal()" v-model="formDetails.price" name="price" outlined dense>
           </v-text-field>
         </v-col>
         <v-col cols="12" sm="6" md="3">
           <h4>Cantidad ({{ this.selectedProduct.unitOfMeasure }})</h4>
-          <v-text-field
-            type="number"
-            prepend-icon="mdi-numeric-2-box-multiple-outline "
-            :disabled="selectedProduct == null"
-            @keyup="getSubTotal()"
-            @change="getSubTotal()"
-            :rules="quantityRules"
-            v-model="formDetails.quantity"
-          ></v-text-field>
+          <v-text-field type="number" prepend-inner-icon="mdi-numeric-2-box-multiple-outline "
+            :disabled="selectedProduct == null" @keyup="getSubTotal()" @change="getSubTotal()" :rules="quantityRules"
+            v-model="formDetails.quantity" name="quantity" outlined dense></v-text-field>
         </v-col>
       </v-row>
     </v-form>
-    <v-row>
+    <v-row class="px-4 px-sm-8">
       <v-col cols="12" sm="12" md="10">
         <div class="d-flex justify-space-between">
           <div>
-            <v-btn color="primary" :disabled="!isValid" @click="addProduct()"
-              >Agregar</v-btn
-            >
+            <v-btn color="primary" :disabled="!isValid" @click="addProduct()">Agregar</v-btn>
           </div>
           <div class="d-flex">
-            <h3>SubTotal: <shared-money :amount="parseInt(subTotal)" /></h3>
+            <h3>SubTotal:
+              <shared-money :amount="parseInt(subTotal)" />
+            </h3>
           </div>
         </div>
       </v-col>
+      <v-col cols="12">
+        <v-divider class="mb-5"></v-divider>
+      </v-col>
     </v-row>
-    <v-divider class="primary my-5"></v-divider>
-    <div class="d-flex mb-3 justify-space-between">
+    <div class="d-flex mb-3 px-4 px-sm-8 justify-space-between">
       <div class="d-flex">
         <h2>Productos seleccionados</h2>
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
             <v-btn icon class="mx-6" v-bind="attrs" v-on="on">
-              <v-icon color="primary" large @click="cleanTable"
-                >mdi-broom</v-icon
-              >
+              <v-icon color="primary" large @click="cleanTable">mdi-broom</v-icon>
             </v-btn>
           </template>
           <span>Limpiar Tabla</span>
         </v-tooltip>
       </div>
       <span class="caption pt-3">
-        <v-icon color="blue" class="mb-1" small
-          >mdi-alert-circle-outline
+        <v-icon color="blue" class="mb-1" small>mdi-alert-circle-outline
         </v-icon>
         <span class="subtitle-2">
-          Para crear el pedido clickea el boton guardar</span
-        >
+          Para crear el pedido clickea el boton guardar</span>
       </span>
     </div>
-    <v-card class="mt-5" elevation="4" outlined>
-      <v-data-table :items="dataItems" :headers="dataHeaders">
-        <template v-slot:[`item.isPrepared`]="{ item }">
-          <v-checkbox v-model="item.product.isPrepared"> </v-checkbox>
-        </template>
-        <template v-slot:[`item.product`]="{ item }">
-          {{ item.product.name }}
-        </template>
-        <template v-slot:[`item.subTotal`]="{ item }">
-          <shared-money :amount="parseInt(item.subTotal)"></shared-money>
-        </template>
-        <template v-slot:[`item.price`]="{ item }">
-          <div class="d-flex">
-            <shared-money :amount="parseInt(item.price)"></shared-money>
-          </div>
-        </template>
-        <template v-slot:[`item.quantity`]="{ item }">
-          <div class="d-flex">
-            {{ item.quantity }} {{ item.product.unitOfMeasure }}
-          </div>
-        </template>
-        <template v-slot:[`item.actions`]="{ item }">
-          <v-btn icon>
-            <v-icon color="error" @click="removeItem(item)" title="Remover item"
-              >mdi-close</v-icon
-            >
-          </v-btn>
-        </template>
-      </v-data-table>
-    </v-card>
-    <v-row>
-      <v-col cols="12" sm="12" md="10">
+    <div class="px-4 px-sm-8">
+      <v-card class="mt-5" elevation="4" outlined>
+        <v-data-table :items="dataItems" :headers="dataHeaders">
+          <template v-slot:[`item.isPrepared`]="{ item }">
+            <v-checkbox v-model="item.product.isPrepared"> </v-checkbox>
+          </template>
+          <template v-slot:[`item.product`]="{ item }">
+            {{ item.product.name }}
+          </template>
+          <template v-slot:[`item.subTotal`]="{ item }">
+            <shared-money :amount="parseInt(item.subTotal)"></shared-money>
+          </template>
+          <template v-slot:[`item.price`]="{ item }">
+            <div class="d-flex">
+              <shared-money :amount="parseInt(item.price)"></shared-money>
+            </div>
+          </template>
+          <template v-slot:[`item.quantity`]="{ item }">
+            <div class="d-flex">
+              {{ item.quantity }} {{ item.product.unitOfMeasure }}
+            </div>
+          </template>
+          <template v-slot:[`item.actions`]="{ item }">
+            <v-btn icon>
+              <v-icon color="error" @click="removeItem(item)" title="Remover item">mdi-close</v-icon>
+            </v-btn>
+          </template>
+        </v-data-table>
+      </v-card>
+    </div>
+
+    <v-row class="px-4 px-sm-8">
+      <v-col cols="12" md="10">
         <div class="d-flex justify-space-between">
-          <v-btn
-            color="primary"
-            class="my-4"
-            @click="saveOrder"
-            :disabled="!hasItem"
-            >Guardar</v-btn
-          >
+          <v-btn color="primary" class="my-4" @click="saveOrder" :disabled="!hasItem">Guardar</v-btn>
           <div class="d-flex mt-2 mr-5">
             <h3>
               Total: <shared-money :amount="parseInt(total)"></shared-money>
@@ -222,7 +167,7 @@
         </div>
       </v-col>
     </v-row>
-  </v-container>
+  </v-card>
 </template>
 
 <script>
@@ -326,7 +271,6 @@ export default {
       }
     },
     getSubTotal() {
-      console.log(this.selectedProduct.unitOfMeasure)
       if (this.selectedProduct.unitOfMeasure == 'gramos')
         return (this.subTotal =
           this.formDetails.price * (this.formDetails.quantity / 1000))
@@ -386,7 +330,7 @@ export default {
       this.$store.commit('setLoading')
       this.$router.push('/orders')
     },
-    removeItem(item, event) {
+    removeItem(item) {
       const index = this.dataItems.indexOf(item)
       this.total = this.total - item.subTotal
       this.dataItems.splice(index, 1)
@@ -417,10 +361,7 @@ export default {
           return false
         }
       }
-      console.log(this.selectedProduct)
-      console.log(this.selectedProduct.inOrder)
       let stock = this.selectedProduct.stock - this.selectedProduct.inOrder
-      console.log(stock)
       stock = stock - this.formDetails.quantity
       if (stock < 0) {
         this.$store.commit(
@@ -453,7 +394,6 @@ export default {
       this.formDetails.price = value.price
       this.formDetails.quantity = 0
       this.subTotal = 0
-      console.log(value)
       this.selectedProduct = value
     },
   },
@@ -473,15 +413,15 @@ export default {
       get() {
         return this.formHeader.deliveryDate
           ? moment(this.formHeader.deliveryDate)
-              .locale('es_py')
-              .format('dddd, DD MMMM, yyyy')
+            .locale('es_py')
+            .format('dddd, DD MMMM, yyyy')
           : ''
       },
       set(value) {
         return this.formHeader.deliveryDate
           ? moment(this.formHeader.deliveryDate)
-              .locale('es_py')
-              .format('dddd, DD MMMM, yyyy')
+            .locale('es_py')
+            .format('dddd, DD MMMM, yyyy')
           : ''
       },
     },

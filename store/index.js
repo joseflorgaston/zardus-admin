@@ -159,7 +159,6 @@ export const actions = {
 
   async getProviders({ commit }, pagination) {
     try {
-      console.log(pagination);
       const providers = await this.$axios.$get(`/api/providers/${(pagination.page - 1) * pagination.itemsPerPage}/${pagination.itemsPerPage}`);
       commit("setCount", providers.count)
       commit('setItems', providers.data);
@@ -301,6 +300,16 @@ export const actions = {
     } catch (error) {
       commit("setError", "Ha ocurrido un error");
     }
-  }
+  },
+
+  async getDecreases({ commit }, pagination) {
+    try {
+      const decreases = await this.$axios.$get(`/api/decrease/${(pagination.page - 1) * pagination.itemsPerPage}/${pagination.itemsPerPage}`);
+      commit('setCount', decreases.count);
+      commit('setItems', decreases.data);
+    } catch (error) {
+      commit("setError", "Ha ocurrido un error inesperado");
+    }
+  },
 
 }

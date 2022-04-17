@@ -166,6 +166,7 @@ export default Vue.extend({
     },
     async getTotalStatistic() {
       try {
+        this.text = 'Total';
         const statistic = await this.$axios.$get('/api/balance/statistics', {
           params: {
             type: 'Total',
@@ -191,7 +192,8 @@ export default Vue.extend({
           params: {
             type: 'Weekly',
           },
-        })
+        });
+        this.text = "En la semana";
         this.totalExpenses = statistic.expenses.total
         this.totalProfits = statistic.profits.total
         this.setDataSets(
@@ -213,8 +215,8 @@ export default Vue.extend({
           params: {
             type: 'Monthly',
           },
-        })
-        console.log(statistic.expenses.values)
+        });
+        this.text = "Ultimos 30 dias";
         this.totalExpenses = statistic.expenses.total
         this.totalProfits = statistic.profits.total
         this.setDataSets(

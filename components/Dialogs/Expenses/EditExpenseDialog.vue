@@ -54,6 +54,7 @@
             v-model="editItem.totalAmount"
             type="number"
             :rules="rules"
+            name="amount"
           >
           </v-text-field>
         </v-col>
@@ -65,6 +66,7 @@
             outlined
             v-model="editItem.description"
             :rules="required"
+            name="description"
           >
           </v-textarea>
         </v-col>
@@ -110,7 +112,6 @@ export default {
   }),
   methods: {
     async editExpense() {
-      console.log(this.editItem)
       try {
         this.$store.commit('setLoading')
         this.editItem.totalAmount = parseInt(this.editItem.totalAmount)

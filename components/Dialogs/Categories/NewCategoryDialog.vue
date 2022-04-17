@@ -17,17 +17,18 @@
             label="Nombre"
             v-model="form.name"
             :rules="rules"
+            name="name"
           >
           </v-text-field>
         </v-col>
         <v-col offset="1" offset-sm="0" cols="10" sm="4">
           <h4>Contacto</h4>
-          <v-text-field color="accent" label="Contacto" v-model="form.contact">
+          <v-text-field color="accent" label="Contacto" v-model="form.contact" name="contact">
           </v-text-field>
         </v-col>
         <v-col offset="1" cols="10" sm="10">
           <h4>Direccion</h4>
-          <v-text-field color="accent" label="Direccion" v-model="form.address">
+          <v-text-field color="accent" label="Direccion" v-model="form.address" name="address">
           </v-text-field>
         </v-col>
       </v-row>

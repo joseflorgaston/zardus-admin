@@ -17,6 +17,7 @@
             label="Nombre"
             v-model="editItem.name"
             :rules="rules"
+            name="name"
           >
           </v-text-field>
         </v-col>
@@ -39,6 +40,7 @@
             label="Precio"
             v-model="editItem.price"
             :rules="rules"
+            name="price"
           >
           </v-text-field>
         </v-col>
@@ -59,6 +61,7 @@
             label="Stock"
             v-model="editItem.stock"
             :rules="quantityRules"
+            name="stock"
           >
           </v-text-field>
         </v-col>
@@ -70,6 +73,7 @@
             label="Cantidad por ingredientes"
             v-model="editItem.quantityPerIngredients"
             :rules="quantityRules"
+            name="quantity"
           >
           </v-text-field>
         </v-col>
@@ -102,6 +106,7 @@
               v-model="productQuantity"
               :label="'Cantidad (' + product.unitOfMeasure + ')'"
               :rules="quantityRules"
+              name="productQuantity"
             >
             </v-text-field>
           </div>

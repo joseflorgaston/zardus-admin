@@ -11,7 +11,7 @@
     <v-form v-model="isValid">
       <v-row class="mt-5 max-width mb-5">
         <v-col offset="1" cols="10" sm="6">
-          <v-text-field color="accent" label="Nombre" v-model="editItem.name" :rules="rules">
+          <v-text-field color="accent" label="Nombre" v-model="editItem.name" :rules="rules" name="name">
           </v-text-field>
         </v-col>
         <v-col offset="1" offset-sm="0" cols="10" sm="4">
@@ -19,6 +19,7 @@
             color="accent"
             label="Contacto"
             v-model="editItem.contact"
+            name="contact"
           >
           </v-text-field>
         </v-col>
@@ -27,6 +28,7 @@
             color="accent"
             label="Direccion"
             v-model="editItem.address"
+            name="address"
           >
           </v-text-field>
         </v-col>
@@ -74,14 +76,12 @@ export default {
       this.$store.commit('setDeleteDialog');
     },
     async updateProvider() {
-      
       this.form = {
         _id: this.editItem._id,
         name: this.editItem.name,
         address: this.editItem.address,
         contact: this.editItem.contact
       }
-      console.log(this.form);
       this.$store.commit('setLoading');
       await this.$store.dispatch('updateProvider', this.form);
       await this.$store.dispatch('getProviders', {

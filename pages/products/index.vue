@@ -212,7 +212,6 @@ export default {
       this.$store.commit('setEditDialog')
     },
     openMixtureModal() {
-      console.log(this.mixtureDialog)
       this.mixtureDialog = !this.mixtureDialog
     },
     openDeleteDialog(item) {

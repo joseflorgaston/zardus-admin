@@ -1,30 +1,14 @@
 <template>
   <v-container>
-    <pedidos-header
-      title="Historial de pedidos"
-      link="orders/create"
-      :searchUrl="searchUrl"
-      :hasButton="false"
-    />
+    <pedidos-header title="Historial de pedidos" link="orders/create" :searchUrl="searchUrl" :hasButton="false" />
     <v-card class="mt-5">
-      <v-data-table
-        :items="items"
-        :headers="headers"
-        :server-items-length="count"
-        :page="page"
-        :items-per-page="itemsPerPage"
-        @update:page="nextPage"
-        @update:items-per-page="otherItemCount"
-        :loading="loading"
-        :footer-props="{
+      <v-data-table :items="items" :headers="headers" :server-items-length="count" :page="page"
+        :items-per-page="itemsPerPage" @update:page="nextPage" @update:items-per-page="otherItemCount"
+        :loading="loading" :footer-props="{
           itemsPerPageOptions: [5, 10, 15],
-        }"
-      >
+        }">
         <template v-slot:[`item.isSelected`]="{ item }">
-          <v-checkbox
-            :value="isChecked(item)"
-            @change="setSelected(item, $event)"
-          ></v-checkbox>
+          <v-checkbox :value="isChecked(item)" @change="setSelected(item, $event)"></v-checkbox>
         </template>
         <template v-slot:[`item.totalAmount`]="{ item }">
           <shared-money :amount="item.totalAmount || 0"></shared-money>
@@ -33,15 +17,10 @@
           <shared-money :amount="item.totalPayed || 0"></shared-money>
         </template>
         <template v-slot:[`item.createdOn`]="{ item }">
-          <shared-formatted-date
-            :date="item.createdOn || ''"
-            :hasHour="true"
-          ></shared-formatted-date>
+          <shared-formatted-date :date="item.createdOn || ''" :hasHour="true"></shared-formatted-date>
         </template>
         <template v-slot:[`item.deliveryDate`]="{ item }">
-          <shared-formatted-date
-            :date="universalDate(item.deliveryDate) || ''"
-          ></shared-formatted-date>
+          <shared-formatted-date :date="universalDate(item.deliveryDate) || ''"></shared-formatted-date>
         </template>
         <template v-slot:[`item.actions`]="{ item }">
           <v-tooltip bottom>
@@ -67,38 +46,22 @@
       </v-data-table>
     </v-card>
     <div class="d-flex justify-end ma-5">
-      <v-btn
-        color="green"
-        class="white--text"
-        :disabled="selectedItems.length == 0"
-      >
-        <json-excel
-          :data="selectedItems"
-          :field="fields"
-          :class="selectedItems.length == 0 ? '' : 'btn green white--text'"
-        >
+      <v-btn color="green" class="white--text" :disabled="selectedItems.length == 0">
+        <json-excel :data="selectedItems" :field="fields"
+          :class="selectedItems.length == 0 ? '' : 'btn green white--text'">
           Exportar
           <v-icon class="pl-1">mdi-download</v-icon>
         </json-excel>
       </v-btn>
     </div>
     <v-dialog v-model="dialog" persistent min-width="500" width="700">
-      <view-order-dialog
-        :item="viewItem"
-        :payments="payments"
-      ></view-order-dialog>
+      <view-order-dialog :item="viewItem" :payments="payments"></view-order-dialog>
     </v-dialog>
     <v-dialog v-model="editDialog" persistent min-width="500" width="700">
-      <change-order-status-dialog
-        :id="statusModalId"
-        :status="'Pagado'"
-      ></change-order-status-dialog>
+      <change-order-status-dialog :id="statusModalId" :status="'Pagado'"></change-order-status-dialog>
     </v-dialog>
     <v-dialog v-model="paymentDialog" persistent min-width="500" width="700">
-      <add-payment-dialog
-        :item="viewItem"
-        v-on:closeDialog="openPaymentDialog"
-      ></add-payment-dialog>
+      <add-payment-dialog :item="viewItem" v-on:closeDialog="openPaymentDialog"></add-payment-dialog>
     </v-dialog>
   </v-container>
 </template>
@@ -237,9 +200,6 @@ export default {
       this.itemsPerPage = value
       await this.getOrdersHistory()
     },
-    editOrder(item) {
-      console.log(item)
-    },
     async getOrdersHistory() {
       this.loading = true
       this.$store.commit('setLoading')
@@ -256,7 +216,6 @@ export default {
       this.loading = false
     },
     changeOrderStatus(id, status) {
-      console.log(id)
       this.statusModalValue = status
       this.statusModalId = id
     },

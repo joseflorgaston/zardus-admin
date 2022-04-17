@@ -72,6 +72,7 @@
               (v) => !!v || 'Este campo es requerido',
             ]"
             @keyup="validateAmount"
+            name="amount"
           >
           </v-text-field>
         </v-col>
@@ -84,6 +85,7 @@
             ]"
             prepend-icon="mdi-receipt"
             placeholder="Nro de comprobante"
+            name="invoiceNumber"
           >
           </v-text-field>
         </v-col>

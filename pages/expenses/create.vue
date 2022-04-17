@@ -28,6 +28,7 @@
             @keyup="getSubTotal()"
             @change="getSubTotal()"
             v-model="formDetails.price"
+            name="price"
           >
           </v-text-field>
         </v-col>
@@ -39,6 +40,7 @@
             :disabled="selectedProduct == null"
             :rules="quantityRules"
             v-model="formDetails.quantity"
+            name="quantity"
           ></v-text-field>
         </v-col>
       </v-row>
@@ -201,7 +203,6 @@ export default {
     this.$store.commit('setLoading')
     if (this.$route.query._id != null) {
       this.isEdit = true
-      console.log(this.$route.query._id)
       const item = await this.$axios.$get(
         '/api/supplyOrder/' + this.$route.query._id
       )
@@ -320,7 +321,6 @@ export default {
         price: parseInt(this.formDetails.price),
       }
       this.dataItems.push(item)
-      console.log(this.dataItems)
       this.total = this.total + this.subTotal
       this.hasItem = true
     },

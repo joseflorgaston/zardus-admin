@@ -17,6 +17,7 @@
             label="Nombre"
             v-model="editItem.name"
             :rules="rules"
+            name="name"
           >
           </v-text-field>
         </v-col>
@@ -39,6 +40,7 @@
             label="Precio"
             v-model="editItem.price"
             :rules="priceRules"
+            name="price"
           >
           </v-text-field>
         </v-col>
@@ -59,6 +61,7 @@
             label="Stock"
             :rules="priceRules"
             v-model="editItem.stock"
+            name="stock"
           >
           </v-text-field>
         </v-col>

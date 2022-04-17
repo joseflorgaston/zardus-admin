@@ -101,6 +101,7 @@
                     :rules="quantityRules"
                     label="Cantidad"
                     type="number"
+                    name="quantity"
                   >
                   </v-text-field>
                 </div>
@@ -204,7 +205,6 @@ export default {
       this.selectedProduct.discountQuantity = parseInt(this.customIngredientQuantity)
       if (this.customIngredients.includes(this.selectedProduct)) return
       this.customIngredients.push(this.selectedProduct)
-      console.log(this.customIngredients)
     },
     removeCustomIngredient(item) {
       let index = this.customIngredients.indexOf(item)

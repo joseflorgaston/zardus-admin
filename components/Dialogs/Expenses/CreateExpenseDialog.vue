@@ -58,6 +58,7 @@
             v-model="form.totalAmount"
             type="number"
             :rules="rules"
+            name="amount"
           >
           </v-text-field>
         </v-col>
@@ -69,6 +70,7 @@
             outlined
             v-model="form.description"
             :rules="required"
+            name="description"
           >
           </v-textarea>
         </v-col>
