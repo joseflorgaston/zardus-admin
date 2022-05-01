@@ -168,6 +168,7 @@ export default {
         email: item.email,
         password: '',
         name: item.userName,
+        roles: `${item.roles[0]}`
       }
       this.$store.commit('setEditDialog')
     },
