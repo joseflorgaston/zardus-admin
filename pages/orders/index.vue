@@ -288,6 +288,11 @@ export default {
         class: 'header-color white--text',
       },
       {
+        text: 'Facturado por',
+        value: 'billedBy',
+        class: 'header-color white--text',
+      },
+      {
         text: 'Estado',
         value: 'status',
         class: 'header-color white--text',

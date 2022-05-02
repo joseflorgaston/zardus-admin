@@ -96,7 +96,7 @@
         :editItem="editedItem"
       ></edit-mixture-dialog>
     </v-dialog>
-    <v-dialog v-model="mixtureDialog" persistent min-width="500" width="700">
+    <v-dialog v-model="mixtureDialog" persistent min-width="500" max-width="1000" width="100%">
       <mixture-modal v-on:mixtureModal="openMixtureModal()"></mixture-modal>
     </v-dialog>
     <v-dialog v-model="stockMixtureDialog" persistent min-width="500" width="600">

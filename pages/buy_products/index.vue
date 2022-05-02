@@ -50,7 +50,13 @@
           </v-tooltip>
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
-              <v-btn icon v-bind="attrs" :disabled="item.totalPayed > 0" v-on="on" @click="editOrder(item)">
+              <v-btn
+                icon
+                v-bind="attrs"
+                :disabled="item.totalPayed > 0"
+                v-on="on"
+                @click="editOrder(item)"
+              >
                 <v-icon color="primary" title="Editar Compra"
                   >mdi-pencil</v-icon
                 >
@@ -71,6 +77,21 @@
               </v-btn>
             </template>
             <span>Agregar Pago</span>
+          </v-tooltip>
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                icon
+                v-bind="attrs"
+                v-on="on"
+                @click="deleteOrder(item)"
+              >
+                <v-icon color="primary" title="Editar Compra"
+                  >mdi-delete</v-icon
+                >
+              </v-btn>
+            </template>
+            <span>Deshacer Compra</span>
           </v-tooltip>
         </template>
       </v-data-table>
@@ -209,6 +230,20 @@ export default {
       )
       this.$store.commit('setLoading')
       this.$store.commit('setDialog')
+    },
+
+    async deleteOrder({_id}) {
+      try {
+        this.$store.commit('setLoading')
+        await this.$axios.delete('api/supplyOrder/' + _id);
+        await this.getSupplyOrders()
+        this.$store.commit('setSuccess', 'Compra eliminada exitosamente')
+      } catch (error) {
+        console.log(error)
+        this.$store.commit('setError', 'Ha ocurrido un error')
+      } finally {
+        this.$store.commit('setLoading')
+      }
     },
 
     openPaymentDialog(item) {

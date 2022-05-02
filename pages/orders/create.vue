@@ -59,6 +59,12 @@
             prepend-inner-icon="mdi-receipt" :rules="rules" name="invoiceNumber" dense outlined>
           </v-text-field>
         </v-col>
+        <v-col cols="12" sm="4" md="3">
+          <h4>Facturado por</h4>
+          <v-text-field v-model="formHeader.billedBy" placeholder="Facturado por"
+            prepend-inner-icon="mdi-receipt" :rules="rules" name="billedBy" dense outlined>
+          </v-text-field>
+        </v-col>
         <v-col cols="12">
           <v-divider class="mb-5"></v-divider>
         </v-col>
@@ -264,6 +270,7 @@ export default {
       this.formHeader.customer = item.customer
       this.formHeader.numberOfPayments = item.numberOfPayments
       this.formHeader.invoiceNumber = item.invoiceNumber
+      this.formHeader.billedBy = item.billedBy;
       this.total = item.totalAmount
       for (let i = 0; i < item.details.length; i++) {
         const element = item.details[i]
@@ -307,6 +314,7 @@ export default {
         paymentMethod: this.formHeader.paymentMethod,
         numberOfPayments: this.formHeader.numberOfPayments,
         invoiceNumber: this.formHeader.invoiceNumber,
+        billedBy: this.formHeader.billedBy,
         total: this.total,
         details: this.dataItems,
         deliveryAddress: 'N/A',

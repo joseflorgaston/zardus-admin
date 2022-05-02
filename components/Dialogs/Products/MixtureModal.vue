@@ -1,5 +1,5 @@
 <template>
-  <v-card width="800" max-width="100%">
+  <v-card>
     <v-card-title class="text-h5 white--text primary header">
       Agregar Mezcla
       <v-spacer></v-spacer>
@@ -154,7 +154,9 @@
 <script>
 export default {
   data: () => ({
-    form: {},
+    form: {
+      quantityPerIngredients: 1000,
+    },
     product: '',
     products: [],
     productQuantity: '0',
