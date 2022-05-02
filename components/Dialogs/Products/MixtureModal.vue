@@ -105,7 +105,10 @@
             </v-text-field>
           </div>
           <div class="col-12 col-sm-6 col-md-3">
-            <v-btn @click="addToIngredients" color="success" :disabled="!isValid"
+            <v-btn
+              @click="addToIngredients"
+              color="success"
+              :disabled="!isValid"
               >Añadir ingrendiente</v-btn
             >
           </div>
@@ -124,13 +127,25 @@
       <div class="black--text">{{ ingredient.name }}</div>
       <div class="mx-3">-</div>
       <div class="black--text">
-        {{ ingredient.quantity }} {{ ingredient.unitOfMeasure }} 
-        <v-btn x-small icon color="red" @click="removeIngredient(i)" title="Borrar ingrediente"><v-icon>mdi-close</v-icon></v-btn>
+        {{ ingredient.quantity }} {{ ingredient.unitOfMeasure }}
+        <v-btn
+          x-small
+          icon
+          color="red"
+          @click="removeIngredient(i)"
+          title="Borrar ingrediente"
+          ><v-icon>mdi-close</v-icon></v-btn
+        >
       </div>
     </div>
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn color="primary" @click="save()" :disabled="ingredients.length == 0 || !isValid">Guardar</v-btn>
+      <v-btn
+        color="primary"
+        @click="save()"
+        :disabled="ingredients.length == 0 || !isValid"
+        >Guardar</v-btn
+      >
       <v-btn @click="closeDialog()">Cancelar</v-btn>
     </v-card-actions>
   </v-card>
@@ -151,6 +166,10 @@ export default {
       'Semillas',
       'Frutos Secos',
       'Deshidratados',
+      'Aditivos',
+      'Legumbres',
+      'Harinas',
+      'Empaquetados',
     ],
     isValid: false,
     rules: [(v) => !!v || 'Este campo es requerido'],
@@ -168,7 +187,7 @@ export default {
       try {
         if (val == null) return
         if (val.length < 2) return
-        
+
         const product = await this.$axios.$get(`/api/products/${val}`)
         this.products = product.data
       } catch (error) {
@@ -178,16 +197,20 @@ export default {
   },
   methods: {
     closeDialog() {
-      this.$emit('mixtureModal');
+      this.$emit('mixtureModal')
     },
 
     removeIngredient(i) {
-      this.ingredients.splice(i, 1);
+      this.ingredients.splice(i, 1)
     },
 
     validateStock() {
       if (this.productQuantity > this.product.stock) {
-        alert('La cantidad ingresada supera al stock del producto (' + this.product.stock + ')')
+        alert(
+          'La cantidad ingresada supera al stock del producto (' +
+            this.product.stock +
+            ')'
+        )
         return false
       }
       const isOnIngredients = this.ingredients.filter(
@@ -219,27 +242,29 @@ export default {
     },
     async save() {
       try {
-        if(this.ingredients.length < 2){
-          alert('Coloca al menos dos ingredientes para crear la mezcla');
+        if (this.ingredients.length < 2) {
+          alert('Coloca al menos dos ingredientes para crear la mezcla')
           return
         }
-        this.$store.commit('setLoading');
-        let mixture = this.form;
-        mixture.ingredients = this.ingredients;
-        mixture.price = parseInt(mixture.price);
-        mixture.stock = parseInt(mixture.stock);
-        mixture.quantityPerIngredients = parseInt(mixture.quantityPerIngredients);
-        await this.$axios.post('/api/mixture/create', mixture);
-        this.closeDialog();
+        this.$store.commit('setLoading')
+        let mixture = this.form
+        mixture.ingredients = this.ingredients
+        mixture.price = parseInt(mixture.price)
+        mixture.stock = parseInt(mixture.stock)
+        mixture.quantityPerIngredients = parseInt(
+          mixture.quantityPerIngredients
+        )
+        await this.$axios.post('/api/mixture/create', mixture)
+        this.closeDialog()
         this.resetForm()
-        this.$store.commit('setSuccess', 'Mezcla creada exitosamente');
+        this.$store.commit('setSuccess', 'Mezcla creada exitosamente')
         await this.$store.dispatch('getMixtures', { page: 1, itemsPerPage: 10 })
-        this.$store.commit('setLoading');
+        this.$store.commit('setLoading')
       } catch (error) {
-        console.log(error);
-        this.$store.commit('setError', error.toString());
+        console.log(error)
+        this.$store.commit('setError', error.toString())
       }
-    }
+    },
   },
 }
 </script>

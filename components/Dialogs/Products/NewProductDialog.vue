@@ -102,6 +102,10 @@ export default {
       'Semillas',
       'Frutos Secos',
       'Deshidratados',
+      'Aditivos',
+      'Legumbres',
+      'Harinas',
+      'Empaquetados',
     ],
   }),
   methods: {
@@ -125,7 +129,7 @@ export default {
       this.$store.commit('setLoading')
       await this.$store.dispatch('saveProduct', this.form)
       await this.$store.dispatch('getProducts', { page: 1, itemsPerPage: 10 })
-      this.resetForm();
+      this.resetForm()
       this.$store.commit('setLoading')
     },
   },

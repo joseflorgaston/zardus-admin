@@ -70,11 +70,11 @@
     <v-divider></v-divider>
 
     <v-card-actions class="d-flex flex-wrap">
-      <v-btn color="error" @click="openDeleteDialog">
-        Eliminar Producto
-      </v-btn>
+      <v-btn color="error" @click="openDeleteDialog"> Eliminar Producto </v-btn>
       <v-spacer></v-spacer>
-      <v-btn color="primary" @click="save()" :disabled="!isValid"> Guardar </v-btn>
+      <v-btn color="primary" @click="save()" :disabled="!isValid">
+        Guardar
+      </v-btn>
       <v-btn text @click="closeDialog()"> Cancelar </v-btn>
     </v-card-actions>
   </v-card>
@@ -94,8 +94,8 @@ export default {
     rules: [(v) => !!v || 'Este campo es requerido'],
     priceRules: [
       (v) => !!v || 'Este campo es requerido',
-      (v) => v >= 0 || 'Este campo debe ser mayor a 0'
-      ],
+      (v) => v >= 0 || 'Este campo debe ser mayor a 0',
+    ],
     form: {
       name: '',
       category: '',
@@ -109,6 +109,10 @@ export default {
       'Semillas',
       'Frutos Secos',
       'Deshidratados',
+      'Aditivos',
+      'Legumbres',
+      'Harinas',
+      'Empaquetados',
     ],
   }),
   methods: {
@@ -121,10 +125,10 @@ export default {
         category: this.editItem.category,
         unitOfMeasure: this.editItem.unitOfMeasure,
       }
-      if (this.form.unitOfMeasure != "gramos") {
+      if (this.form.unitOfMeasure != 'gramos') {
         this.form.stock = parseInt(this.form.stock)
       } else {
-        this.form.stock = parseFloat(this.form.stock).toFixed(3);
+        this.form.stock = parseFloat(this.form.stock).toFixed(3)
       }
       this.$store.commit('setLoading')
       await this.$store.dispatch('updateProduct', this.form)

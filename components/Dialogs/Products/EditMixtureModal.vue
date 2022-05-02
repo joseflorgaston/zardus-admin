@@ -178,6 +178,10 @@ export default {
       'Semillas',
       'Frutos Secos',
       'Deshidratados',
+      'Aditivos',
+      'Legumbres',
+      'Harinas',
+      'Empaquetados'
     ],
     isValid: true,
     rules: [(v) => !!v || 'Este campo es requerido'],
