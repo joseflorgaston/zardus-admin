@@ -133,6 +133,7 @@ export default {
     },
   },
   data: () => ({
+    loading: true,
     headers: [
       {
         text: 'Fecha',
@@ -157,7 +158,6 @@ export default {
     ],
     editItem: {},
     searchUrl: '/api/expenses/Expense',
-    loading: false,
     page: 1,
     itemsPerPage: 10,
     addExpenseDialog: false,

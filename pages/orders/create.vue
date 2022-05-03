@@ -6,10 +6,14 @@
           <h2>Nuevo Pedido</h2>
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
-              <v-btn icon class="mx-6" v-bind="attrs" v-on="on">
-                <v-icon color="primary" large @click="cleanHeader()"
-                  >mdi-broom</v-icon
-                >
+              <v-btn
+                icon
+                class="mx-6"
+                v-bind="attrs"
+                v-on="on"
+                @click="cleanHeader()"
+              >
+                <v-icon color="primary" large>mdi-broom</v-icon>
               </v-btn>
             </template>
             <span>Limpiar Formulario</span>
@@ -234,8 +238,8 @@
         <h2>Productos seleccionados</h2>
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
-            <v-btn icon class="mx-6" v-bind="attrs" v-on="on">
-              <v-icon color="primary" large @click="cleanTable"
+            <v-btn icon class="mx-6" v-bind="attrs" v-on="on" @click="cleanTable()">
+              <v-icon color="primary" large
                 >mdi-broom</v-icon
               >
             </v-btn>

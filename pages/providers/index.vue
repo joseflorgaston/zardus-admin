@@ -118,7 +118,7 @@ export default {
   },
   data: () => ({
     editedItem: {},
-    loading: false,
+    loading: true,
     datatableHeaders: [
       {
         text: 'Nombre',

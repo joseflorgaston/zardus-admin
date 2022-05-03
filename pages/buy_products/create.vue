@@ -7,8 +7,8 @@
           <h2>Nueva Compra</h2>
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
-              <v-btn icon class="mx-6" v-bind="attrs" v-on="on">
-                <v-icon color="primary" large @click="cleanHeader()">mdi-broom</v-icon>
+              <v-btn icon class="mx-6" v-bind="attrs" v-on="on" @click="cleanHeader()">
+                <v-icon color="primary" large>mdi-broom</v-icon>
               </v-btn>
             </template>
             <span>Limpiar Formulario</span>
@@ -34,8 +34,8 @@
         </div>
         <div class="col-12 col-sm-4">
           <h4>Nro. de comprobante.</h4>
-          <v-text-field v-model="formHeader.invoiceNumber" placeholder="Nro de comprobante" prepend-inner-icon="mdi-receipt"
-            :rules="rules" name="invoiceNumber" outlined dense>
+          <v-text-field v-model="formHeader.invoiceNumber" placeholder="Nro de comprobante"
+            prepend-inner-icon="mdi-receipt" :rules="rules" name="invoiceNumber" outlined dense>
           </v-text-field>
         </div>
         <div class="col-12" style="padding-top: 0px">
@@ -57,8 +57,8 @@
         </div>
         <div class="col-12 col-sm-6 col-md-4">
           <h4>Precio Gs.</h4>
-          <v-text-field type="number" prepend-inner-icon="mdi-currency-usd" :rules="quantityRules" @keyup="setSubTotal()"
-            @change="setSubTotal()" v-model="formDetails.price" name="price" outlined dense>
+          <v-text-field type="number" prepend-inner-icon="mdi-currency-usd" :rules="quantityRules"
+            @keyup="setSubTotal()" @change="setSubTotal()" v-model="formDetails.price" name="price" outlined dense>
           </v-text-field>
         </div>
         <div class="col-12 col-sm-6 col-md-4">
@@ -91,8 +91,8 @@
             <h2>Productos seleccionados</h2>
             <v-tooltip bottom>
               <template v-slot:activator="{ on, attrs }">
-                <v-btn icon class="mx-6" v-bind="attrs" v-on="on">
-                  <v-icon color="primary" large @click="cleanTable">mdi-broom</v-icon>
+                <v-btn icon class="mx-6" v-bind="attrs" v-on="on" @click="cleanTable()">
+                  <v-icon color="primary" large >mdi-broom</v-icon>
                 </v-btn>
               </template>
               <span>Limpiar Tabla</span>

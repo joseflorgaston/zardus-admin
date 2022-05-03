@@ -162,6 +162,7 @@ export default {
     },
   },
   data: () => ({
+    loading: true,
     headers: [
       {
         text: 'Exp',
@@ -216,7 +217,6 @@ export default {
     payments: [],
     selectedItems: [],
     viewItem: {},
-    loading: false,
     page: 1,
     itemsPerPage: 10,
     paymentDialog: false,
