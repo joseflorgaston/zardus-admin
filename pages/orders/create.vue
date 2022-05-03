@@ -68,7 +68,7 @@
         <v-col cols="12" sm="8" md="9">
           <h4>Observación</h4>
           <v-text-field v-model="formHeader.description" placeholder="Observación"
-            prepend-inner-icon="mdi-receipt" :rules="rules" name="billedBy" dense outlined>
+            prepend-inner-icon="mdi-receipt" name="description" dense outlined>
           </v-text-field>
         </v-col>
         <v-col cols="12">
