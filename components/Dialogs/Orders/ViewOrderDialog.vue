@@ -7,6 +7,11 @@
         <v-icon color="white"> mdi-close </v-icon>
       </v-btn>
     </v-card-title>
+      <center>
+        <div class="mt-2">
+          <h3>Datos generales:</h3>
+        </div>
+      </center>
     <v-card-text class="mt-4 black--text">
       <v-row>
         <v-col cols="12" sm="4">
@@ -34,12 +39,31 @@
           </div>
         </v-col>
         <v-col cols="12" sm="4">
-          <span class="font-weight-black">Metodo de pago:</span>
+          <span class="font-weight-black">RUC:</span>
+          <span>{{ item.ruc }}</span>
+        </v-col>
+        <v-col cols="12" sm="4">
+          <span class="font-weight-black">Nro comprobante:</span>
+          <span>{{ item.invoiceNumber }}</span>
+        </v-col>
+        <v-col cols="12" sm="4">
+          <span class="font-weight-black">Método de pago:</span>
           <span>{{ item.paymentMethod }}</span>
         </v-col>
         <v-col cols="12" sm="4">
           <span class="font-weight-black">Encargado:</span>
           <span>{{ item.userName }}</span>
+        </v-col>
+        <v-col cols="12" sm="4">
+          <div class="d-flex flex-wrap">
+            <span class="font-weight-black">Costo delivery:</span>
+            <span
+              ><shared-money
+                :amount="item.deliveryAmount"
+                class="pl-1"
+              ></shared-money
+            ></span>
+          </div>
         </v-col>
         <v-col cols="12" sm="4">
           <span class="font-weight-black">Estado:</span>
@@ -75,9 +99,7 @@
           {{ element.product.name }}
         </v-col>
         <v-col cols="3" class="pt-0">
-          <shared-money
-            :amount="parseInt(element.price)"
-          ></shared-money>
+          <shared-money :amount="parseInt(element.price)"></shared-money>
         </v-col>
         <v-col cols="2" class="pt-0">
           {{ element.quantity }} {{ element.product.unitOfMeasure }}
@@ -169,7 +191,7 @@ export default {
     payments: {
       type: [],
       required: false,
-      default: []
+      default: [],
     },
   },
   data: () => ({

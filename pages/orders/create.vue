@@ -7,7 +7,9 @@
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
               <v-btn icon class="mx-6" v-bind="attrs" v-on="on">
-                <v-icon color="primary" large @click="cleanHeader()">mdi-broom</v-icon>
+                <v-icon color="primary" large @click="cleanHeader()"
+                  >mdi-broom</v-icon
+                >
               </v-btn>
             </template>
             <span>Limpiar Formulario</span>
@@ -25,17 +27,40 @@
       <v-row class="py-3">
         <v-col cols="12" sm="6" md="3">
           <h4>Fecha de entrega</h4>
-          <v-menu ref="menu" v-model="menu" :return-value.sync="computedDateFormattedMomentjs"
-            :close-on-content-click="false" transition="scale-transition" min-width="auto">
+          <v-menu
+            ref="menu"
+            v-model="menu"
+            :return-value.sync="computedDateFormattedMomentjs"
+            :close-on-content-click="false"
+            transition="scale-transition"
+            min-width="auto"
+          >
             <template v-slot:activator="{ on, attrs }">
-              <v-combobox v-model="computedDateFormattedMomentjs" color="primary" prepend-inner-icon="mdi-calendar"
-                readonly v-bind="attrs" v-on="on" outlined dense></v-combobox>
+              <v-combobox
+                v-model="computedDateFormattedMomentjs"
+                color="primary"
+                prepend-inner-icon="mdi-calendar"
+                readonly
+                v-bind="attrs"
+                v-on="on"
+                outlined
+                dense
+              ></v-combobox>
             </template>
-            <v-date-picker v-model="formHeader.deliveryDate" locale="es-py" title="Entrega" header-color="primary"
-              scrollable>
+            <v-date-picker
+              v-model="formHeader.deliveryDate"
+              locale="es-py"
+              title="Entrega"
+              header-color="primary"
+              scrollable
+            >
               <v-spacer></v-spacer>
               <v-btn text color="primary" @click="menu = false"> Cancel </v-btn>
-              <v-btn text color="primary" @click="$refs.menu.save(formHeader.deliveryDate)">
+              <v-btn
+                text
+                color="primary"
+                @click="$refs.menu.save(formHeader.deliveryDate)"
+              >
                 OK
               </v-btn>
             </v-date-picker>
@@ -43,32 +68,89 @@
         </v-col>
         <v-col cols="12" sm="6" md="3">
           <h4>Cliente</h4>
-          <v-text-field placeholder="Cliente" prepend-inner-icon="mdi-account" v-model="formHeader.customer"
-            :rules="rules" name="customer" outlined dense>
+          <v-text-field
+            placeholder="Cliente"
+            prepend-inner-icon="mdi-account"
+            v-model="formHeader.customer"
+            :rules="rules"
+            name="customer"
+            outlined
+            dense
+          >
           </v-text-field>
         </v-col>
         <v-col cols="12" sm="6" md="3">
           <h4>Metodo de pago</h4>
-          <v-select :items="['Contado', 'Credito']" :rules="rules" v-model="formHeader.paymentMethod"
-            prepend-inner-icon="mdi-account-cash-outline" dense outlined>
+          <v-select
+            :items="['Contado', 'Credito']"
+            :rules="rules"
+            v-model="formHeader.paymentMethod"
+            prepend-inner-icon="mdi-account-cash-outline"
+            dense
+            outlined
+          >
           </v-select>
         </v-col>
         <v-col cols="12" sm="4" md="3">
+          <h4>Monto Delivery</h4>
+          <v-text-field
+            v-model="formHeader.deliveryAmount"
+            placeholder="Delivery"
+            prepend-inner-icon="mdi-moped"
+            name="delivery"
+            dense
+            outlined
+            type="number"
+            @blur="calculateTotal()"
+          >
+          </v-text-field>
+        </v-col>
+        <v-col cols="12" sm="4" md="3">
+          <h4>RUC</h4>
+          <v-text-field
+            v-model="formHeader.ruc"
+            placeholder="RUC"
+            prepend-inner-icon="mdi-magnify"
+            name="ruc"
+            dense
+            outlined
+          >
+          </v-text-field>
+        </v-col>
+        <v-col cols="12" sm="4" md="3">
           <h4>Nro. de comprobante.</h4>
-          <v-text-field v-model="formHeader.invoiceNumber" placeholder="Nro de comprobante"
-            prepend-inner-icon="mdi-receipt" :rules="rules" name="invoiceNumber" dense outlined>
+          <v-text-field
+            v-model="formHeader.invoiceNumber"
+            placeholder="Nro de comprobante"
+            prepend-inner-icon="mdi-receipt"
+            name="invoiceNumber"
+            dense
+            outlined
+          >
           </v-text-field>
         </v-col>
         <v-col cols="12" sm="4" md="3">
           <h4>Facturado por</h4>
-          <v-text-field v-model="formHeader.billedBy" placeholder="Facturado por"
-            prepend-inner-icon="mdi-receipt" :rules="rules" name="billedBy" dense outlined>
+          <v-text-field
+            v-model="formHeader.billedBy"
+            placeholder="Facturado por"
+            prepend-inner-icon="mdi-account-arrow-right"
+            name="billedBy"
+            dense
+            outlined
+          >
           </v-text-field>
         </v-col>
-        <v-col cols="12" sm="8" md="9">
+        <v-col cols="12" sm="4" md="3">
           <h4>Observación</h4>
-          <v-text-field v-model="formHeader.description" placeholder="Observación"
-            prepend-inner-icon="mdi-receipt" name="description" dense outlined>
+          <v-text-field
+            v-model="formHeader.description"
+            placeholder="Observación"
+            prepend-inner-icon="mdi-alert-box-outline"
+            name="description"
+            dense
+            outlined
+          >
           </v-text-field>
         </v-col>
         <v-col cols="12">
@@ -81,22 +163,49 @@
       <v-row>
         <v-col cols="12" sm="6" md="4">
           <h4>Producto</h4>
-          <v-autocomplete prepend-inner-icon="mdi-seed" :rules="rules" :items="products" item-text="name"
-            v-model="autocomplete" :search-input.sync="search" @change="selectProduct($event)" return-object outlined
-            dense>
+          <v-autocomplete
+            prepend-inner-icon="mdi-seed"
+            :rules="rules"
+            :items="products"
+            item-text="name"
+            v-model="autocomplete"
+            :search-input.sync="search"
+            @change="selectProduct($event)"
+            return-object
+            outlined
+            dense
+          >
           </v-autocomplete>
         </v-col>
         <v-col cols="12" sm="6" md="3">
           <h4>Precio Gs.</h4>
-          <v-text-field type="number" prepend-inner-icon="mdi-currency-usd" :rules="quantityRules"
-            @keyup="getSubTotal()" @change="getSubTotal()" v-model="formDetails.price" name="price" outlined dense>
+          <v-text-field
+            type="number"
+            prepend-inner-icon="mdi-currency-usd"
+            :rules="quantityRules"
+            @keyup="getSubTotal()"
+            @change="getSubTotal()"
+            v-model="formDetails.price"
+            name="price"
+            outlined
+            dense
+          >
           </v-text-field>
         </v-col>
         <v-col cols="12" sm="6" md="3">
           <h4>Cantidad ({{ this.selectedProduct.unitOfMeasure }})</h4>
-          <v-text-field type="number" prepend-inner-icon="mdi-numeric-2-box-multiple-outline "
-            :disabled="selectedProduct == null" @keyup="getSubTotal()" @change="getSubTotal()" :rules="quantityRules"
-            v-model="formDetails.quantity" name="quantity" outlined dense></v-text-field>
+          <v-text-field
+            type="number"
+            prepend-inner-icon="mdi-numeric-2-box-multiple-outline "
+            :disabled="selectedProduct == null"
+            @keyup="getSubTotal()"
+            @change="getSubTotal()"
+            :rules="quantityRules"
+            v-model="formDetails.quantity"
+            name="quantity"
+            outlined
+            dense
+          ></v-text-field>
         </v-col>
       </v-row>
     </v-form>
@@ -104,10 +213,13 @@
       <v-col cols="12" sm="12" md="10">
         <div class="d-flex justify-space-between">
           <div>
-            <v-btn color="primary" :disabled="!isValid" @click="addProduct()">Agregar</v-btn>
+            <v-btn color="primary" :disabled="!isValid" @click="addProduct()"
+              >Agregar</v-btn
+            >
           </div>
           <div class="d-flex">
-            <h3>SubTotal:
+            <h3>
+              SubTotal:
               <shared-money :amount="parseInt(subTotal)" />
             </h3>
           </div>
@@ -123,17 +235,21 @@
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
             <v-btn icon class="mx-6" v-bind="attrs" v-on="on">
-              <v-icon color="primary" large @click="cleanTable">mdi-broom</v-icon>
+              <v-icon color="primary" large @click="cleanTable"
+                >mdi-broom</v-icon
+              >
             </v-btn>
           </template>
           <span>Limpiar Tabla</span>
         </v-tooltip>
       </div>
       <span class="caption pt-3">
-        <v-icon color="blue" class="mb-1" small>mdi-alert-circle-outline
+        <v-icon color="blue" class="mb-1" small
+          >mdi-alert-circle-outline
         </v-icon>
         <span class="subtitle-2">
-          Para crear el pedido clickea el boton guardar</span>
+          Para crear el pedido clickea el boton guardar</span
+        >
       </span>
     </div>
     <div class="px-4 px-sm-8">
@@ -150,17 +266,67 @@
           </template>
           <template v-slot:[`item.price`]="{ item }">
             <div class="d-flex">
-              <shared-money :amount="parseInt(item.price)"></shared-money>
+              <shared-money
+                v-show="item.isEdit === false"
+                :amount="parseInt(item.price)"
+              ></shared-money>
+            </div>
+            <div>
+              <v-text-field
+                type="number"
+                v-show="item.isEdit === true"
+                dense
+                v-model="item.price"
+                @keyup="calculateProductTotal(item)"
+                @blur="calculateTotal()"
+              >
+              </v-text-field>
             </div>
           </template>
           <template v-slot:[`item.quantity`]="{ item }">
             <div class="d-flex">
-              {{ item.quantity }} {{ item.product.unitOfMeasure }}
+              <span v-show="!item.isEdit">
+                {{ item.quantity }} {{ item.product.unitOfMeasure }}
+              </span>
+            </div>
+            <div v-show="item.isEdit">
+              <v-text-field
+                type="number"
+                v-show="item.isEdit === true"
+                dense
+                v-model="item.quantity"
+                @keyup="calculateProductTotal(item)"
+                @blur="calculateTotal()"
+              >
+              </v-text-field>
             </div>
           </template>
           <template v-slot:[`item.actions`]="{ item }">
-            <v-btn icon>
-              <v-icon color="error" @click="removeItem(item)" title="Remover item">mdi-close</v-icon>
+            <v-btn
+              icon
+              color="error"
+              @click="removeItem(item)"
+              title="Remover item"
+            >
+              <v-icon>mdi-close</v-icon>
+            </v-btn>
+            <v-btn
+              v-show="!item.isEdit"
+              icon
+              @click="editItemPrice(item)"
+              color="primary"
+              title="Editar precio"
+            >
+              <v-icon>mdi-pencil</v-icon>
+            </v-btn>
+            <v-btn
+              v-show="item.isEdit"
+              icon
+              @click="editItemPrice(item)"
+              color="success"
+              title="Confirmar"
+            >
+              <v-icon>mdi-check</v-icon>
             </v-btn>
           </template>
         </v-data-table>
@@ -170,7 +336,13 @@
     <v-row class="px-4 px-sm-8">
       <v-col cols="12" md="10">
         <div class="d-flex justify-space-between">
-          <v-btn color="primary" class="my-4" @click="saveOrder" :disabled="!hasItem">Guardar</v-btn>
+          <v-btn
+            color="primary"
+            class="my-4"
+            @click="saveOrder"
+            :disabled="!hasItem"
+            >Guardar</v-btn
+          >
           <div class="d-flex mt-2 mr-5">
             <h3>
               Total: <shared-money :amount="parseInt(total)"></shared-money>
@@ -208,6 +380,7 @@ export default {
       invoiceNumber: '',
       numberOfPayments: 0,
       deliveryAddress: '',
+      deliveryAmount: 0,
     },
     search: null,
     formDetails: {
@@ -256,14 +429,21 @@ export default {
 
   async beforeMount() {
     this.$store.commit('setLoading')
-    if (this.$route.query._id != null) {
-      this.isEdit = true
-      const item = await this.$axios.$get('/api/order/' + this.$route.query._id)
-      this.setItem(item)
+    try {
+      if (this.$route.query._id != null) {
+        this.isEdit = true
+        const item = await this.$axios.$get(
+          '/api/order/' + this.$route.query._id
+        )
+        this.setItem(item)
+      }
+    } catch (error) {
+      console.log(error)
+      this.$store.commit('setError', error.toString())
+    } finally {
+      this.$store.commit('setLoading')
     }
-    this.$store.commit('setLoading')
   },
-
   methods: {
     setItem(item) {
       this.dataItems = item.details
@@ -272,16 +452,36 @@ export default {
         parseISO(item.deliveryDate),
         'yyyy-MM-dd'
       )
-      this.formHeader.paymentMethod = item.paymentMethod
       this.formHeader.customer = item.customer
-      this.formHeader.numberOfPayments = item.numberOfPayments
+      this.formHeader.paymentMethod = item.paymentMethod
+      this.formHeader.deliveryAmount = item.deliveryAmount
+      this.formHeader.ruc = item.ruc
       this.formHeader.invoiceNumber = item.invoiceNumber
-      this.formHeader.billedBy = item.billedBy;
+      this.formHeader.billedBy = item.billedBy
+      this.formHeader.description = item.description
       this.total = item.totalAmount
       for (let i = 0; i < item.details.length; i++) {
         const element = item.details[i]
+        element.isEdit = false
         this.editItem.push(element)
       }
+    },
+    calculateProductTotal(item) {
+      if (item.product.unitOfMeasure == 'gramos') {
+        item.subTotal = item.quantity * 0.001 * item.price
+        console.log(item.subTotal)
+        this.$forceUpdate()
+        return
+      }
+      item.subTotal = item.quantity * item.price
+      this.$forceUpdate()
+    },
+    calculateTotal() {
+      console.log(this.dataItems)
+      this.total = this.dataItems.reduce((accumulator, object) => {
+        return accumulator + object.subTotal
+      }, 0)
+      this.total = this.total + parseInt(this.formHeader.deliveryAmount)
     },
     getSubTotal() {
       if (this.selectedProduct.unitOfMeasure == 'gramos')
@@ -292,8 +492,12 @@ export default {
         this.formDetails.price * this.formDetails.quantity)
     },
     cleanTable() {
-      this.total = 0
       this.dataItems = []
+      this.total = parseInt(this.formDetails.deliveryAmount)
+    },
+    editItemPrice(item) {
+      item.isEdit = !item.isEdit
+      this.$forceUpdate()
     },
     cleanHeader() {
       this.formHeader = {
@@ -302,6 +506,11 @@ export default {
         customer: '',
         numberOfPayments: 0,
         deliveryAddress: '',
+        deliveryAmount: 0,
+        ruc: '',
+        invoiceNumber: '',
+        billedBy: '',
+        description: '',
       }
       this.formDetails = {
         product: '',
@@ -313,12 +522,14 @@ export default {
     async saveOrder() {
       this.$store.commit('setLoading')
       const item = {
-        deliveryDate: this.formHeader.deliveryDate,
         totalAmount: this.total,
+        deliveryDate: this.formHeader.deliveryDate,
         customer: this.formHeader.customer,
         lowerCaseCustomer: this.formHeader.customer.toLowerCase(),
         paymentMethod: this.formHeader.paymentMethod,
+        deliveryAmount: this.formHeader.deliveryAmount,
         numberOfPayments: this.formHeader.numberOfPayments,
+        ruc: this.formHeader.ruc,
         invoiceNumber: this.formHeader.invoiceNumber,
         billedBy: this.formHeader.billedBy,
         description: this.formHeader.description,
@@ -398,6 +609,7 @@ export default {
         product: this.selectedProduct,
         quantity: this.formDetails.quantity,
         price: parseInt(this.formDetails.price),
+        isEdit: false,
       }
       this.dataItems.push(item)
       this.total = this.total + parseInt(this.subTotal)
@@ -428,15 +640,15 @@ export default {
       get() {
         return this.formHeader.deliveryDate
           ? moment(this.formHeader.deliveryDate)
-            .locale('es_py')
-            .format('dddd, DD MMMM, yyyy')
+              .locale('es_py')
+              .format('dddd, DD MMMM, yyyy')
           : ''
       },
       set(value) {
         return this.formHeader.deliveryDate
           ? moment(this.formHeader.deliveryDate)
-            .locale('es_py')
-            .format('dddd, DD MMMM, yyyy')
+              .locale('es_py')
+              .format('dddd, DD MMMM, yyyy')
           : ''
       },
     },

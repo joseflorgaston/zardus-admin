@@ -165,7 +165,7 @@
       v-model="dialog"
       persistent
       min-width="500"
-      width="700"
+      width="900"
       max-width="100%"
     >
       <view-order-dialog
@@ -253,11 +253,6 @@ export default {
         class: 'header-color white--text',
       },
       {
-        text: 'Fecha Pedido',
-        value: 'createdOn',
-        class: 'header-color white--text',
-      },
-      {
         text: 'Fecha entrega',
         value: 'deliveryDate',
         class: 'header-color white--text',
@@ -285,6 +280,11 @@ export default {
       {
         text: 'Comprobante',
         value: 'invoiceNumber',
+        class: 'header-color white--text',
+      },
+      {
+        text: 'RUC',
+        value: 'ruc',
         class: 'header-color white--text',
       },
       {
