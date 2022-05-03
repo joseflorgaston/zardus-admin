@@ -264,11 +264,11 @@ export default {
     },
     async nextPage(value) {
       this.page = value
-      await this.getProducts()
+      await this.getMixtures()
     },
     async otherItemCount(value) {
       this.itemsPerPage = value
-      await this.getProducts()
+      await this.getMixtures()
     },
     async getMixtures() {
       this.loading = true
