@@ -190,7 +190,7 @@ export default {
         if (val == null) return
         if (val.length < 2) return
 
-        const product = await this.$axios.$get(`/api/products/${val}`)
+        const product = await this.$axios.$get(`/api/allProducts/${val}`)
         this.products = product.data
       } catch (error) {
         console.log(error)
@@ -207,14 +207,15 @@ export default {
     },
 
     validateStock() {
-      if (this.productQuantity > this.product.stock) {
+      /*if (this.productQuantity > this.product.stock) {
         alert(
           'La cantidad ingresada supera al stock del producto (' +
             this.product.stock +
             ')'
         )
         return false
-      }
+      }*/ 
+      
       const isOnIngredients = this.ingredients.filter(
         (x) => x.name == this.product.name
       )
@@ -225,6 +226,10 @@ export default {
       return true
     },
     addToIngredients() {
+      if (!this.validateStock()) {
+        return
+      }
+      
       const newIngredient = {
         _id: this.product._id,
         name: this.product.name,

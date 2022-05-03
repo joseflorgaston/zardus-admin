@@ -125,8 +125,8 @@
                 >
               </v-btn>
             </template>
-            <span v-if="item.paymentMethod == 'Credito'">Agregar Pago</span>
-            <span v-else>Cambiar estado a pagado</span>
+            <span v-show="item.paymentMethod == 'Credito'">Agregar Pago</span>
+            <span v-show="item.paymentMethod != 'Credito'">Cambiar estado a pagado</span>
           </v-tooltip>
         </template>
         <template v-slot:[`item.status`]="{ item }">

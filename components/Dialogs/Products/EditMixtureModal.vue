@@ -196,7 +196,7 @@ export default {
         if (val == null) return
         if (val.length < 2) return
 
-        const product = await this.$axios.$get(`/api/products/${val}`)
+        const product = await this.$axios.$get(`/api/allProducts/${val}`)
         this.products = product.data
       } catch (error) {
         console.log(error)
@@ -224,6 +224,7 @@ export default {
         )
         return false
       }*/
+
       const isOnIngredients = this.editItem.ingredients.filter(
         (x) => x.name == this.product.name
       )
