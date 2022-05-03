@@ -65,6 +65,12 @@
             prepend-inner-icon="mdi-receipt" :rules="rules" name="billedBy" dense outlined>
           </v-text-field>
         </v-col>
+        <v-col cols="12" sm="8" md="9">
+          <h4>Observación</h4>
+          <v-text-field v-model="formHeader.description" placeholder="Observación"
+            prepend-inner-icon="mdi-receipt" :rules="rules" name="billedBy" dense outlined>
+          </v-text-field>
+        </v-col>
         <v-col cols="12">
           <v-divider class="mb-5"></v-divider>
         </v-col>
@@ -315,6 +321,7 @@ export default {
         numberOfPayments: this.formHeader.numberOfPayments,
         invoiceNumber: this.formHeader.invoiceNumber,
         billedBy: this.formHeader.billedBy,
+        description: this.formHeader.description,
         total: this.total,
         details: this.dataItems,
         deliveryAddress: 'N/A',

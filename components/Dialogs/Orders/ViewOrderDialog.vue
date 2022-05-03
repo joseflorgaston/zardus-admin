@@ -45,6 +45,10 @@
           <span class="font-weight-black">Estado:</span>
           <span :class="getStatusClass()">{{ item.status }}</span>
         </v-col>
+        <v-col cols="12">
+          <span class="font-weight-black">Observación:</span>
+          <span>{{ item.description }}</span>
+        </v-col>
       </v-row>
       <v-divider class="mt-3"></v-divider>
       <center>

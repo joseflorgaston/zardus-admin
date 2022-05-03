@@ -90,7 +90,7 @@
         </v-card>
       </v-col>
     </v-row>
-    <v-dialog v-model="editDialog" persistent min-width="500" width="700">
+    <v-dialog v-model="editDialog" persistent min-width="500" max-width="1000" width="100%">
       <edit-mixture-dialog
         v-on:removeIngredient="removeIngredient"
         :editItem="editedItem"
