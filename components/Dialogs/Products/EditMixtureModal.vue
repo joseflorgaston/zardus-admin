@@ -111,8 +111,11 @@
             </v-text-field>
           </div>
           <div class="col-12 col-sm-6 col-md-3">
-            <v-btn @click="addToIngredients()" :disabled="!validIngredient"
-              >Anadir ingrendiente.</v-btn
+            <v-btn
+              @click="addToIngredients()"
+              color="success"
+              :disabled="!validIngredient"
+              >Añadir ingrendiente.</v-btn
             >
           </div>
           <div class="col-12">
@@ -181,7 +184,7 @@ export default {
       'Aditivos',
       'Legumbres',
       'Harinas',
-      'Empaquetados'
+      'Empaquetados',
     ],
     isValid: true,
     rules: [(v) => !!v || 'Este campo es requerido'],
@@ -210,9 +213,9 @@ export default {
 
     removeIngredient(i) {
       this.editItem.ingredients.splice(i, 1)
-      let item = this.editItem;
-      this.editItem = {};
-      this.editItem = item;
+      let item = this.editItem
+      this.editItem = {}
+      this.editItem = item
     },
 
     validateStock() {
@@ -247,9 +250,9 @@ export default {
         category: this.product.category,
       }
       this.editItem.ingredients.push(newIngredient)
-      let newIngredients = this.editItem;
-      this.editItem = {};
-      this.editItem = newIngredients;
+      let newIngredients = this.editItem
+      this.editItem = {}
+      this.editItem = newIngredients
     },
 
     async save() {
@@ -266,8 +269,11 @@ export default {
         mixture.quantityPerIngredients = parseInt(
           mixture.quantityPerIngredients
         )
-        await this.$axios.put('/api/mixture/update/' + this.editItem._id, this.editItem)
-        this.$store.commit('setEditDialog');
+        await this.$axios.put(
+          '/api/mixture/update/' + this.editItem._id,
+          this.editItem
+        )
+        this.$store.commit('setEditDialog')
         this.$store.commit('setSuccess', 'Mezcla editada exitosamente')
         await this.$store.dispatch('getMixtures', { page: 1, itemsPerPage: 10 })
         this.$store.commit('setLoading')
